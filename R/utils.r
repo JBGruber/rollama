@@ -5,26 +5,34 @@ build_req <- function(model, msg, server) {
 
   if (is.null(model)) model <- getOption("rollama_model", default = "llama2")
   if (is.null(server)) server <- getOption("rollama_server", default = "http://localhost:11434")
+  spinner <- getOption("rollama_spinner", default = interactive())
 
   req_data <- list(model = model,
                    messages = msg,
                    stream = FALSE)
 
-  if (interactive()) cli::cli_progress_step("{model} is thinking {cli::pb_spin}")
-
-  rp <- callr::r_bg(make_req,
-                    args = list(req_data = req_data,
-                                server = server),
-                    package = TRUE)
-
-  while (rp$is_alive()) {
-    if (interactive()) cli::cli_progress_update()
-    Sys.sleep(2 / 100)
+  if (spinner) {
+    cli::cli_progress_step("{model} is thinking {cli::pb_spin}")
+    rp <- callr::r_bg(make_req,
+                      args = list(req_data = req_data,
+                                  server = server),
+                      package = TRUE)
+    while (rp$is_alive()) {
+      if (interactive()) cli::cli_progress_update()
+      Sys.sleep(2 / 100)
+    }
+    resp <- rp$get_result()
+    if (interactive()) cli::cli_progress_done()
+  } else {
+    resp <- make_req(req_data, server)
   }
 
-  resp <- rp$get_result()
-
-  if (interactive()) cli::cli_progress_done()
+  if (!is.null(resp$error)) {
+    if (grepl("model.+not found, try pulling it first", resp$error)) {
+      resp$error <- paste(resp$error, "with {.code pull_model(\"{model}\")}")
+    }
+    cli::cli_abort(resp$error)
+  }
 
   return(resp)
 }
@@ -48,3 +56,10 @@ screen_answer <- function(x) {
   for (i in pars) cli::cli_text("{i}")
 }
 
+
+# function to display progress in streaming operations
+pgrs <- function(resp) {
+  rawToChar(resp) |>
+    cat()
+  TRUE
+}
