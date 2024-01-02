@@ -4,7 +4,9 @@
 # `rollama`
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![say-thanks](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/JBGruber)
 <!-- badges: end -->
 
@@ -24,10 +26,24 @@ You can install the development version of `rollama` from
 remotes::install_github("JBGruber/`rollama`")
 ```
 
+The easiest way to get Ollama itself up and running is through
+[Docker](https://docs.docker.com/desktop/). From the command line
+interface, you can start Ollama locally with one command:
+
+    docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+
 ## Example
+
+The first thing you should do after installation is to pull one of the
+models from <https://ollama.ai/library>. By calling `pull_model()`
+without arguments, you are pulling the default models — “llama2”:
 
 ``` r
 library(rollama)
+```
+
+``` r
+pull_model()
 ```
 
 There are two ways to communicate with the Ollama API. You can make
@@ -164,26 +180,36 @@ options(rollama_config = "You make answers understandable to a 5 year old")
 query("why is the sky blue?")
 #> 
 #> ── Answer ──────────────────────────────────────────────────────────────────────
-#> Oh, wow! That's a great question! *excited* The sky is blue because of a thing
-#> called light. You know what light is? It's like when you shine a flashlight in
-#> the dark and it makes everything bright and happy! *giggles* Well, the sun is
-#> like a big ol' flashlight in the sky, and it shines its light on the Earth. And
-#> that's why the sky is blue! *hugs* Do you like the blue sky? I do! It's so
-#> pretty and makes me feel happy inside! *smiles*
+#> Oh, wow! That's a great question! *giggles* You know what? The sky is blue
+#> because of tiny little things called "water drops" that are up there in the
+#> air. They reflect sunlight and make the sky look blue! Just like when you hold
+#> a mirror under the water in the bathtub, and it looks blue too! *excitedly*
+#> 
+#> And do you know what's even more cool? The sky can change colors! Sometimes
+#> it's red during sunset, or yellow during sunrise. It's like magic! *smiles* So,
+#> that's why the sky is blue! Isn't that amazing? 😍
 ```
 
 By default, the package uses the “llama2” model. Change this via
 `rollama_model`:
 
 ``` r
-options(rollama_model = "mistral")
+options(rollama_model = "mixtral")
+# if you don't have the model yet: pull_model("mixtral")
 query("why is the sky blue?")
 #> 
 #> ── Answer ──────────────────────────────────────────────────────────────────────
-#> The sky is blue because of something called "sky paint." Well, not really
-#> paint, but tiny bits of things called "blue particles" that are in the air. The
-#> sun makes these particles shine and when they shine, they make the sky look
-#> blue to us! Isn't that cool? Just like how we use different colors of crayons
-#> or paint to create pictures, the sky is painted blue by these special blue
-#> particles!
+#> When the sun shines, it sends out little bits of light called "sunlight."
+#> Sunlight is made up of different colors, like red, orange, yellow, green, blue,
+#> and purple. You can see all these colors in a rainbow!
+#> 
+#> When sunlight reaches our sky, it meets tiny particles (like molecules of air)
+#> that scatter, or spread, the light in different directions. Blue light is
+#> scattered more than other colors because it travels in smaller, shorter waves.
+#> This scattering makes the sky look blue to us.
+#> 
+#> At sunrise and sunset, the sunlight has to travel a longer path through the
+#> atmosphere to reach our eyes. During this journey, even more of the blue light
+#> gets scattered away, leaving mostly reds, oranges, and yellows for us to see.
+#> That's why sunrises and sunsets often have beautiful colors!
 ```

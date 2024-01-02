@@ -24,6 +24,7 @@ The goal of `rollama` is to wrap the Ollama API, which allows you to run differe
 Ollama is very easy to deploy and handles a huge number of models.
 Checkout the project here: <https://github.com/jmorganca/ollama>.
 
+
 ## Installation
 
 You can install the development version of `rollama` from [GitHub](https://github.com/) with:
@@ -33,10 +34,23 @@ You can install the development version of `rollama` from [GitHub](https://githu
 remotes::install_github("JBGruber/`rollama`")
 ```
 
+The easiest way to get Ollama itself up and running is through [Docker](https://docs.docker.com/desktop/).
+From the command line interface, you can start Ollama locally with one command:
+
+```
+docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+```
+
 ## Example
+
+The first thing you should do after installation is to pull one of the models from <https://ollama.ai/library>.
+By calling `pull_model()` without arguments, you are pulling the default models --- "llama2":
 
 ```{r lib}
 library(rollama)
+```
+```{r eval=FALSE}
+pull_model()
 ```
 
 There are two ways to communicate with the Ollama API.
@@ -83,7 +97,8 @@ By default, the package uses the "llama2" model.
 Change this via `rollama_model`:
 
 ```{r model}
-options(rollama_model = "mistral")
+options(rollama_model = "mixtral")
+# if you don't have the model yet: pull_model("mixtral")
 query("why is the sky blue?")
 ```
 
