@@ -15,5 +15,6 @@ RoxygenNote: 7.2.3
 Imports: 
     callr,
     cli,
+    dplyr,
     httr2,
     purrr

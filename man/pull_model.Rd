@@ -2,9 +2,12 @@
 % Please edit documentation in R/models.r
 \name{pull_model}
 \alias{pull_model}
-\title{Pull a new model}
+\alias{show_model}
+\title{Pull a new model or show more information about it}
 \usage{
 pull_model(model = NULL, server = NULL)
+
+show_model(model = NULL, server = NULL)
 }
 \arguments{
 \item{model}{name of the model. "llama2" by default.}
@@ -13,13 +16,15 @@ pull_model(model = NULL, server = NULL)
 "http://localhost:11434".}
 }
 \value{
-TRUE, if model was pulled successfully.
+(invisible) a tibble with information about the model
 }
 \description{
-Pull a new model
+Pull a new model or show more information about it
 }
 \examples{
 \dontrun{
-pull_model("mixtral")
+model_info <- pull_model("mixtral")
+# after you pull, you can get the same information with:
+model_info <- show_model("mixtral")
 }
 }
