@@ -5,7 +5,7 @@
 #'   messages as part of the same conversation until \link{new_chat} is called.
 #'
 #'
-#' @param q the question.
+#' @param q the question as a character string or a conversation object.
 #' @param model which model to use. See <https://ollama.ai/library> for options.
 #'   Default is "llama2". Set option(rollama_model = "modelname") to change
 #'   default for the current session.
@@ -30,12 +30,20 @@ query <- function(q,
                   screen = TRUE,
                   server = NULL) {
 
-  config <- getOption("rollama_config", default = NULL)
-  msg <- do.call(rbind, list(
-    if (!is.null(config)) data.frame(role = "system",
-                                     content = config),
-    data.frame(role = "user", content = q)
-  ))
+  if (!is.list(q)) {
+    config <- getOption("rollama_config", default = NULL)
+    msg <- do.call(rbind, list(
+      if (!is.null(config)) data.frame(role = "system",
+                                       content = config),
+      data.frame(role = "user", content = q)
+    ))
+  } else {
+    msg <- q
+    if (!"user" %in% msg$role && nchar(msg$content) > 0)
+      cli::cli_abort(paste("If you supply a conversation object, it needs at",
+                            "least one user message. See {.help query}."))
+  }
+
   resp <- build_req(model = model, msg = msg, server = server)
   if (screen) screen_answer(purrr::pluck(resp, "message", "content"))
   invisible(resp)
@@ -62,12 +70,11 @@ chat <- function(q,
                                      content = hist),
     data.frame(role = "user", content = q)
   )))
-  resp <- build_req(model = model, msg = msg, server = server)
+  resp <- query(q = msg, model = model, screen = screen, server = server)
 
   # save response
   the$responses <- c(the$responses, purrr::pluck(resp, "message", "content"))
 
-  if (screen) screen_answer(tail(the$responses, 1L))
   invisible(resp)
 }
 
