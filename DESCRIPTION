@@ -17,4 +17,10 @@ Imports:
     cli,
     dplyr,
     httr2,
-    purrr
+    purrr,
+    tibble,
+    utils
+Suggests: 
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

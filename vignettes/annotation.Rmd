@@ -1,0 +1,64 @@
+---
+title: "annotation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{annotation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(rollama)
+```
+
+Based on <https://arxiv.org/abs/2401.00284>
+
+# Zero-shot
+
+```{r}
+q <- tibble::tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. Answer with just the correct category and your confidence in percent.",
+  "user",   "text: the pizza tastes terrible\ncategories: positive, neutral, negative"
+)
+query(q)
+```
+
+# One-shot
+
+```{r}
+q <- tibble::tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. Answer with just the correct category and your confidence in percent.",
+  "user", "text: the pizza tastes terrible\ncategories: positive, neutral, negative",
+  "assistant", "Category: Negative\nConfidence: 100%",
+  "user", "text: the service is great\ncategories: positive, neutral, negative"
+)
+query(q)
+```
+
+# Few-shot
+
+```{r}
+q <- tibble::tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. Answer with just the correct category and your confidence in percent.",
+  "user", "text: the pizza tastes terrible\ncategories: positive, neutral, negative",
+  "assistant", "Category: Negative\nConfidence: 100%",
+  "user", "text: the service is great\ncategories: positive, neutral, negative",
+  "assistant", "Category: Positive\nConfidence: 100%",
+  "user", "text: I once came here with my wife\ncategories: positive, neutral, negative",
+  "assistant", "Category: Neutral\nConfidence: 100%",
+  "user", "text: I like the Hawaiian pizza\ncategories: positive, neutral, negative"
+)
+query(q)
+```
+
+# Chain-of-Thought
