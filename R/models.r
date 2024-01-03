@@ -20,7 +20,9 @@ pull_model <- function(model = NULL, server = NULL) {
   httr2::request(server) |>
     httr2::req_url_path_append("/api/pull") |>
     httr2::req_body_json(list(name = model)) |>
-    httr2::req_perform_stream(callback = pgrs, buffer_kb = 8L)
+    httr2::req_perform_stream(callback = pgrs, buffer_kb = 0.1L)
+
+  the$str_prgs <- NULL
 
   invisible(show_model(model))
 }

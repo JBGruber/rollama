@@ -1,5 +1,5 @@
 # package environment
-the <- new.env(parent = emptyenv())
+the <- new.env()
 
 build_req <- function(model, msg, server) {
 
@@ -59,7 +59,51 @@ screen_answer <- function(x) {
 
 # function to display progress in streaming operations
 pgrs <- function(resp) {
-  rawToChar(resp) |>
-    cat()
+
+  the$str_prgs$stream_resp <- c(the$str_prgs$stream_resp, resp)
+  resp <- the$str_prgs$stream_resp
+
+  status <- strsplit(rawToChar(resp), "\n")[[1]] |>
+    grep("}$", x = _, value = TRUE) |>
+    textConnection() |>
+    jsonlite::stream_in(verbose = FALSE, simplifyVector = FALSE)
+
+  status <- setdiff(status, the$str_prgs$pb_done)
+
+  for (s in status) {
+
+    if (!purrr::pluck_exists(s, "total")) {
+      cli::cli_progress_step(purrr::pluck(s, "status"), .envir = the)
+    } else {
+      the$str_prgs$f <- sub("pulling ", "", purrr::pluck(s, "status"))
+      the$str_prgs$done <- purrr::pluck(s, "completed", .default = 0L)
+      the$str_prgs$total <-  purrr::pluck(s, "total", .default = 0L)
+      if (!isTRUE(the$str_prgs$pb == the$str_prgs$f)) {
+        cli::cli_progress_bar(
+          name = the$str_prgs$f,
+          type = "download",
+          format = paste0(
+            "{cli::pb_spin} Downloading {str_prgs$f} ",
+            "[{str_prgs$done}/{str_prgs$total}] ETA:{cli::pb_eta}"
+          ),
+          format_done = paste0(
+            "{cli::col_green(cli::symbol$tick)} Downloaded f ",
+            "in {cli::pb_elapsed}."
+          ),
+          total = the$str_prgs$total,
+          .envir = the
+        )
+        the$str_prgs$pb <- the$str_prgs$f
+      } else {
+        if ( the$str_prgs$total > the$str_prgs$done) {
+          cli::cli_progress_update(force = TRUE, .envir = the)
+        } else {
+          cli::cli_process_done(.envir = the)
+          the$str_prgs$pb <- NULL
+        }
+      }
+    }
+    the$str_prgs$pb_done <- append(the$str_prgs$pb_done, list(s))
+  }
   TRUE
 }
