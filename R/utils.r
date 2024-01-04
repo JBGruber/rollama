@@ -71,31 +71,41 @@ pgrs <- function(resp) {
   status <- setdiff(status, the$str_prgs$pb_done)
 
   for (s in status) {
-
+    status_message <- purrr::pluck(s, "status")
     if (!purrr::pluck_exists(s, "total")) {
-      cli::cli_progress_step(purrr::pluck(s, "status"), .envir = the)
+      if (status_message == "success") {
+        cli::cli_progress_message("{cli::col_green(cli::symbol$tick)} success!")
+      } else {
+        cli::cli_progress_step(purrr::pluck(s, "status"), .envir = the)
+      }
     } else {
       the$str_prgs$f <- sub("pulling ", "", purrr::pluck(s, "status"))
       the$str_prgs$done <- purrr::pluck(s, "completed", .default = 0L)
       the$str_prgs$total <-  purrr::pluck(s, "total", .default = 0L)
+      the$str_prgs$done_pct <-
+        paste(round(the$str_prgs$done / the$str_prgs$total * 100, 0), "%")
+      the$str_prgs$speed <-
+        prettyunits::pretty_bytes(
+          the$str_prgs$done /
+            (as.integer(Sys.time()) - as.integer(the$str_prgs$pb_start)))
       if (!isTRUE(the$str_prgs$pb == the$str_prgs$f)) {
         cli::cli_progress_bar(
           name = the$str_prgs$f,
           type = "download",
           format = paste0(
             "{cli::pb_spin} Downloading {str_prgs$f} ",
-            "[{str_prgs$done}/{str_prgs$total}] ETA:{cli::pb_eta}"
+            "({str_prgs$done_pct} of {prettyunits::pretty_bytes(str_prgs$total)}) ",
+            "at {str_prgs$speed}/s"
           ),
           format_done = paste0(
-            "{cli::col_green(cli::symbol$tick)} Downloaded f ",
-            "in {cli::pb_elapsed}."
+            "{cli::col_green(cli::symbol$tick)} Downloaded {str_prgs$f}."
           ),
-          total = the$str_prgs$total,
           .envir = the
         )
         the$str_prgs$pb <- the$str_prgs$f
+        the$str_prgs$pb_start <- Sys.time()
       } else {
-        if ( the$str_prgs$total > the$str_prgs$done) {
+        if (the$str_prgs$total > the$str_prgs$done) {
           cli::cli_progress_update(force = TRUE, .envir = the)
         } else {
           cli::cli_process_done(.envir = the)

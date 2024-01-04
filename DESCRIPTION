@@ -17,6 +17,7 @@ Imports:
     cli,
     dplyr,
     httr2,
+    prettyunits,
     purrr,
     tibble,
     utils
