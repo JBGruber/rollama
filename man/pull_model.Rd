@@ -3,14 +3,18 @@
 \name{pull_model}
 \alias{pull_model}
 \alias{show_model}
-\title{Pull a new model or show more information about it}
+\alias{delete_model}
+\title{Pull, show and delete models}
 \usage{
 pull_model(model = NULL, server = NULL)
 
 show_model(model = NULL, server = NULL)
+
+delete_model(model, server = NULL)
 }
 \arguments{
-\item{model}{name of the model. "llama2" by default.}
+\item{model}{name of the model. Defaults to "llama2" when \code{NULL} (except in
+\code{delete_model}).}
 
 \item{server}{URL to an Oolama server (not the API). Defaults to
 "http://localhost:11434".}
@@ -19,7 +23,14 @@ show_model(model = NULL, server = NULL)
 (invisible) a tibble with information about the model
 }
 \description{
-Pull a new model or show more information about it
+Pull, show and delete models
+}
+\details{
+\itemize{
+\item \code{pull_model}: downloads model
+\item \code{show_model}: displays information about a local model
+\item \code{delete_model}: deletes local model
+}
 }
 \examples{
 \dontrun{

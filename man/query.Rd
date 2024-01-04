@@ -10,7 +10,7 @@ query(q, model = NULL, screen = TRUE, server = NULL)
 chat(q, model = NULL, screen = TRUE, server = NULL)
 }
 \arguments{
-\item{q}{the question.}
+\item{q}{the question as a character string or a conversation object.}
 
 \item{model}{which model to use. See \url{https://ollama.ai/library} for options.
 Default is "llama2". Set option(rollama_model = "modelname") to change
