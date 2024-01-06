@@ -19,7 +19,7 @@ copy_model(model, destination = paste0(model, "-copy"), server = NULL)
 \item{model}{name of the model. Defaults to "llama2" when \code{NULL} (except in
 \code{delete_model}).}
 
-\item{server}{URL to an Oolama server (not the API). Defaults to
+\item{server}{URL to an Ollama server (not the API). Defaults to
 "http://localhost:11434".}
 
 \item{destination}{name of the copied model.}
@@ -36,8 +36,6 @@ Pull, show and delete models
 \item \code{pull_model()}: downloads model
 \item \code{show_model()}: displays information about a local model
 \item \code{copy_model()}: creates a model with another name from an existing model
-\item \code{push_model()}: upload a model to a model library. Requires registering for
-ollama.ai and adding a public key first.
 \item \code{delete_model()}: deletes local model
 }
 

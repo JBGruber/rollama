@@ -3,7 +3,7 @@
 \name{query}
 \alias{query}
 \alias{chat}
-\title{Chat with a LLM through Oolama}
+\title{Chat with a LLM through Ollama}
 \usage{
 query(q, model = NULL, screen = TRUE, server = NULL)
 
@@ -18,14 +18,14 @@ default for the current session. See \link{pull_model} for more details.}
 
 \item{screen}{Logical. Should the answer be printed to the screen.}
 
-\item{server}{URL to an Oolama server (not the API). Defaults to
+\item{server}{URL to an Ollama server (not the API). Defaults to
 "http://localhost:11434".}
 }
 \value{
 an httr2 response
 }
 \description{
-Chat with a LLM through Oolama
+Chat with a LLM through Ollama
 }
 \details{
 \code{query} sends a single question to the API, without knowledge about

@@ -81,9 +81,9 @@ show_model <- function(model = NULL, server = NULL) {
 #'
 #' @examples
 #' modelfile <- system.file("extdata", "modelfile.txt", package = "rollama")
-#' \dontrun(create_model("mario", modelfile))
+#' \dontrun{create_model("mario", modelfile)}
 #' modelfile <- "FROM llama2\nSYSTEM You are mario from Super Mario Bros."
-#' \dontrun(create_model("mario", modelfile))
+#' \dontrun{create_model("mario", modelfile)}
 create_model <- function(model, modelfile, server = NULL) {
 
   if (is.null(server)) server <- getOption("rollama_server",
@@ -142,7 +142,8 @@ copy_model <- function(model,
 
   httr2::request(server) |>
     httr2::req_url_path_append("/api/copy") |>
-    httr2::req_body_json(list(name = model)) |>
+    httr2::req_body_json(list(source = model,
+                              destination = destination)) |>
     httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
     httr2::req_perform()
 

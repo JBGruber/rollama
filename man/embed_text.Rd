@@ -13,7 +13,7 @@ embed_text(text, model = NULL, server = NULL)
 Default is "llama2". Set option(rollama_model = "modelname") to change
 default for the current session. See \link{pull_model} for more details.}
 
-\item{server}{URL to an Oolama server (not the API). Defaults to
+\item{server}{URL to an Ollama server (not the API). Defaults to
 "http://localhost:11434".}
 }
 \value{

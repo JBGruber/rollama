@@ -1,4 +1,4 @@
-#' Chat with a LLM through Oolama
+#' Chat with a LLM through Ollama
 #'
 #' @details `query` sends a single question to the API, without knowledge about
 #'   previous questions (only the config message is relevant). `chat` treats new
@@ -10,7 +10,7 @@
 #'   Default is "llama2". Set option(rollama_model = "modelname") to change
 #'   default for the current session. See \link{pull_model} for more details.
 #' @param screen Logical. Should the answer be printed to the screen.
-#' @param server URL to an Oolama server (not the API). Defaults to
+#' @param server URL to an Ollama server (not the API). Defaults to
 #'   "http://localhost:11434".
 #'
 #' @return an httr2 response
@@ -41,7 +41,7 @@ query <- function(q,
     msg <- q
     if (!"user" %in% msg$role && nchar(msg$content) > 0)
       cli::cli_abort(paste("If you supply a conversation object, it needs at",
-                            "least one user message. See {.help query}."))
+                           "least one user message. See {.help query}."))
   }
 
   resp <- build_req(model = model, msg = msg, server = server)
@@ -58,7 +58,7 @@ chat <- function(q,
                  server = NULL) {
 
   config <- getOption("rollama_config", default = NULL)
-  hist <- c(rbind(the$prompts, the$responses))
+  hist <- chat_history()
 
   # save prompt
   the$prompts <- c(the$prompts, q)
@@ -66,8 +66,7 @@ chat <- function(q,
   msg <- do.call(rbind, (list(
     if (!is.null(config)) data.frame(role = "system",
                                      content = config),
-    if (length(hist) > 0) data.frame(role = c("user", "assistant"),
-                                     content = hist),
+    if (length(hist) > 0) hist,
     data.frame(role = "user", content = q)
   )))
   resp <- query(q = msg, model = model, screen = screen, server = server)
@@ -88,4 +87,17 @@ chat <- function(q,
 new_chat <- function() {
   the$responses <- NULL
   the$prompts <- NULL
+}
+
+
+#' Chat history
+#'
+#' @return as
+#' @export
+chat_history <- function() {
+  hist <- c(rbind(the$prompts, the$responses))
+  if (length(hist) > 0) tibble::as_tibble(
+    data.frame(role = c("user", "assistant"),
+               content = hist)
+  ) else tibble::tibble()
 }

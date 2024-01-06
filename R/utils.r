@@ -1,11 +1,44 @@
 # package environment
 the <- new.env()
 
+#' Ping server to see if Ollama is reachable
+#'
+#' @inheritParams query
+#'
+#' @return TRUE if server is running
+#' @export
+ping_ollama <- function(server = NULL, silent = FALSE) {
+
+  if (is.null(server)) server <- getOption("rollama_server",
+                                           default = "http://localhost:11434")
+  res <- try({
+    httr2::request(server) |>
+    httr2::req_perform() |>
+    httr2::resp_body_string()
+  }, silent = TRUE)
+
+  if (!methods::is(res, "try-error")) {
+    if (!silent) cli::cli_progress_message(
+      "{cli::col_green(cli::symbol$play)} {res} at {.url {server}}!"
+    )
+    invisible(TRUE)
+  } else {
+    if (!silent) {
+      cli::cli_alert_danger("Could not connect to Ollama at {.url {server}}")
+      print(res)
+    }
+    invisible(FALSE)
+  }
+
+}
+
+
 build_req <- function(model, msg, server) {
 
   if (is.null(model)) model <- getOption("rollama_model", default = "llama2")
-  if (is.null(server)) server <- getOption("rollama_server", default = "http://localhost:11434")
-  spinner <- getOption("rollama_spinner", default = interactive())
+  if (is.null(server)) server <- getOption("rollama_server",
+                                           default = "http://localhost:11434")
+  spinner <- getOption("rollama_verbose", default = interactive())
 
   req_data <- list(model = model,
                    messages = msg,
@@ -60,8 +93,9 @@ screen_answer <- function(x) {
 
 # function to display progress in streaming operations
 pgrs <- function(resp) {
-
+  if (!getOption("rollama_verbose", default = interactive())) return(TRUE)
   the$str_prgs$stream_resp <- c(the$str_prgs$stream_resp, resp)
+  x <<- the$str_prgs$stream_resp
   resp <- the$str_prgs$stream_resp
 
   status <- strsplit(rawToChar(resp), "\n")[[1]] |>
@@ -85,10 +119,14 @@ pgrs <- function(resp) {
       the$str_prgs$total <-  purrr::pluck(s, "total", .default = 0L)
       the$str_prgs$done_pct <-
         paste(round(the$str_prgs$done / the$str_prgs$total * 100, 0), "%")
-      the$str_prgs$speed <-
-        prettyunits::pretty_bytes(
-          the$str_prgs$done /
-            (as.integer(Sys.time()) - as.integer(the$str_prgs$pb_start)))
+      if (the$str_prgs$done != the$str_prgs$total) {
+        the$str_prgs$speed <-
+          prettyunits::pretty_bytes(
+            the$str_prgs$done /
+              (as.integer(Sys.time()) - as.integer(the$str_prgs$pb_start))
+          )
+      } else the$str_prgs$speed <- 1L
+
       if (!isTRUE(the$str_prgs$pb == the$str_prgs$f)) {
         cli::cli_progress_bar(
           name = the$str_prgs$f,
