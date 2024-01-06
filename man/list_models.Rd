@@ -4,7 +4,11 @@
 \alias{list_models}
 \title{List models that are available locally.}
 \usage{
-list_models()
+list_models(server = NULL)
+}
+\arguments{
+\item{server}{URL to an Ollama server (not the API). Defaults to
+"http://localhost:11434".}
 }
 \value{
 a tibble of installed models

@@ -3,6 +3,7 @@ the <- new.env()
 
 #' Ping server to see if Ollama is reachable
 #'
+#' @param silent suppress warnings and status (only return `TRUE`/`FALSE`).
 #' @inheritParams query
 #'
 #' @return TRUE if server is running
@@ -94,7 +95,6 @@ screen_answer <- function(x) {
 pgrs <- function(resp) {
   if (!getOption("rollama_verbose", default = interactive())) return(TRUE)
   the$str_prgs$stream_resp <- c(the$str_prgs$stream_resp, resp)
-  x <<- the$str_prgs$stream_resp
   resp <- the$str_prgs$stream_resp
 
   status <- strsplit(rawToChar(resp), "\n")[[1]] |>

@@ -17,10 +17,11 @@ Imports:
     cli,
     dplyr,
     httr2,
+    jsonlite,
+    methods,
     prettyunits,
     purrr,
-    tibble,
-    utils
+    tibble
 Suggests: 
     knitr,
     rmarkdown,
@@ -29,3 +30,4 @@ Suggests:
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Language: en-US
+URL: https://jbgruber.github.io/rollama/

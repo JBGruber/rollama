@@ -1,3 +1,4 @@
+CMD
 ChatGPT
 Embeddings
 LLM
@@ -7,6 +8,7 @@ Modelfile
 Ollama
 OpenAI's
 OpenAI’s
+RMDs
 Reichardt
 config
 embeddings

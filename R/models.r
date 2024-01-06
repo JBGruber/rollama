@@ -155,9 +155,15 @@ copy_model <- function(model,
 
 #' List models that are available locally.
 #'
+#' @inheritParams query
+#'
 #' @return a tibble of installed models
 #' @export
-list_models <- function() {
+list_models <- function(server = NULL) {
+
+  if (is.null(server)) server <- getOption("rollama_server",
+                                           default = "http://localhost:11434")
+
   httr2::request(server) |>
     httr2::req_url_path_append("/api/tags") |>
     httr2::req_perform() |>
