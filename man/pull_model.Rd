@@ -4,6 +4,7 @@
 \alias{pull_model}
 \alias{show_model}
 \alias{delete_model}
+\alias{copy_model}
 \title{Pull, show and delete models}
 \usage{
 pull_model(model = NULL, server = NULL)
@@ -11,6 +12,8 @@ pull_model(model = NULL, server = NULL)
 show_model(model = NULL, server = NULL)
 
 delete_model(model, server = NULL)
+
+copy_model(model, destination = paste0(model, "-copy"), server = NULL)
 }
 \arguments{
 \item{model}{name of the model. Defaults to "llama2" when \code{NULL} (except in
@@ -18,19 +21,30 @@ delete_model(model, server = NULL)
 
 \item{server}{URL to an Oolama server (not the API). Defaults to
 "http://localhost:11434".}
+
+\item{destination}{name of the copied model.}
 }
 \value{
-(invisible) a tibble with information about the model
+(invisible) a tibble with information about the model (except in
+\code{delete_model})
 }
 \description{
 Pull, show and delete models
 }
 \details{
 \itemize{
-\item \code{pull_model}: downloads model
-\item \code{show_model}: displays information about a local model
-\item \code{delete_model}: deletes local model
+\item \code{pull_model()}: downloads model
+\item \code{show_model()}: displays information about a local model
+\item \code{copy_model()}: creates a model with another name from an existing model
+\item \code{push_model()}: upload a model to a model library. Requires registering for
+ollama.ai and adding a public key first.
+\item \code{delete_model()}: deletes local model
 }
+
+\strong{Model names}: Model names follow a model:tag format, where model can have
+an optional namespace such as example/model. Some examples are
+orca-mini:3b-q4_1 and llama2:70b. The tag is optional and, if not provided,
+will default to latest. The tag is used to identify a specific version.
 }
 \examples{
 \dontrun{

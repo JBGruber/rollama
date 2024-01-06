@@ -15,16 +15,17 @@ build_req <- function(model, msg, server) {
     cli::cli_progress_step("{model} is thinking {cli::pb_spin}")
     rp <- callr::r_bg(make_req,
                       args = list(req_data = req_data,
-                                  server = server),
+                                  server = server,
+                                  endpoint = "/api/chat"),
                       package = TRUE)
     while (rp$is_alive()) {
-      if (interactive()) cli::cli_progress_update()
+      cli::cli_progress_update()
       Sys.sleep(2 / 100)
     }
     resp <- rp$get_result()
-    if (interactive()) cli::cli_progress_done()
+    cli::cli_progress_done()
   } else {
-    resp <- make_req(req_data, server)
+    resp <- make_req(req_data, server, "/api/chat")
   }
 
   if (!is.null(resp$error)) {
@@ -38,9 +39,9 @@ build_req <- function(model, msg, server) {
 }
 
 
-make_req <- function(req_data, server) {
+make_req <- function(req_data, server, endpoint) {
   httr2::request(server) |>
-    httr2::req_url_path_append("/api/chat") |>
+    httr2::req_url_path_append(endpoint) |>
     httr2::req_body_json(req_data) |>
     # turn off errors since error messages can't be seen in sub-process
     httr2::req_error(is_error = function(resp) FALSE) |>

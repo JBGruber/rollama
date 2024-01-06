@@ -8,7 +8,7 @@
 #' @param q the question as a character string or a conversation object.
 #' @param model which model to use. See <https://ollama.ai/library> for options.
 #'   Default is "llama2". Set option(rollama_model = "modelname") to change
-#'   default for the current session.
+#'   default for the current session. See \link{pull_model} for more details.
 #' @param screen Logical. Should the answer be printed to the screen.
 #' @param server URL to an Oolama server (not the API). Defaults to
 #'   "http://localhost:11434".
