@@ -38,13 +38,12 @@ build_req <- function(model, msg, server) {
   if (is.null(model)) model <- getOption("rollama_model", default = "llama2")
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
-  spinner <- getOption("rollama_verbose", default = interactive())
 
   req_data <- list(model = model,
                    messages = msg,
                    stream = FALSE)
 
-  if (spinner) {
+  if (getOption("rollama_verbose", default = interactive())) {
     cli::cli_progress_step("{model} is thinking {cli::pb_spin}")
     rp <- callr::r_bg(make_req,
                       args = list(req_data = req_data,

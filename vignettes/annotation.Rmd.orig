@@ -7,10 +7,15 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options("rollama_verbose" = FALSE)
+```
 
-
-
-```r
+```{r setup}
 library(rollama)
 ```
 
@@ -18,24 +23,18 @@ Based on [Weber and Reichardt (2024)](<https://arxiv.org/abs/2401.00284>).
 
 # Zero-shot
 
-
-```r
+```{r}
 q <- tibble::tribble(
   ~role,    ~content,
   "system", "You assign texts into categories. Answer with just the correct category and your confidence in percent.",
   "user",   "text: the pizza tastes terrible\ncategories: positive, neutral, negative"
 )
 query(q)
-#> 
-#> ── Answer ─────────────────────────────────────────────────────────────
-#> 
-#> Category: Negative (Confidence: 100%)
 ```
 
 # One-shot
 
-
-```r
+```{r}
 q <- tibble::tribble(
   ~role,    ~content,
   "system", "You assign texts into categories. Answer with just the correct category and your confidence in percent.",
@@ -44,16 +43,11 @@ q <- tibble::tribble(
   "user", "text: the service is great\ncategories: positive, neutral, negative"
 )
 query(q)
-#> 
-#> ── Answer ─────────────────────────────────────────────────────────────
-#> Category: Positive
-#> Confidence: 100%
 ```
 
 # Few-shot
 
-
-```r
+```{r}
 q <- tibble::tribble(
   ~role,    ~content,
   "system", "You assign texts into categories. Answer with just the correct category and your confidence in percent.",
@@ -66,10 +60,6 @@ q <- tibble::tribble(
   "user", "text: I once ate pizza\ncategories: positive, neutral, negative"
 )
 query(q)
-#> 
-#> ── Answer ─────────────────────────────────────────────────────────────
-#> Category: Positive
-#> Confidence: 100%
 ```
 
 # Chain-of-Thought
