@@ -15,7 +15,15 @@ query(
   template = NULL
 )
 
-chat(q, model = NULL, screen = TRUE, server = NULL)
+chat(
+  q,
+  model = NULL,
+  screen = TRUE,
+  server = NULL,
+  images = NULL,
+  model_params = NULL,
+  template = NULL
+)
 }
 \arguments{
 \item{q}{the question as a character string or a conversation object.}

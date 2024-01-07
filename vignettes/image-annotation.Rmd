@@ -1,0 +1,44 @@
+---
+title: "image-annotation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{annotation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+
+```r
+library(rollama)
+```
+
+Ollama also supports multimodal models which can interact (albeit not create) images.
+
+
+```r
+query("Exitedly desscribe this logo", model = "llava", 
+      images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png", 
+      model_params = list(seed = 712))
+#> 
+#> ── Answer ───────────────────────────────────────────
+#> The logo is an animated animal, specifically a teddy
+#> bear or possibly a white rabbit. It's laying on
+#> grass, wearing a hat and has a happy expression with
+#> its mouth open in what appears to be a smiley face.
+#> This whimsical image creates a sense of fun and
+#> playfulness.
+```
+
+
+```r
+query("Which animal is in this image: a llama, dog, or walrus?", 
+      model = "llava", 
+      images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png", 
+      model_params = list(seed = 712))
+#> 
+#> ── Answer ───────────────────────────────────────────
+#> A llama is in the image.
+```
+

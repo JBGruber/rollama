@@ -1,0 +1,36 @@
+---
+title: "image-annotation"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{annotation}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options("rollama_verbose" = FALSE)
+```
+
+```{r setup}
+library(rollama)
+```
+
+Ollama also supports multimodal models which can interact (albeit not create) images.
+
+```{r}
+query("Exitedly desscribe this logo", model = "llava", 
+      images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png", 
+      model_params = list(seed = 712))
+```
+
+```{r}
+query("Which animal is in this image: a llama, dog, or walrus?", 
+      model = "llava", 
+      images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png", 
+      model_params = list(seed = 712))
+```
+

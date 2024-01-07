@@ -18,7 +18,6 @@ embed_text <- function(text,
 
   if (is.null(model)) model <- getOption("rollama_model", default = "llama2")
   if (is.null(server)) server <- getOption("rollama_server", default = "http://localhost:11434")
-  spinner <- getOption("rollama_spinner", default = interactive())
 
   purrr::map(seq_along(text), function(i) {
     req_data <- list(model = model,
@@ -27,7 +26,7 @@ embed_text <- function(text,
                      model_params = model_params) |>
       purrr::compact()
 
-    if (spinner) {
+    if (getOption("rollama_verbose", default = interactive())) {
       cli::cli_progress_step("{cli::pb_spin} {model} is embedding text {i}", )
       rp <- callr::r_bg(make_req,
                         args = list(req_data = req_data,

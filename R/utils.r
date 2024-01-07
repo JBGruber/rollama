@@ -78,7 +78,7 @@ build_req <- function(model, msg, server, images, model_params, template) {
 make_req <- function(req_data, server, endpoint) {
   httr2::request(server) |>
     httr2::req_url_path_append(endpoint) |>
-    httr2::req_body_json(req_data) |>
+    httr2::req_body_json(prep_req_data(req_data), auto_unbox = FALSE) |>
     # turn off errors since error messages can't be seen in sub-process
     httr2::req_error(is_error = function(resp) FALSE) |>
     httr2::req_perform() |>
@@ -91,6 +91,19 @@ screen_answer <- function(x) {
   cli::cli_h1("Answer")
   # "{i}" instead of i stops glue from evaluating code inside the answer
   for (i in pars) cli::cli_text("{i}")
+}
+
+
+# the requirements for the data are a little weird as boxes can only show up in
+# very particular places in the json string.
+prep_req_data <- function(tbl) {
+  purrr::map(tbl, function(x) {
+    if (!is.list(x)) {
+      jsonlite::unbox(x)
+    } else {
+      x
+    }
+  })
 }
 
 

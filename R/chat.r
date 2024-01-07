@@ -137,7 +137,10 @@ query <- function(q,
 chat <- function(q,
                  model = NULL,
                  screen = TRUE,
-                 server = NULL) {
+                 server = NULL,
+                 images = NULL,
+                 model_params = NULL,
+                 template = NULL) {
 
   config <- getOption("rollama_config", default = NULL)
   hist <- chat_history()
@@ -145,13 +148,26 @@ chat <- function(q,
   # save prompt
   the$prompts <- c(the$prompts, q)
 
+  q <- data.frame(role = "user", content = q)
+  if (length(images) > 0) {
+    rlang::check_installed("base64enc")
+    images <- list(purrr::map_chr(images, \(i) base64enc::base64encode(i)))
+    q <- tibble::add_column(q, images = images)
+  }
+
   msg <- do.call(rbind, (list(
     if (!is.null(config)) data.frame(role = "system",
                                      content = config),
     if (length(hist) > 0) hist,
-    data.frame(role = "user", content = q)
+    q
   )))
-  resp <- query(q = msg, model = model, screen = screen, server = server)
+
+  resp <- query(q = msg,
+                model = model,
+                screen = screen,
+                server = server,
+                model_params = model_params,
+                template = template)
 
   # save response
   the$responses <- c(the$responses, purrr::pluck(resp, "message", "content"))
