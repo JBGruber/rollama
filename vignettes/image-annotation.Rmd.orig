@@ -2,7 +2,7 @@
 title: "image-annotation"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{annotation}
+  %\VignetteIndexEntry{image-annotatio}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
