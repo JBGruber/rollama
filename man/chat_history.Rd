@@ -2,13 +2,18 @@
 % Please edit documentation in R/chat.r
 \name{chat_history}
 \alias{chat_history}
-\title{Chat history}
+\alias{new_chat}
+\title{Handle conversations}
 \usage{
 chat_history()
+
+new_chat()
 }
 \value{
-as
+chat_history: tibble with chat history
+
+new_chat: Does not return a value
 }
 \description{
-Chat history
+Shows and deletes (\code{new_chat}) the local prompt and response history to start a new conversation.
 }

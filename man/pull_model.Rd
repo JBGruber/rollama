@@ -7,7 +7,7 @@
 \alias{copy_model}
 \title{Pull, show and delete models}
 \usage{
-pull_model(model = NULL, server = NULL)
+pull_model(model = NULL, server = NULL, insecure = FALSE)
 
 show_model(model = NULL, server = NULL)
 
@@ -21,6 +21,9 @@ copy_model(model, destination = paste0(model, "-copy"), server = NULL)
 
 \item{server}{URL to an Ollama server (not the API). Defaults to
 "http://localhost:11434".}
+
+\item{insecure}{allow insecure connections to the library. Only use this if
+you are pulling from your own library during development. description}
 
 \item{destination}{name of the copied model.}
 }

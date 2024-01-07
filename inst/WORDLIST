@@ -14,8 +14,8 @@ config
 embeddings
 http
 httr
+llava
 modelfile
 modelname
 orca
-paramters
 tibble

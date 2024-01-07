@@ -4,7 +4,7 @@
 \alias{embed_text}
 \title{Generate Embeddings}
 \usage{
-embed_text(text, model = NULL, server = NULL)
+embed_text(text, model = NULL, server = NULL, model_params = NULL)
 }
 \arguments{
 \item{text}{text vector to generate embeddings for.}
@@ -15,6 +15,9 @@ default for the current session. See \link{pull_model} for more details.}
 
 \item{server}{URL to an Ollama server (not the API). Defaults to
 "http://localhost:11434".}
+
+\item{model_params}{a named list of additional model parameters listed in the
+documentation for the Modelfile such as temperature.}
 }
 \value{
 a tibble with embeddings.

@@ -21,8 +21,10 @@ Imports:
     methods,
     prettyunits,
     purrr,
+    rlang,
     tibble
 Suggests: 
+    base64enc,
     knitr,
     rmarkdown,
     spelling,
@@ -30,4 +32,4 @@ Suggests:
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Language: en-US
-URL: https://jbgruber.github.io/rollama/
+URL: https://jbgruber.github.io/rollama/, https://github.com/JBGruber/rollama

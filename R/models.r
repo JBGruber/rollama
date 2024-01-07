@@ -13,6 +13,8 @@
 #'
 #' @param model name of the model. Defaults to "llama2" when `NULL` (except in
 #'   `delete_model`).
+#' @param insecure allow insecure connections to the library. Only use this if
+#'   you are pulling from your own library during development. description
 #' @param destination name of the copied model.
 #' @inheritParams query
 #'
@@ -26,7 +28,7 @@
 #' # after you pull, you can get the same information with:
 #' model_info <- show_model("mixtral")
 #' }
-pull_model <- function(model = NULL, server = NULL) {
+pull_model <- function(model = NULL, server = NULL, insecure = FALSE) {
 
   if (is.null(model)) model <- getOption("rollama_model", default = "llama2")
   if (is.null(server)) server <- getOption("rollama_server",
@@ -34,7 +36,7 @@ pull_model <- function(model = NULL, server = NULL) {
 
   httr2::request(server) |>
     httr2::req_url_path_append("/api/pull") |>
-    httr2::req_body_json(list(name = model)) |>
+    httr2::req_body_json(list(name = model, insecure = insecure)) |>
     httr2::req_perform_stream(callback = pgrs, buffer_kb = 0.1)
 
   cli::cli_process_done(.envir = the)
@@ -51,6 +53,7 @@ show_model <- function(model = NULL, server = NULL) {
   if (is.null(model)) model <- getOption("rollama_model", default = "llama2")
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
+  if (length(model) != 1L) cli::cli_abort("model needs to be one model name.")
 
   httr2::request(server) |>
     httr2::req_url_path_append("/api/show") |>
@@ -59,6 +62,7 @@ show_model <- function(model = NULL, server = NULL) {
     httr2::req_perform() |>
     httr2::resp_body_json() |>
     purrr::list_flatten(name_spec = "{inner}") |>
+    purrr::compact() |>
     tibble::as_tibble()
 }
 
@@ -70,10 +74,13 @@ show_model <- function(model = NULL, server = NULL) {
 #'   the model file as a character vector.
 #' @inheritParams query
 #'
-#' @details Custom models are the way to change paramters in Ollama. If you use
-#' `show_model()`, you can look at the configuration of a model in the column
-#' modelfile. To get more information and a list of valid parameters, check out
-#' <https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md>.
+#' @details Custom models are the way to save your system message and model
+#'   parameters in a dedicated shareable way. If you use `show_model()`, you can
+#'   look at the configuration of a model in the column modelfile. To get more
+#'   information and a list of valid parameters, check out
+#'   <https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md>. Most
+#'   options are also available through the `query` and `chat` functions, yet
+#'   are not persistent over sessions.
 #'
 #'
 #' @return Nothing. Called to create a model on the Ollama server.

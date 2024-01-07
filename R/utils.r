@@ -34,7 +34,7 @@ ping_ollama <- function(server = NULL, silent = FALSE) {
 }
 
 
-build_req <- function(model, msg, server) {
+build_req <- function(model, msg, server, images, model_params, template) {
 
   if (is.null(model)) model <- getOption("rollama_model", default = "llama2")
   if (is.null(server)) server <- getOption("rollama_server",
@@ -42,7 +42,10 @@ build_req <- function(model, msg, server) {
 
   req_data <- list(model = model,
                    messages = msg,
-                   stream = FALSE)
+                   stream = FALSE,
+                   model_params = model_params,
+                   template = template) |>
+    purrr::compact()
 
   if (getOption("rollama_verbose", default = interactive())) {
     cli::cli_progress_step("{model} is thinking {cli::pb_spin}")
@@ -155,3 +158,4 @@ pgrs <- function(resp) {
   }
   TRUE
 }
+

@@ -5,7 +5,15 @@
 \alias{chat}
 \title{Chat with a LLM through Ollama}
 \usage{
-query(q, model = NULL, screen = TRUE, server = NULL)
+query(
+  q,
+  model = NULL,
+  screen = TRUE,
+  server = NULL,
+  images = NULL,
+  model_params = NULL,
+  template = NULL
+)
 
 chat(q, model = NULL, screen = TRUE, server = NULL)
 }
@@ -20,6 +28,14 @@ default for the current session. See \link{pull_model} for more details.}
 
 \item{server}{URL to an Ollama server (not the API). Defaults to
 "http://localhost:11434".}
+
+\item{images}{path(s) to images (for multimodal models such as llava).}
+
+\item{model_params}{a named list of additional model parameters listed in the
+documentation for the Modelfile such as temperature.}
+
+\item{template}{the prompt template to use (overrides what is defined in the
+Modelfile).}
 }
 \value{
 an httr2 response
@@ -40,5 +56,59 @@ query("why is the sky blue?")
 # hold a conversation
 chat("why is the sky blue?")
 chat("and how do you know that?")
+
+# ask question about images (to a multimodal model)
+images <- c("https://avatars.githubusercontent.com/u/23524101?v=4", # remote
+            "/path/to/your/image.jpg") # or local images supported
+query(q = "describe these images",
+      model = "llava",
+      images = images)
+
+# set custom options for the model at runtime (rather than in create_model())
+query("why is the sky blue?",
+      model_params = list(
+        num_keep = 5,
+        seed = 42,
+        num_predict = 100,
+        top_k = 20,
+        top_p = 0.9,
+        tfs_z = 0.5,
+        typical_p = 0.7,
+        repeat_last_n = 33,
+        temperature = 0.8,
+        repeat_penalty = 1.2,
+        presence_penalty = 1.5,
+        frequency_penalty = 1.0,
+        mirostat = 1,
+        mirostat_tau = 0.8,
+        mirostat_eta = 0.6,
+        penalize_newline = TRUE,
+        stop = c("\n", "user:"),
+        numa = FALSE,
+        num_ctx = 1024,
+        num_batch = 2,
+        num_gqa = 1,
+        num_gpu = 1,
+        main_gpu = 0,
+        low_vram = FALSE,
+        f16_kv = TRUE,
+        vocab_only = FALSE,
+        use_mmap = TRUE,
+        use_mlock = FALSE,
+        embedding_only = FALSE,
+        rope_frequency_base = 1.1,
+        rope_frequency_scale = 0.8,
+        num_thread = 8
+      ))
+
+# this might be interesting if you want to turn off the GPU and load the
+# model into the system memory (slower, but most people have more RAM than
+# VRAM, which might be interesting for larger models)
+query("why is the sky blue?",
+       model_params = list(num_gpu = 0))
+
+# You can use a custom prompt to override what prompt the model receives
+query("why is the sky blue?",
+      template = "Just say I'm a llama!")
 }
 }
