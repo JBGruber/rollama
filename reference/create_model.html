@@ -30,7 +30,13 @@
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
-      <ul class="navbar-nav"></ul></div>
+      <ul class="navbar-nav"><li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/JBGruber/rollama/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div>
 
     
   </div>
@@ -38,7 +44,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Create a model from a Modelfile</h1>
-      
+      <small class="dont-index">Source: <a href="https://github.com/JBGruber/rollama/blob/HEAD/R/models.r" class="external-link"><code>R/models.r</code></a></small>
       <div class="d-none name"><code>create_model.Rd</code></div>
     </div>
 
@@ -75,10 +81,13 @@ the model file as a character vector.</p></dd>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>Custom models are the way to change paramters in Ollama. If you use
-<code><a href="pull_model.html">show_model()</a></code>, you can look at the configuration of a model in the column
-modelfile. To get more information and a list of valid parameters, check out
-<a href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md" class="external-link">https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md</a>.</p>
+    <p>Custom models are the way to save your system message and model
+parameters in a dedicated shareable way. If you use <code><a href="pull_model.html">show_model()</a></code>, you can
+look at the configuration of a model in the column modelfile. To get more
+information and a list of valid parameters, check out
+<a href="https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md" class="external-link">https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md</a>. Most
+options are also available through the <code>query</code> and <code>chat</code> functions, yet
+are not persistent over sessions.</p>
     </div>
 
     <div class="section level2">

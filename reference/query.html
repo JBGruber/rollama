@@ -30,7 +30,13 @@
       </ul><form class="form-inline my-2 my-lg-0" role="search">
         <input type="search" class="form-control me-sm-2" aria-label="Toggle navigation" name="search-input" data-search-index="../search.json" id="search-input" placeholder="Search for" autocomplete="off"></form>
 
-      <ul class="navbar-nav"></ul></div>
+      <ul class="navbar-nav"><li class="nav-item">
+  <a class="external-link nav-link" href="https://github.com/JBGruber/rollama/" aria-label="github">
+    <span class="fab fa fab fa-github fa-lg"></span>
+     
+  </a>
+</li>
+      </ul></div>
 
     
   </div>
@@ -38,7 +44,7 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.png" class="logo" alt=""><h1>Chat with a LLM through Ollama</h1>
-      
+      <small class="dont-index">Source: <a href="https://github.com/JBGruber/rollama/blob/HEAD/R/chat.r" class="external-link"><code>R/chat.r</code></a></small>
       <div class="d-none name"><code>query.Rd</code></div>
     </div>
 
@@ -48,7 +54,15 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">query</span><span class="op">(</span><span class="va">q</span>, model <span class="op">=</span> <span class="cn">NULL</span>, screen <span class="op">=</span> <span class="cn">TRUE</span>, server <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">query</span><span class="op">(</span></span>
+<span>  <span class="va">q</span>,</span>
+<span>  model <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  screen <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  server <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  images <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  model_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  template <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">chat</span><span class="op">(</span><span class="va">q</span>, model <span class="op">=</span> <span class="cn">NULL</span>, screen <span class="op">=</span> <span class="cn">TRUE</span>, server <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -73,6 +87,20 @@ default for the current session. See <a href="pull_model.html">pull_model</a> fo
 <dd><p>URL to an Ollama server (not the API). Defaults to
 "http://localhost:11434".</p></dd>
 
+
+<dt>images</dt>
+<dd><p>path(s) to images (for multimodal models such as llava).</p></dd>
+
+
+<dt>model_params</dt>
+<dd><p>a named list of additional model parameters listed in the
+documentation for the Modelfile such as temperature.</p></dd>
+
+
+<dt>template</dt>
+<dd><p>the prompt template to use (overrides what is defined in the
+Modelfile).</p></dd>
+
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
@@ -84,7 +112,7 @@ default for the current session. See <a href="pull_model.html">pull_model</a> fo
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
     <p><code>query</code> sends a single question to the API, without knowledge about
 previous questions (only the config message is relevant). <code>chat</code> treats new
-messages as part of the same conversation until <a href="new_chat.html">new_chat</a> is called.</p>
+messages as part of the same conversation until <a href="chat_history.html">new_chat</a> is called.</p>
     </div>
 
     <div class="section level2">
@@ -96,6 +124,60 @@ messages as part of the same conversation until <a href="new_chat.html">new_chat
 <span class="r-in"><span><span class="co"># hold a conversation</span></span></span>
 <span class="r-in"><span><span class="fu">chat</span><span class="op">(</span><span class="st">"why is the sky blue?"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">chat</span><span class="op">(</span><span class="st">"and how do you know that?"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># ask question about images (to a multimodal model)</span></span></span>
+<span class="r-in"><span><span class="va">images</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://avatars.githubusercontent.com/u/23524101?v=4"</span>, <span class="co"># remote</span></span></span>
+<span class="r-in"><span>            <span class="st">"/path/to/your/image.jpg"</span><span class="op">)</span> <span class="co"># or local images supported</span></span></span>
+<span class="r-in"><span><span class="fu">query</span><span class="op">(</span>q <span class="op">=</span> <span class="st">"describe these images"</span>,</span></span>
+<span class="r-in"><span>      model <span class="op">=</span> <span class="st">"llava"</span>,</span></span>
+<span class="r-in"><span>      images <span class="op">=</span> <span class="va">images</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># set custom options for the model at runtime (rather than in create_model())</span></span></span>
+<span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="st">"why is the sky blue?"</span>,</span></span>
+<span class="r-in"><span>      model_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        num_keep <span class="op">=</span> <span class="fl">5</span>,</span></span>
+<span class="r-in"><span>        seed <span class="op">=</span> <span class="fl">42</span>,</span></span>
+<span class="r-in"><span>        num_predict <span class="op">=</span> <span class="fl">100</span>,</span></span>
+<span class="r-in"><span>        top_k <span class="op">=</span> <span class="fl">20</span>,</span></span>
+<span class="r-in"><span>        top_p <span class="op">=</span> <span class="fl">0.9</span>,</span></span>
+<span class="r-in"><span>        tfs_z <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
+<span class="r-in"><span>        typical_p <span class="op">=</span> <span class="fl">0.7</span>,</span></span>
+<span class="r-in"><span>        repeat_last_n <span class="op">=</span> <span class="fl">33</span>,</span></span>
+<span class="r-in"><span>        temperature <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
+<span class="r-in"><span>        repeat_penalty <span class="op">=</span> <span class="fl">1.2</span>,</span></span>
+<span class="r-in"><span>        presence_penalty <span class="op">=</span> <span class="fl">1.5</span>,</span></span>
+<span class="r-in"><span>        frequency_penalty <span class="op">=</span> <span class="fl">1.0</span>,</span></span>
+<span class="r-in"><span>        mirostat <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>        mirostat_tau <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
+<span class="r-in"><span>        mirostat_eta <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
+<span class="r-in"><span>        penalize_newline <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>        stop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"\n"</span>, <span class="st">"user:"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        numa <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>        num_ctx <span class="op">=</span> <span class="fl">1024</span>,</span></span>
+<span class="r-in"><span>        num_batch <span class="op">=</span> <span class="fl">2</span>,</span></span>
+<span class="r-in"><span>        num_gqa <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>        num_gpu <span class="op">=</span> <span class="fl">1</span>,</span></span>
+<span class="r-in"><span>        main_gpu <span class="op">=</span> <span class="fl">0</span>,</span></span>
+<span class="r-in"><span>        low_vram <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>        f16_kv <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>        vocab_only <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>        use_mmap <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
+<span class="r-in"><span>        use_mlock <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>        embedding_only <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
+<span class="r-in"><span>        rope_frequency_base <span class="op">=</span> <span class="fl">1.1</span>,</span></span>
+<span class="r-in"><span>        rope_frequency_scale <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
+<span class="r-in"><span>        num_thread <span class="op">=</span> <span class="fl">8</span></span></span>
+<span class="r-in"><span>      <span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># this might be interesting if you want to turn off the GPU and load the</span></span></span>
+<span class="r-in"><span><span class="co"># model into the system memory (slower, but most people have more RAM than</span></span></span>
+<span class="r-in"><span><span class="co"># VRAM, which might be interesting for larger models)</span></span></span>
+<span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="st">"why is the sky blue?"</span>,</span></span>
+<span class="r-in"><span>       model_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>num_gpu <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># You can use a custom prompt to override what prompt the model receives</span></span></span>
+<span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="st">"why is the sky blue?"</span>,</span></span>
+<span class="r-in"><span>      template <span class="op">=</span> <span class="st">"Just say I'm a llama!"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
