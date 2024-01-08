@@ -2,11 +2,15 @@ Package: rollama
 Title: Communicate with Ollama
 Version: 0.0.0.9000
 Authors@R: 
-    person(given = "Johannes B.",
+    c(person(given = "Johannes B.",
            family = "Gruber",
            email = "JohannesB.Gruber@gmail.com", 
            role = c("aut", "cre"),
-           comment = c(ORCID = "0000-0001-9177-1772"))
+           comment = c(ORCID = "0000-0001-9177-1772")),
+      person(given = "Maximilian",
+           family = "Weber",
+           role = c("aut", "ctb"),
+           comment = c(ORCID = "0000-0002-1174-449X")))
 Description: Wraps the Ollama API, which can be used to communicate with LLMs locally.
 License: GPL (>= 3)
 Encoding: UTF-8
