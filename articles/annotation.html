@@ -108,7 +108,9 @@ part, user part and assistant part. The system message typically
 includes instructions or context that guides the interaction, setting
 the stage for how the user and the assistant should interact. For an
 annotation task we could write: “You assign texts into categories.
-Answer with just the correct category.”</p>
+Answer with just the correct category.” The table summarizes different
+prompting strategies for annotating textual data. Each strategy varies
+in the number of examples given and the incorporation of reasoning.</p>
 <table class="table">
 <colgroup>
 <col width="18%">
@@ -148,6 +150,10 @@ Answer with just the correct category.”</p>
 <div class="section level3">
 <h3 id="zero-shot">Zero-shot<a class="anchor" aria-label="anchor" href="#zero-shot"></a>
 </h3>
+<p>In this approach, no prior examples are given. The structure includes
+a system prompt providing instructions and a user prompt with the text
+to classify and the classification question (in this example we only
+provide the categories).</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">role</span>,    <span class="op">~</span><span class="va">content</span>,</span>
@@ -157,11 +163,17 @@ Answer with just the correct category.”</p>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Category: Negative</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="one-shot">One-shot<a class="anchor" aria-label="anchor" href="#one-shot"></a>
 </h3>
+<p>This involves giving a single example before the actual task. The
+structure includes a system prompt, followed by a user prompt with an
+example text and classification question, the assistant’s example
+classification, and then another user prompt with the new text to
+classify.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">role</span>,    <span class="op">~</span><span class="va">content</span>,</span>
@@ -178,6 +190,10 @@ Answer with just the correct category.”</p>
 <div class="section level3">
 <h3 id="few-shot">Few-shot<a class="anchor" aria-label="anchor" href="#few-shot"></a>
 </h3>
+<p>This strategy includes multiple examples (more than one). The
+structure is similar to one-shot but with several iterations of user and
+assistant messages providing examples before the final text to
+classify.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">role</span>,    <span class="op">~</span><span class="va">content</span>,</span>
@@ -202,8 +218,8 @@ Answer with just the correct category.”</p>
 <div class="section level3">
 <h3 id="function-to-create-a-query">Function to create a query<a class="anchor" aria-label="anchor" href="#function-to-create-a-query"></a>
 </h3>
-<p>The create_query function is designed to facilitate the creation of a
-structured query for text classification.</p>
+<p>The <code>create_query</code> function is designed to facilitate the
+creation of a structured query for text classification.</p>
 <p>Components:</p>
 <ul>
 <li>
@@ -255,7 +271,7 @@ categories for classification.</li>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_zs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Negative</span></span></code></pre></div>
+<span><span class="co">#&gt; Category: Negative</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="one-shot-example-with-one-example">One-shot example with one example<a class="anchor" aria-label="anchor" href="#one-shot-example-with-one-example"></a>
@@ -298,7 +314,7 @@ new classification:</p>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_fs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Category: Positive</span></span></code></pre></div>
+<span><span class="co">#&gt; Category: Neutral</span></span></code></pre></div>
 </div>
 </div>
 </div>
@@ -309,7 +325,8 @@ new classification:</p>
 of movie reviews. The process involves creating a dataframe of reviews,
 processing each review to classify its sentiment, and appending the
 results as a new column in the dataframe.</p>
-<p>We create a dataframe named movie_reviews with two columns:</p>
+<p>We create a dataframe named <code>movie_reviews</code> with two
+columns:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create an example dataframe with 5 movie reviews</span></span>
 <span><span class="va">movie_reviews</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
@@ -330,16 +347,18 @@ results as a new column in the dataframe.</p>
 <span><span class="co">#&gt; 3         3 An overrated film with underwhelming performances.              </span></span>
 <span><span class="co">#&gt; 4         4 A beautiful tale of love and adventure, beautifully shot.       </span></span>
 <span><span class="co">#&gt; 5         5 The movie lacked depth, but the special effects were incredible.</span></span></code></pre></div>
-<div class="section level3">
-<h3 id="system-message-and-classification-question">System message and classification question<a class="anchor" aria-label="anchor" href="#system-message-and-classification-question"></a>
-</h3>
 <p>We define a system message and a classification question to guide the
 sentiment analysis:</p>
-<p>The function <code>process_reviews</code> - Iterates through each
-review. - Constructs a query using <code>create_query</code>. - Obtains
-sentiment classification (assumed by <code>query(q)</code> function). -
-Stores the result in the <code>annotations</code> vector. - Appends
-<code>annotations</code> as a new column in the dataframe.</p>
+<p>The function <code>process_reviews</code></p>
+<ul>
+<li>Iterates through each review.</li>
+<li>Constructs a query using <code>create_query</code>.</li>
+<li>Obtains sentiment classification (by <code>query(q)</code>
+function).</li>
+<li>Stores the result in the <code>annotations</code> vector.</li>
+<li>Appends <code>annotations</code> as a new column in the
+dataframe.</li>
+</ul>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">systemmsg</span> <span class="op">&lt;-</span> <span class="st">"Classify the sentiment of the movie review. Answer with just the correct category."</span></span>
 <span><span class="va">classification_question</span> <span class="op">&lt;-</span> <span class="st">"Categories: positive, neutral, negative"</span></span>
@@ -350,7 +369,7 @@ Stores the result in the <code>annotations</code> vector. - Appends
 <span></span>
 <span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">reviews</span><span class="op">$</span><span class="va">review</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
 <span>    <span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">create_query</span><span class="op">(</span><span class="va">systemmsg</span>, examples <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">reviews</span><span class="op">$</span><span class="va">review</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">classification_question</span><span class="op">)</span></span>
-<span>    <span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span>  </span>
+<span>    <span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span>    <span class="va">annotations</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">output</span><span class="op">$</span><span class="va">message</span><span class="op">$</span><span class="va">content</span></span>
 <span>  <span class="op">}</span></span>
 <span>  <span class="va">reviews</span><span class="op">$</span><span class="va">annotation</span> <span class="op">&lt;-</span> <span class="va">annotations</span></span>
@@ -361,18 +380,18 @@ Stores the result in the <code>annotations</code> vector. - Appends
 <span><span class="va">annotated_reviews</span> <span class="op">&lt;-</span> <span class="fu">process_reviews</span><span class="op">(</span><span class="va">movie_reviews</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Positive</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Category: Positive</span></span>
+<span><span class="co">#&gt; Sentiment: Positive</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; Negative</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Positive</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Category: Positive</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -381,14 +400,13 @@ Stores the result in the <code>annotations</code> vector. - Appends
 <span><span class="co"># Print the annotated dataframe</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">annotated_reviews</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 5 × 3</span></span>
-<span><span class="co">#&gt;   review_id review                                                           annotation            </span></span>
-<span><span class="co">#&gt;       &lt;int&gt; &lt;chr&gt;                                                            &lt;chr&gt;                 </span></span>
-<span><span class="co">#&gt; 1         1 A stunning visual spectacle with a gripping storyline.           "\nPositive"          </span></span>
-<span><span class="co">#&gt; 2         2 The plot was predictable, but the acting was superb.             "\nCategory: Positive"</span></span>
-<span><span class="co">#&gt; 3         3 An overrated film with underwhelming performances.               "Negative"            </span></span>
-<span><span class="co">#&gt; 4         4 A beautiful tale of love and adventure, beautifully shot.        "Positive"            </span></span>
+<span><span class="co">#&gt;   review_id review                                                           annotation             </span></span>
+<span><span class="co">#&gt;       &lt;int&gt; &lt;chr&gt;                                                            &lt;chr&gt;                  </span></span>
+<span><span class="co">#&gt; 1         1 A stunning visual spectacle with a gripping storyline.           "Positive"             </span></span>
+<span><span class="co">#&gt; 2         2 The plot was predictable, but the acting was superb.             "\nSentiment: Positive"</span></span>
+<span><span class="co">#&gt; 3         3 An overrated film with underwhelming performances.               "Negative"             </span></span>
+<span><span class="co">#&gt; 4         4 A beautiful tale of love and adventure, beautifully shot.        "\nCategory: Positive" </span></span>
 <span><span class="co">#&gt; 5         5 The movie lacked depth, but the special effects were incredible. "\nCategory: Neutral"</span></span></code></pre></div>
-</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
