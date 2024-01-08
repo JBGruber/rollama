@@ -85,66 +85,310 @@
 
     
     
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jbgruber.github.io/rollama/">rollama</a></span><span class="op">)</span></span></code></pre></div>
-<p>Based on <a href="https://arxiv.org/abs/2401.00284" class="external-link">Weber and
-Reichardt (2024)</a>.</p>
 <div class="section level2">
-<h2 id="zero-shot">Zero-shot<a class="anchor" aria-label="anchor" href="#zero-shot"></a>
+<h2 id="introduction">Introduction<a class="anchor" aria-label="anchor" href="#introduction"></a>
 </h2>
+<p>After you installed Ollama on your machine and downloaded the package
+rollama you can load the library by calling:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jbgruber.github.io/rollama/">rollama</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/pull_model.html">pull_model</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="prompting-strategies">Prompting Strategies<a class="anchor" aria-label="anchor" href="#prompting-strategies"></a>
+</h2>
+<p>If you want to annotate textual data, you can use various prompting
+strategies. For an overview of common approaches, you can read a paper
+by <a href="https://arxiv.org/abs/2401.00284" class="external-link">Weber and Reichardt
+(2023)</a>. These strategies primarily differ in whether or how many
+examples are given (Zero-shot, One-shot, or Few-shot) and whether
+reasoning is involved (Chain-of-Thought).</p>
+<p>When writing a prompt we can give the model content for the system
+part, user part and assistant part. The system message typically
+includes instructions or context that guides the interaction, setting
+the stage for how the user and the assistant should interact. For an
+annotation task we could write: “You assign texts into categories.
+Answer with just the correct category.”</p>
+<table class="table">
+<colgroup>
+<col width="18%">
+<col width="81%">
+</colgroup>
+<thead><tr class="header">
+<th>Prompting Strategy</th>
+<th>Example Structure</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Zero-shot</td>
+<td>
+<code>{"role": "system", "content": "Text of System Prompt"},</code><br><code>{"role": "user", "content": "(Text to classify) + classification question"}</code>
+</td>
+</tr>
+<tr class="even">
+<td>One-shot</td>
+<td>
+<code>{"role": "system", "content": "Text of System Prompt"},</code><br><code>{"role": "user", "content": "(Example text) + classification question"},</code><br><code>{"role": "assistant", "content": "Example classification"},</code><br><code>{"role": "user", "content": "(Text to classify) + classification question"}</code>
+</td>
+</tr>
+<tr class="odd">
+<td>Few-shot</td>
+<td>
+<code>{"role": "system", "content": "Text of System Prompt"},</code><br><code>{"role": "user", "content": "(Example text) + classification question"},</code><br><code>{"role": "assistant", "content": "Example classification"},</code><br><code>{"role": "user", "content": "(Example text) + classification question"},</code><br><code>{"role": "assistant", "content": "Example classification"},</code><br><code>. . . more examples</code><br><code>{"role": "user", "content": "(Text to classify) + classification question"}</code>
+</td>
+</tr>
+<tr class="even">
+<td>Chain-of-Thought</td>
+<td>
+<code>{"role": "system", "content": "Text of System Prompt"},</code><br><code>{"role": "user", "content": "(Text to classify) + reasoning question"},</code><br><code>{"role": "assistant", "content": "Reasoning"},</code><br><code>{"role": "user", "content": "Classification question"}</code>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="section level3">
+<h3 id="zero-shot">Zero-shot<a class="anchor" aria-label="anchor" href="#zero-shot"></a>
+</h3>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">role</span>,    <span class="op">~</span><span class="va">content</span>,</span>
-<span>  <span class="st">"system"</span>, <span class="st">"You assign texts into categories. Answer with just the correct category and your confidence in percent."</span>,</span>
+<span>  <span class="st">"system"</span>, <span class="st">"You assign texts into categories. Answer with just the correct category."</span>,</span>
 <span>  <span class="st">"user"</span>,   <span class="st">"text: the pizza tastes terrible\ncategories: positive, neutral, negative"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Category: Negative (Confidence: 100%)</span></span></code></pre></div>
+<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Category: Negative</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="one-shot">One-shot<a class="anchor" aria-label="anchor" href="#one-shot"></a>
-</h2>
+<div class="section level3">
+<h3 id="one-shot">One-shot<a class="anchor" aria-label="anchor" href="#one-shot"></a>
+</h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">role</span>,    <span class="op">~</span><span class="va">content</span>,</span>
-<span>  <span class="st">"system"</span>, <span class="st">"You assign texts into categories. Answer with just the correct category and your confidence in percent."</span>,</span>
+<span>  <span class="st">"system"</span>, <span class="st">"You assign texts into categories. Answer with just the correct category."</span>,</span>
 <span>  <span class="st">"user"</span>, <span class="st">"text: the pizza tastes terrible\ncategories: positive, neutral, negative"</span>,</span>
-<span>  <span class="st">"assistant"</span>, <span class="st">"Category: Negative\nConfidence: 100%"</span>,</span>
+<span>  <span class="st">"assistant"</span>, <span class="st">"Category: Negative"</span>,</span>
 <span>  <span class="st">"user"</span>, <span class="st">"text: the service is great\ncategories: positive, neutral, negative"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Category: Positive</span></span>
-<span><span class="co">#&gt; Confidence: 100%</span></span></code></pre></div>
+<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Category: Positive</span></span></code></pre></div>
 </div>
-<div class="section level2">
-<h2 id="few-shot">Few-shot<a class="anchor" aria-label="anchor" href="#few-shot"></a>
-</h2>
+<div class="section level3">
+<h3 id="few-shot">Few-shot<a class="anchor" aria-label="anchor" href="#few-shot"></a>
+</h3>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
 <span>  <span class="op">~</span><span class="va">role</span>,    <span class="op">~</span><span class="va">content</span>,</span>
-<span>  <span class="st">"system"</span>, <span class="st">"You assign texts into categories. Answer with just the correct category and your confidence in percent."</span>,</span>
+<span>  <span class="st">"system"</span>, <span class="st">"You assign texts into categories. Answer with just the correct category."</span>,</span>
 <span>  <span class="st">"user"</span>, <span class="st">"text: the pizza tastes terrible\ncategories: positive, neutral, negative"</span>,</span>
-<span>  <span class="st">"assistant"</span>, <span class="st">"Category: Negative\nConfidence: 100%"</span>,</span>
+<span>  <span class="st">"assistant"</span>, <span class="st">"Category: Negative"</span>,</span>
 <span>  <span class="st">"user"</span>, <span class="st">"text: the service is great\ncategories: positive, neutral, negative"</span>,</span>
-<span>  <span class="st">"assistant"</span>, <span class="st">"Category: Positive\nConfidence: 100%"</span>,</span>
+<span>  <span class="st">"assistant"</span>, <span class="st">"Category: Positive"</span>,</span>
 <span>  <span class="st">"user"</span>, <span class="st">"text: I once came here with my wife\ncategories: positive, neutral, negative"</span>,</span>
-<span>  <span class="st">"assistant"</span>, <span class="st">"Category: Neutral\nConfidence: 100%"</span>,</span>
+<span>  <span class="st">"assistant"</span>, <span class="st">"Category: Neutral"</span>,</span>
 <span>  <span class="st">"user"</span>, <span class="st">"text: I once ate pizza\ncategories: positive, neutral, negative"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Category: Positive</span></span>
-<span><span class="co">#&gt; Confidence: 100%</span></span></code></pre></div>
+<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Category: Positive</span></span></code></pre></div>
+</div>
 </div>
 <div class="section level2">
-<h2 id="chain-of-thought">Chain-of-Thought<a class="anchor" aria-label="anchor" href="#chain-of-thought"></a>
+<h2 id="as-a-function">As a function<a class="anchor" aria-label="anchor" href="#as-a-function"></a>
 </h2>
+<div class="section level3">
+<h3 id="function-to-create-a-query">Function to create a query<a class="anchor" aria-label="anchor" href="#function-to-create-a-query"></a>
+</h3>
+<p>The create_query function is designed to facilitate the creation of a
+structured query for text classification.</p>
+<p>Components:</p>
+<ul>
+<li>
+<strong>System Message</strong>: Provides context or instructions
+for the classification task.</li>
+<li>
+<strong>Examples</strong>: Prior examples consisting of user
+messages and assistant responses (for one-shot and few-shot
+learning).</li>
+<li>
+<strong>Text to Classify</strong>: The new text to be
+categorized.</li>
+<li>
+<strong>Classification Question</strong>: Lists the possible
+categories for classification.</li>
+</ul>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">create_query</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">systemmsg</span>, <span class="va">examples</span>, <span class="va">texttoclassify</span>, <span class="va">classification_question</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># Start with the system message</span></span>
+<span>  <span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span>    <span class="op">~</span><span class="va">role</span>,    <span class="op">~</span><span class="va">content</span>,</span>
+<span>    <span class="st">"system"</span>, <span class="va">systemmsg</span></span>
+<span>  <span class="op">)</span></span>
+<span></span>
+<span>  <span class="co"># Add examples (if any), appending the classification question to the user messages</span></span>
+<span>  <span class="kw">for</span><span class="op">(</span><span class="va">example</span> <span class="kw">in</span> <span class="va">examples</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">usermsg_with_question</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">example</span><span class="op">$</span><span class="va">usermsg</span>, <span class="st">"\n"</span>, <span class="va">classification_question</span><span class="op">)</span></span>
+<span>    <span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/add_row.html" class="external-link">add_row</a></span><span class="op">(</span><span class="va">q</span>, role <span class="op">=</span> <span class="st">"user"</span>, content <span class="op">=</span> <span class="va">usermsg_with_question</span><span class="op">)</span></span>
+<span>    <span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/add_row.html" class="external-link">add_row</a></span><span class="op">(</span><span class="va">q</span>, role <span class="op">=</span> <span class="st">"assistant"</span>, content <span class="op">=</span> <span class="va">example</span><span class="op">$</span><span class="va">assistantmsg</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="co"># Add the current text to classify along with the classification question</span></span>
+<span>  <span class="va">usermsg_final</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"text:"</span>, <span class="va">texttoclassify</span>, <span class="st">"\n"</span>, <span class="va">classification_question</span><span class="op">)</span></span>
+<span>  <span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/add_row.html" class="external-link">add_row</a></span><span class="op">(</span><span class="va">q</span>, role <span class="op">=</span> <span class="st">"user"</span>, content <span class="op">=</span> <span class="va">usermsg_final</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="example-usage">Example usage<a class="anchor" aria-label="anchor" href="#example-usage"></a>
+</h3>
+<div class="section level4">
+<h4 id="zero-shot-example">Zero-shot example<a class="anchor" aria-label="anchor" href="#zero-shot-example"></a>
+</h4>
+<p>In this example, the function is used without any examples.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">systemmsg</span> <span class="op">&lt;-</span> <span class="st">"You assign texts into categories. Answer with just the correct category."</span></span>
+<span><span class="va">q_zs</span> <span class="op">&lt;-</span> <span class="fu">create_query</span><span class="op">(</span><span class="va">systemmsg</span>, examples <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"the pizza tastes terrible"</span>, <span class="st">"Categories: positive, neutral, negative"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_zs</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Negative</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="one-shot-example-with-one-example">One-shot example with one example<a class="anchor" aria-label="anchor" href="#one-shot-example-with-one-example"></a>
+</h4>
+<p>Here, one prior example is provided to aid the classification:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">examples_os</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    usermsg <span class="op">=</span> <span class="st">"text: the pizza tastes terrible"</span>,</span>
+<span>    assistantmsg <span class="op">=</span> <span class="st">"Category: Negative"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">q_os</span> <span class="op">&lt;-</span> <span class="fu">create_query</span><span class="op">(</span><span class="va">systemmsg</span>, <span class="va">examples_os</span>, <span class="st">"the service is great"</span>, <span class="st">"Categories: positive, neutral, negative"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_os</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Category: Positive</span></span></code></pre></div>
+</div>
+<div class="section level4">
+<h4 id="few-shot-example-with-multiple-examples">Few-shot example with multiple examples<a class="anchor" aria-label="anchor" href="#few-shot-example-with-multiple-examples"></a>
+</h4>
+<p>This scenario uses multiple examples to enrich the context for the
+new classification:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">examples_fs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    usermsg <span class="op">=</span> <span class="st">"text: the pizza tastes terrible"</span>,</span>
+<span>    assistantmsg <span class="op">=</span> <span class="st">"Category: Negative"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    usermsg <span class="op">=</span> <span class="st">"text: the service is great"</span>,</span>
+<span>    assistantmsg <span class="op">=</span> <span class="st">"Category: Positive"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>    usermsg <span class="op">=</span> <span class="st">"text: I once came here with my wife"</span>,</span>
+<span>    assistantmsg <span class="op">=</span> <span class="st">"Category: Neutral"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">q_fs</span> <span class="op">&lt;-</span> <span class="fu">create_query</span><span class="op">(</span><span class="va">systemmsg</span>, <span class="va">examples_fs</span>, <span class="st">"I once ate pizza"</span>, <span class="st">"Categories: positive, neutral, negative"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_fs</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Category: Positive</span></span></code></pre></div>
+</div>
+</div>
+</div>
+<div class="section level2">
+<h2 id="another-example-using-a-dataframe">Another example using a dataframe<a class="anchor" aria-label="anchor" href="#another-example-using-a-dataframe"></a>
+</h2>
+<p>This example demonstrates how to perform sentiment analysis on a set
+of movie reviews. The process involves creating a dataframe of reviews,
+processing each review to classify its sentiment, and appending the
+results as a new column in the dataframe.</p>
+<p>We create a dataframe named movie_reviews with two columns:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># Create an example dataframe with 5 movie reviews</span></span>
+<span><span class="va">movie_reviews</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
+<span>  review_id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span>
+<span>  review <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"A stunning visual spectacle with a gripping storyline."</span>,</span>
+<span>             <span class="st">"The plot was predictable, but the acting was superb."</span>,</span>
+<span>             <span class="st">"An overrated film with underwhelming performances."</span>,</span>
+<span>             <span class="st">"A beautiful tale of love and adventure, beautifully shot."</span>,</span>
+<span>             <span class="st">"The movie lacked depth, but the special effects were incredible."</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co"># Print the initial dataframe</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">movie_reviews</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 5 × 2</span></span>
+<span><span class="co">#&gt;   review_id review                                                          </span></span>
+<span><span class="co">#&gt;       &lt;int&gt; &lt;chr&gt;                                                           </span></span>
+<span><span class="co">#&gt; 1         1 A stunning visual spectacle with a gripping storyline.          </span></span>
+<span><span class="co">#&gt; 2         2 The plot was predictable, but the acting was superb.            </span></span>
+<span><span class="co">#&gt; 3         3 An overrated film with underwhelming performances.              </span></span>
+<span><span class="co">#&gt; 4         4 A beautiful tale of love and adventure, beautifully shot.       </span></span>
+<span><span class="co">#&gt; 5         5 The movie lacked depth, but the special effects were incredible.</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="system-message-and-classification-question">System message and classification question<a class="anchor" aria-label="anchor" href="#system-message-and-classification-question"></a>
+</h3>
+<p>We define a system message and a classification question to guide the
+sentiment analysis:</p>
+<p>The function <code>process_reviews</code> - Iterates through each
+review. - Constructs a query using <code>create_query</code>. - Obtains
+sentiment classification (assumed by <code>query(q)</code> function). -
+Stores the result in the <code>annotations</code> vector. - Appends
+<code>annotations</code> as a new column in the dataframe.</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">systemmsg</span> <span class="op">&lt;-</span> <span class="st">"Classify the sentiment of the movie review. Answer with just the correct category."</span></span>
+<span><span class="va">classification_question</span> <span class="op">&lt;-</span> <span class="st">"Categories: positive, neutral, negative"</span></span>
+<span></span>
+<span><span class="co"># Function to process each review and append the result to a new column</span></span>
+<span><span class="va">process_reviews</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">reviews</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">annotations</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/vector.html" class="external-link">vector</a></span><span class="op">(</span><span class="st">"character"</span>, length <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html" class="external-link">nrow</a></span><span class="op">(</span><span class="va">reviews</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html" class="external-link">seq_along</a></span><span class="op">(</span><span class="va">reviews</span><span class="op">$</span><span class="va">review</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">create_query</span><span class="op">(</span><span class="va">systemmsg</span>, examples <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">reviews</span><span class="op">$</span><span class="va">review</span><span class="op">[</span><span class="va">i</span><span class="op">]</span>, <span class="va">classification_question</span><span class="op">)</span></span>
+<span>    <span class="va">output</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span>  </span>
+<span>    <span class="va">annotations</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">output</span><span class="op">$</span><span class="va">message</span><span class="op">$</span><span class="va">content</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">reviews</span><span class="op">$</span><span class="va">annotation</span> <span class="op">&lt;-</span> <span class="va">annotations</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html" class="external-link">return</a></span><span class="op">(</span><span class="va">reviews</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Process and annotate the movie reviews</span></span>
+<span><span class="va">annotated_reviews</span> <span class="op">&lt;-</span> <span class="fu">process_reviews</span><span class="op">(</span><span class="va">movie_reviews</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Positive</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Category: Positive</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Negative</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Positive</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Category: Neutral</span></span>
+<span></span>
+<span><span class="co"># Print the annotated dataframe</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">annotated_reviews</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 5 × 3</span></span>
+<span><span class="co">#&gt;   review_id review                                                           annotation            </span></span>
+<span><span class="co">#&gt;       &lt;int&gt; &lt;chr&gt;                                                            &lt;chr&gt;                 </span></span>
+<span><span class="co">#&gt; 1         1 A stunning visual spectacle with a gripping storyline.           "\nPositive"          </span></span>
+<span><span class="co">#&gt; 2         2 The plot was predictable, but the acting was superb.             "\nCategory: Positive"</span></span>
+<span><span class="co">#&gt; 3         3 An overrated film with underwhelming performances.               "Negative"            </span></span>
+<span><span class="co">#&gt; 4         4 A beautiful tale of love and adventure, beautifully shot.        "Positive"            </span></span>
+<span><span class="co">#&gt; 5         5 The movie lacked depth, but the special effects were incredible. "\nCategory: Neutral"</span></span></code></pre></div>
+</div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
