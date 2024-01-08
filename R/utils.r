@@ -14,12 +14,12 @@ ping_ollama <- function(server = NULL, silent = FALSE) {
                                            default = "http://localhost:11434")
   res <- try({
     httr2::request(server) |>
-    httr2::req_perform() |>
-    httr2::resp_body_string()
+      httr2::req_perform() |>
+      httr2::resp_body_string()
   }, silent = TRUE)
 
-  if (!methods::is(res, "try-error")) {
-    if (!silent) cli::cli_progress_message(
+  if (!methods::is(res, "try-error") & res == "Ollama is running") {
+    if (!silent) cli::cli_inform(
       "{cli::col_green(cli::symbol$play)} {res} at {.url {server}}!"
     )
     invisible(TRUE)
