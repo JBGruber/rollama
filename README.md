@@ -34,8 +34,8 @@ interface, you can start Ollama locally with one command:
 ## Example
 
 The first thing you should do after installation is to pull one of the
-models from <https://ollama.ai/library>. By calling `pull_model()`
-without arguments, you are pulling the default models — “llama2”:
+models from <https://ollama.ai/library>. By calling `pull_model()` 
+without arguments, you are pulling the (current) default model  --- "llama2 7b":
 
 ``` r
 library(rollama)
@@ -189,8 +189,10 @@ query("why is the sky blue?")
 #> that's why the sky is blue! Isn't that amazing? 😍
 ```
 
-By default, the package uses the “llama2” model. Change this via
-`rollama_model`:
+By default, the package uses the "llama2 7B" model. Supported models can be found 
+at <https://ollama.ai/library>. To download a specific model make use of the additional 
+information available in "Tags" <https://ollama.ai/library/mistral/tags>.
+Change this via `rollama_model`:
 
 ``` r
 options(rollama_model = "mixtral")
