@@ -162,7 +162,7 @@ provide the categories).</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Category: Negative</span></span></code></pre></div>
 </div>
@@ -184,7 +184,7 @@ classify.</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; Category: Positive</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -208,8 +208,51 @@ classify.</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; Category: Positive</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="chain-of-thought">Chain-of-Thought<a class="anchor" aria-label="anchor" href="#chain-of-thought"></a>
+</h3>
+<p>This approach involves at least one reasoning step. The structure
+here starts with the system prompt, then a user prompt with a text to
+classify and a reasoning question.</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">q_thought</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span>  <span class="op">~</span><span class="va">role</span>,    <span class="op">~</span><span class="va">content</span>,</span>
+<span>  <span class="st">"system"</span>, <span class="st">"You assign texts into categories. "</span>,</span>
+<span>  <span class="st">"user"</span>,   <span class="st">"text: the pizza tastes terrible\nWhat sentiment (positive, neutral, or negative) would you assign? Provide some thoughts."</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">output_thought</span> <span class="op">&lt;-</span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_thought</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Based on the text "the pizza tastes terrible," I would assign a sentiment of negative. Here's why:</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; * The use of the word "tastes" implies that the speaker has a strong opinion about the taste of the pizza, which is typically associated with negative</span></span>
+<span><span class="co">#&gt; emotions.</span></span>
+<span><span class="co">#&gt; * The phrase "terrible" is a strong adjective that conveys a sense of disappointment or displeasure.</span></span>
+<span><span class="co">#&gt; * The sentiment is further reinforced by the fact that the speaker used the word "tastes," which implies a personal evaluation or judgment about the pizza's</span></span>
+<span><span class="co">#&gt; taste, rather than a neutral description.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Overall, based on the language and structure of the sentence, it seems clear that the speaker has a negative sentiment towards the pizza.</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">output_thought</span><span class="op">$</span><span class="va">message</span><span class="op">$</span><span class="va">content</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "\nBased on the text \"the pizza tastes terrible,\" I would assign a sentiment of negative. Here's why:\n\n* The use of the word \"tastes\" implies that the speaker has a strong opinion about the taste of the pizza, which is typically associated with negative emotions.\n* The phrase \"terrible\" is a strong adjective that conveys a sense of disappointment or displeasure.\n* The sentiment is further reinforced by the fact that the speaker used the word \"tastes,\" which implies a personal evaluation or judgment about the pizza's taste, rather than a neutral description.\n\nOverall, based on the language and structure of the sentence, it seems clear that the speaker has a negative sentiment towards the pizza."</span></span></code></pre></div>
+<p>In the next step we can use the assistant’s reasoning and an user
+prompt with the classification question.</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
+<span>  <span class="op">~</span><span class="va">role</span>,    <span class="op">~</span><span class="va">content</span>,</span>
+<span>  <span class="st">"system"</span>, <span class="st">"You assign texts into categories. "</span>,</span>
+<span>  <span class="st">"user"</span>,   <span class="st">"text: the pizza tastes terrible\nWhat sentiment (positive, neutral, or negative) would you assign? Provide some thoughts."</span>,</span>
+<span>  <span class="st">"assistant"</span>, <span class="va">output_thought</span><span class="op">$</span><span class="va">message</span><span class="op">$</span><span class="va">content</span>,</span>
+<span>  <span class="st">"user"</span>,   <span class="st">"Now answer with just the correct category (positive, neutral, or negative)"</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Negative</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -236,7 +279,7 @@ categorized.</li>
 <strong>Classification Question</strong>: Lists the possible
 categories for classification.</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">create_query</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">systemmsg</span>, <span class="va">examples</span>, <span class="va">texttoclassify</span>, <span class="va">classification_question</span><span class="op">)</span> <span class="op">{</span></span>
 <span>  <span class="co"># Start with the system message</span></span>
 <span>  <span class="va">q</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tribble.html" class="external-link">tribble</a></span><span class="op">(</span></span>
@@ -265,19 +308,20 @@ categories for classification.</li>
 <h4 id="zero-shot-example">Zero-shot example<a class="anchor" aria-label="anchor" href="#zero-shot-example"></a>
 </h4>
 <p>In this example, the function is used without any examples.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">systemmsg</span> <span class="op">&lt;-</span> <span class="st">"You assign texts into categories. Answer with just the correct category."</span></span>
 <span><span class="va">q_zs</span> <span class="op">&lt;-</span> <span class="fu">create_query</span><span class="op">(</span><span class="va">systemmsg</span>, examples <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="st">"the pizza tastes terrible"</span>, <span class="st">"Categories: positive, neutral, negative"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_zs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Category: Negative</span></span></code></pre></div>
 </div>
 <div class="section level4">
 <h4 id="one-shot-example-with-one-example">One-shot example with one example<a class="anchor" aria-label="anchor" href="#one-shot-example-with-one-example"></a>
 </h4>
 <p>Here, one prior example is provided to aid the classification:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">examples_os</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    usermsg <span class="op">=</span> <span class="st">"text: the pizza tastes terrible"</span>,</span>
@@ -287,7 +331,7 @@ categories for classification.</li>
 <span><span class="va">q_os</span> <span class="op">&lt;-</span> <span class="fu">create_query</span><span class="op">(</span><span class="va">systemmsg</span>, <span class="va">examples_os</span>, <span class="st">"the service is great"</span>, <span class="st">"Categories: positive, neutral, negative"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_os</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; Category: Positive</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -295,7 +339,7 @@ categories for classification.</li>
 </h4>
 <p>This scenario uses multiple examples to enrich the context for the
 new classification:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">examples_fs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    usermsg <span class="op">=</span> <span class="st">"text: the pizza tastes terrible"</span>,</span>
@@ -313,8 +357,8 @@ new classification:</p>
 <span><span class="va">q_fs</span> <span class="op">&lt;-</span> <span class="fu">create_query</span><span class="op">(</span><span class="va">systemmsg</span>, <span class="va">examples_fs</span>, <span class="st">"I once ate pizza"</span>, <span class="st">"Categories: positive, neutral, negative"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_fs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Category: Neutral</span></span></code></pre></div>
+<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Category: Positive</span></span></code></pre></div>
 </div>
 </div>
 </div>
@@ -327,7 +371,7 @@ processing each review to classify its sentiment, and appending the
 results as a new column in the dataframe.</p>
 <p>We create a dataframe named <code>movie_reviews</code> with two
 columns:</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Create an example dataframe with 5 movie reviews</span></span>
 <span><span class="va">movie_reviews</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span>
 <span>  review_id <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,</span>
@@ -359,7 +403,7 @@ function).</li>
 <li>Appends <code>annotations</code> as a new column in the
 dataframe.</li>
 </ul>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">systemmsg</span> <span class="op">&lt;-</span> <span class="st">"Classify the sentiment of the movie review. Answer with just the correct category."</span></span>
 <span><span class="va">classification_question</span> <span class="op">&lt;-</span> <span class="st">"Categories: positive, neutral, negative"</span></span>
 <span></span>
@@ -379,34 +423,34 @@ dataframe.</li>
 <span><span class="co"># Process and annotate the movie reviews</span></span>
 <span><span class="va">annotated_reviews</span> <span class="op">&lt;-</span> <span class="fu">process_reviews</span><span class="op">(</span><span class="va">movie_reviews</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; Positive</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Sentiment: Positive</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; Negative</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Category: Positive</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Category: Neutral</span></span>
+<span><span class="co">#&gt; Negative</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; Category: Positive</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Positive</span></span>
 <span></span>
 <span><span class="co"># Print the annotated dataframe</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">annotated_reviews</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 5 × 3</span></span>
-<span><span class="co">#&gt;   review_id review                                                           annotation             </span></span>
-<span><span class="co">#&gt;       &lt;int&gt; &lt;chr&gt;                                                            &lt;chr&gt;                  </span></span>
-<span><span class="co">#&gt; 1         1 A stunning visual spectacle with a gripping storyline.           "Positive"             </span></span>
-<span><span class="co">#&gt; 2         2 The plot was predictable, but the acting was superb.             "\nSentiment: Positive"</span></span>
-<span><span class="co">#&gt; 3         3 An overrated film with underwhelming performances.               "Negative"             </span></span>
-<span><span class="co">#&gt; 4         4 A beautiful tale of love and adventure, beautifully shot.        "\nCategory: Positive" </span></span>
-<span><span class="co">#&gt; 5         5 The movie lacked depth, but the special effects were incredible. "\nCategory: Neutral"</span></span></code></pre></div>
+<span><span class="co">#&gt;   review_id review                                                           annotation            </span></span>
+<span><span class="co">#&gt;       &lt;int&gt; &lt;chr&gt;                                                            &lt;chr&gt;                 </span></span>
+<span><span class="co">#&gt; 1         1 A stunning visual spectacle with a gripping storyline.           "Positive"            </span></span>
+<span><span class="co">#&gt; 2         2 The plot was predictable, but the acting was superb.             "\nCategory: Positive"</span></span>
+<span><span class="co">#&gt; 3         3 An overrated film with underwhelming performances.               "\nNegative"          </span></span>
+<span><span class="co">#&gt; 4         4 A beautiful tale of love and adventure, beautifully shot.        "\nCategory: Positive"</span></span>
+<span><span class="co">#&gt; 5         5 The movie lacked depth, but the special effects were incredible. "Positive"</span></span></code></pre></div>
 </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside>
