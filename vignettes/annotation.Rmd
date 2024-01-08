@@ -46,7 +46,7 @@ q <- tibble::tribble(
 )
 query(q)
 #> 
-#> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> Category: Negative
 ```
@@ -65,7 +65,7 @@ q <- tibble::tribble(
 )
 query(q)
 #> 
-#> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> Category: Positive
 ```
 
@@ -87,9 +87,54 @@ q <- tibble::tribble(
 )
 query(q)
 #> 
-#> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> Category: Positive
 ```
+
+## Chain-of-Thought
+This approach involves at least one reasoning step. The structure here starts with the system prompt, then a user prompt with a text to classify and a reasoning question.
+
+
+```r
+q_thought <- tibble::tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. ",
+  "user",   "text: the pizza tastes terrible\nWhat sentiment (positive, neutral, or negative) would you assign? Provide some thoughts."
+)
+output_thought <-query(q_thought)
+#> 
+#> ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> 
+#> Based on the text "the pizza tastes terrible," I would assign a sentiment of negative. Here's why:
+#> 
+#> * The use of the word "tastes" implies that the speaker has a strong opinion about the taste of the pizza, which is typically associated with negative
+#> emotions.
+#> * The phrase "terrible" is a strong adjective that conveys a sense of disappointment or displeasure.
+#> * The sentiment is further reinforced by the fact that the speaker used the word "tastes," which implies a personal evaluation or judgment about the pizza's
+#> taste, rather than a neutral description.
+#> 
+#> Overall, based on the language and structure of the sentence, it seems clear that the speaker has a negative sentiment towards the pizza.
+print(output_thought$message$content)
+#> [1] "\nBased on the text \"the pizza tastes terrible,\" I would assign a sentiment of negative. Here's why:\n\n* The use of the word \"tastes\" implies that the speaker has a strong opinion about the taste of the pizza, which is typically associated with negative emotions.\n* The phrase \"terrible\" is a strong adjective that conveys a sense of disappointment or displeasure.\n* The sentiment is further reinforced by the fact that the speaker used the word \"tastes,\" which implies a personal evaluation or judgment about the pizza's taste, rather than a neutral description.\n\nOverall, based on the language and structure of the sentence, it seems clear that the speaker has a negative sentiment towards the pizza."
+```
+In the next step we can use the assistant's reasoning and an user prompt with the classification question.
+
+
+```r
+q <- tibble::tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. ",
+  "user",   "text: the pizza tastes terrible\nWhat sentiment (positive, neutral, or negative) would you assign? Provide some thoughts.",
+  "assistant", output_thought$message$content,
+  "user",   "Now answer with just the correct category (positive, neutral, or negative)"
+)
+query(q)
+#> 
+#> ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> 
+#> Negative
+```
+
 
 
 # As a function
@@ -138,7 +183,8 @@ systemmsg <- "You assign texts into categories. Answer with just the correct cat
 q_zs <- create_query(systemmsg, examples = list(), "the pizza tastes terrible", "Categories: positive, neutral, negative")
 query(q_zs)
 #> 
-#> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> 
 #> Category: Negative
 ```
 
@@ -157,7 +203,7 @@ examples_os <- list(
 q_os <- create_query(systemmsg, examples_os, "the service is great", "Categories: positive, neutral, negative")
 query(q_os)
 #> 
-#> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> Category: Positive
 ```
 
@@ -183,8 +229,8 @@ examples_fs <- list(
 q_fs <- create_query(systemmsg, examples_fs, "I once ate pizza", "Categories: positive, neutral, negative")
 query(q_fs)
 #> 
-#> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> Category: Neutral
+#> ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> Category: Positive
 ```
 
 # Another example using a dataframe
@@ -246,34 +292,34 @@ process_reviews <- function(reviews) {
 # Process and annotate the movie reviews
 annotated_reviews <- process_reviews(movie_reviews)
 #> 
-#> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> Positive
 #> 
-#> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> Sentiment: Positive
-#> 
-#> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> Negative
-#> 
-#> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> 
 #> Category: Positive
 #> 
-#> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> 
-#> Category: Neutral
+#> Negative
+#> 
+#> ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> 
+#> Category: Positive
+#> 
+#> ── Answer ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> Positive
 
 # Print the annotated dataframe
 print(annotated_reviews)
 #> # A tibble: 5 × 3
-#>   review_id review                                                           annotation             
-#>       <int> <chr>                                                            <chr>                  
-#> 1         1 A stunning visual spectacle with a gripping storyline.           "Positive"             
-#> 2         2 The plot was predictable, but the acting was superb.             "\nSentiment: Positive"
-#> 3         3 An overrated film with underwhelming performances.               "Negative"             
-#> 4         4 A beautiful tale of love and adventure, beautifully shot.        "\nCategory: Positive" 
-#> 5         5 The movie lacked depth, but the special effects were incredible. "\nCategory: Neutral"
+#>   review_id review                                                           annotation            
+#>       <int> <chr>                                                            <chr>                 
+#> 1         1 A stunning visual spectacle with a gripping storyline.           "Positive"            
+#> 2         2 The plot was predictable, but the acting was superb.             "\nCategory: Positive"
+#> 3         3 An overrated film with underwhelming performances.               "\nNegative"          
+#> 4         4 A beautiful tale of love and adventure, beautifully shot.        "\nCategory: Positive"
+#> 5         5 The movie lacked depth, but the special effects were incredible. "Positive"
 ```
 
 

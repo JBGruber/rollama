@@ -83,6 +83,32 @@ q <- tibble::tribble(
 query(q)
 ```
 
+## Chain-of-Thought
+This approach involves at least one reasoning step. The structure here starts with the system prompt, then a user prompt with a text to classify and a reasoning question.
+
+```{r}
+q_thought <- tibble::tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. ",
+  "user",   "text: the pizza tastes terrible\nWhat sentiment (positive, neutral, or negative) would you assign? Provide some thoughts."
+)
+output_thought <-query(q_thought)
+print(output_thought$message$content)
+```
+In the next step we can use the assistant's reasoning and an user prompt with the classification question.
+
+```{r}
+q <- tibble::tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. ",
+  "user",   "text: the pizza tastes terrible\nWhat sentiment (positive, neutral, or negative) would you assign? Provide some thoughts.",
+  "assistant", output_thought$message$content,
+  "user",   "Now answer with just the correct category (positive, neutral, or negative)"
+)
+query(q)
+```
+
+
 
 # As a function
 ## Function to create a query
