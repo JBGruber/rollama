@@ -23,7 +23,7 @@ pull_model()
 If you want to annotate textual data, you can use various prompting strategies. For an overview of common approaches, you can read a paper by [Weber and Reichardt (2023)](<https://arxiv.org/abs/2401.00284>). These strategies primarily differ in whether or how many examples are given (Zero-shot, One-shot, or Few-shot) and whether reasoning is involved (Chain-of-Thought).
 
 When writing a prompt we can give the model content for the system part, user part and assistant part. The system message typically includes instructions or context that guides the interaction, setting the stage for how the user and the assistant should interact.
-For an annotation task we could write: "You assign texts into categories. Answer with just the correct category."
+For an annotation task we could write: "You assign texts into categories. Answer with just the correct category." The table summarizes different prompting strategies for annotating textual data. Each strategy varies in the number of examples given and the incorporation of reasoning.
 
 | Prompting Strategy | Example Structure |
 |-----------|-------------------------------------------------|
@@ -35,6 +35,7 @@ For an annotation task we could write: "You assign texts into categories. Answer
 
 
 ## Zero-shot
+In this approach, no prior examples are given. The structure includes a system prompt providing instructions and a user prompt with the text to classify and the classification question (in this example we only provide the categories).
 
 
 ```r
@@ -46,10 +47,12 @@ q <- tibble::tribble(
 query(q)
 #> 
 #> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> 
 #> Category: Negative
 ```
 
 ## One-shot
+This involves giving a single example before the actual task. The structure includes a system prompt, followed by a user prompt with an example text and classification question, the assistant's example classification, and then another user prompt with the new text to classify.
 
 
 ```r
@@ -67,6 +70,7 @@ query(q)
 ```
 
 ## Few-shot
+This strategy includes multiple examples (more than one). The structure is similar to one-shot but with several iterations of user and assistant messages providing examples before the final text to classify.
 
 
 ```r
@@ -90,7 +94,7 @@ query(q)
 
 # As a function
 ## Function to create a query
-The create_query function is designed to facilitate the creation of a structured query for text classification.
+The `create_query` function is designed to facilitate the creation of a structured query for text classification.
 
 Components:
 
@@ -135,7 +139,7 @@ q_zs <- create_query(systemmsg, examples = list(), "the pizza tastes terrible", 
 query(q_zs)
 #> 
 #> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> Negative
+#> Category: Negative
 ```
 
 
@@ -180,13 +184,13 @@ q_fs <- create_query(systemmsg, examples_fs, "I once ate pizza", "Categories: po
 query(q_fs)
 #> 
 #> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> Category: Positive
+#> Category: Neutral
 ```
 
 # Another example using a dataframe
 This example demonstrates how to perform sentiment analysis on a set of movie reviews. The process involves creating a dataframe of reviews, processing each review to classify its sentiment, and appending the results as a new column in the dataframe.
 
-We create a dataframe named movie_reviews with two columns:
+We create a dataframe named `movie_reviews` with two columns:
 
 ```r
 # Create an example dataframe with 5 movie reviews
@@ -210,13 +214,13 @@ print(movie_reviews)
 #> 5         5 The movie lacked depth, but the special effects were incredible.
 ```
 
-## System message and classification question
 We define a system message and a classification question to guide the sentiment analysis:
 
 The function `process_reviews`
+
 - Iterates through each review.
 - Constructs a query using `create_query`.
-- Obtains sentiment classification (assumed by `query(q)` function).
+- Obtains sentiment classification (by `query(q)` function).
 - Stores the result in the `annotations` vector.
 - Appends `annotations` as a new column in the dataframe.
 
@@ -232,7 +236,7 @@ process_reviews <- function(reviews) {
 
   for (i in seq_along(reviews$review)) {
     q <- create_query(systemmsg, examples = list(), reviews$review[i], classification_question)
-    output <- query(q)  
+    output <- query(q)
     annotations[i] <- output$message$content
   }
   reviews$annotation <- annotations
@@ -243,18 +247,18 @@ process_reviews <- function(reviews) {
 annotated_reviews <- process_reviews(movie_reviews)
 #> 
 #> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> 
 #> Positive
 #> 
 #> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> 
-#> Category: Positive
+#> Sentiment: Positive
 #> 
 #> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> Negative
 #> 
 #> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> Positive
+#> 
+#> Category: Positive
 #> 
 #> ── Answer ─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> 
@@ -263,12 +267,12 @@ annotated_reviews <- process_reviews(movie_reviews)
 # Print the annotated dataframe
 print(annotated_reviews)
 #> # A tibble: 5 × 3
-#>   review_id review                                                           annotation            
-#>       <int> <chr>                                                            <chr>                 
-#> 1         1 A stunning visual spectacle with a gripping storyline.           "\nPositive"          
-#> 2         2 The plot was predictable, but the acting was superb.             "\nCategory: Positive"
-#> 3         3 An overrated film with underwhelming performances.               "Negative"            
-#> 4         4 A beautiful tale of love and adventure, beautifully shot.        "Positive"            
+#>   review_id review                                                           annotation             
+#>       <int> <chr>                                                            <chr>                  
+#> 1         1 A stunning visual spectacle with a gripping storyline.           "Positive"             
+#> 2         2 The plot was predictable, but the acting was superb.             "\nSentiment: Positive"
+#> 3         3 An overrated film with underwhelming performances.               "Negative"             
+#> 4         4 A beautiful tale of love and adventure, beautifully shot.        "\nCategory: Positive" 
 #> 5         5 The movie lacked depth, but the special effects were incredible. "\nCategory: Neutral"
 ```
 
