@@ -86,20 +86,22 @@
 <p>You can install the development version of <code>rollama</code> from <a href="https://github.com/" class="external-link">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
-<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"JBGruber/`rollama`"</span><span class="op">)</span></span></code></pre></div>
-<p>The easiest way to get Ollama itself up and running is through <a href="https://docs.docker.com/desktop/" class="external-link">Docker</a>. From the command line interface, you can start Ollama locally with one command:</p>
+<span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"JBGruber/rollama"</span><span class="op">)</span></span></code></pre></div>
+<p>The easiest way to get Ollama itself up and running is through <a href="https://docs.docker.com/desktop/" class="external-link">Docker</a>. From the command line interface, you can start Ollama locally with one command (add <code>sudo</code> if <code>permission denied</code>)::</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>docker run <span class="sc">-</span>d <span class="sc">-</span>v ollama<span class="sc">:</span><span class="er">/</span>root<span class="sc">/</span>.ollama <span class="sc">-</span>p <span class="dv">11434</span><span class="sc">:</span><span class="dv">11434</span> <span class="sc">--</span>name ollama ollama<span class="sc">/</span>ollama</span></code></pre></div>
+<p>After restarting, you can run Ollama again with the command (add <code>sudo</code> if <code>permission denied</code>):</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode R"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>docker start ollama</span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
 </h2>
 <p>The first thing you should do after installation is to pull one of the models from <a href="https://ollama.ai/library" class="external-link uri">https://ollama.ai/library</a>. By calling <code><a href="reference/pull_model.html">pull_model()</a></code> without arguments, you are pulling the (current) default model — “llama2 7b”:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jbgruber.github.io/rollama/">rollama</a></span><span class="op">)</span></span></code></pre></div>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jbgruber.github.io/rollama/">rollama</a></span><span class="op">)</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/pull_model.html">pull_model</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>There are two ways to communicate with the Ollama API. You can make single requests, which does not store any history and treats each query as the beginning of a new chat:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># ask a single question</span></span>
 <span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="st">"why is the sky blue?"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -130,7 +132,7 @@
 <span><span class="co">#&gt; travel through more atmosphere, or when there are heavy clouds or haze in the</span></span>
 <span><span class="co">#&gt; air. In these cases, the blue color may be less pronounced or even absent.</span></span></code></pre></div>
 <p>Or you can use the <code>chat</code> function, treats all messages sent during an R session as part of the same conversation:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># hold a conversation</span></span>
 <span><span class="fu"><a href="reference/query.html">chat</a></span><span class="op">(</span><span class="st">"why is the sky blue?"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -198,17 +200,17 @@
 <span><span class="co">#&gt; studies and experiments. The evidence from these studies confirms that Rayleigh</span></span>
 <span><span class="co">#&gt; scattering is the primary mechanism responsible for the blue color of the sky.</span></span></code></pre></div>
 <p>If you are done with a conversation and want to start a new one, you can do that like so:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/chat_history.html">new_chat</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a>
 </h2>
 <p>You can configure the server address, the system prompt and the model used for a query or chat. If not configured otherwise, <code>rollama</code> assumes you are using the default port (11434) of a local instance (<a href="http://localhost" class="external-link uri">http://localhost</a>). Let’s make this explicit by setting the option:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>rollama_server <span class="op">=</span> <span class="st">"http://localhost:11434"</span><span class="op">)</span></span></code></pre></div>
 <p>You can change how a model answers by setting a configuration or system message in plain English (or another language supported by the model):</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>rollama_config <span class="op">=</span> <span class="st">"You make answers understandable to a 5 year old"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="st">"why is the sky blue?"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -222,7 +224,7 @@
 <span><span class="co">#&gt; it's red during sunset, or yellow during sunrise. It's like magic! *smiles* So,</span></span>
 <span><span class="co">#&gt; that's why the sky is blue! Isn't that amazing? 😍</span></span></code></pre></div>
 <p>By default, the package uses the “llama2 7B” model. Supported models can be found at <a href="https://ollama.ai/library" class="external-link uri">https://ollama.ai/library</a>. To download a specific model make use of the additional information available in “Tags” <a href="https://ollama.ai/library/mistral/tags" class="external-link uri">https://ollama.ai/library/mistral/tags</a>. Change this via <code>rollama_model</code>:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>rollama_model <span class="op">=</span> <span class="st">"mixtral"</span><span class="op">)</span></span>
 <span><span class="co"># if you don't have the model yet: pull_model("mixtral")</span></span>
 <span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="st">"why is the sky blue?"</span><span class="op">)</span></span>
