@@ -22,14 +22,19 @@ You can install the development version of `rollama` from
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("JBGruber/`rollama`")
+remotes::install_github("JBGruber/rollama")
 ```
 
 The easiest way to get Ollama itself up and running is through
 [Docker](https://docs.docker.com/desktop/). From the command line
-interface, you can start Ollama locally with one command:
+interface, you can start Ollama locally with one command (add `sudo` if `permission denied`)::
 
     docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+
+After restarting, you can run Ollama again with the command  (add `sudo` if `permission denied`):
+
+    docker start ollama
+
 
 ## Example
 
