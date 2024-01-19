@@ -85,30 +85,37 @@
 
     
     
+<p>Ollama also supports multimodal models, which can interact with (but
+not create) images.</p>
+<p>We start by loading the library:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jbgruber.github.io/rollama/">rollama</a></span><span class="op">)</span></span></code></pre></div>
-<p>Ollama also supports multimodal models which can interact (albeit not
-create) images.</p>
+<p>After loading the library, we need to pull a model that can handle
+images. For example, the <a href="https://llava-vl.github.io/" class="external-link">llava</a>
+model. Using pull_model(“llama”) will download the model, or just load
+it if it has already been downloaded before.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="st">"Exitedly desscribe this logo"</span>, model <span class="op">=</span> <span class="st">"llava"</span>, </span>
-<span>      images <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png"</span>, </span>
-<span>      model_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">712</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; The logo is an animated animal, specifically a teddy</span></span>
-<span><span class="co">#&gt; bear or possibly a white rabbit. It's laying on</span></span>
-<span><span class="co">#&gt; grass, wearing a hat and has a happy expression with</span></span>
-<span><span class="co">#&gt; its mouth open in what appears to be a smiley face.</span></span>
-<span><span class="co">#&gt; This whimsical image creates a sense of fun and</span></span>
-<span><span class="co">#&gt; playfulness.</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/pull_model.html">pull_model</a></span><span class="op">(</span><span class="st">"llava"</span><span class="op">)</span></span></code></pre></div>
+<p>We can use textual and visual input together. For instance, we can
+ask a question and provide a link to a picture or even a local file
+path, such as images = “/home/user/Pictures/IMG_4561.jpg”.</p>
+<p>In the first example, we ask the model to describe the logo of this
+package:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="st">"Which animal is in this image: a llama, dog, or walrus?"</span>, </span>
-<span>      model <span class="op">=</span> <span class="st">"llava"</span>, </span>
-<span>      images <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png"</span>, </span>
-<span>      model_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>seed <span class="op">=</span> <span class="fl">712</span><span class="op">)</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="st">"Excitedly desscribe this logo"</span>, model <span class="op">=</span> <span class="st">"llava"</span>,</span>
+<span>      images <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ───────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; A llama is in the image.</span></span></code></pre></div>
+<span><span class="co">#&gt; ── Answer ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; This logo features a cute white bunny in blue sunglasses and hat, laying on top of grass. The bunny seems to be enjoying itself. Additionally, there is an animal laying</span></span>
+<span><span class="co">#&gt; down near the bottom of the image. The logo design combines elements of both cartoon characters and real animals.</span></span></code></pre></div>
+<p>The second example asks a question.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="st">"Which animal is in this image: a llama, dog, or walrus?"</span>,</span>
+<span>      model <span class="op">=</span> <span class="st">"llava"</span>,</span>
+<span>      images <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; 1. Llama, 2. Dog</span></span></code></pre></div>
   </main>
 </div>
 
