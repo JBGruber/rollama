@@ -43,7 +43,7 @@ build_req <- function(model, msg, server, images, model_params, template) {
   req_data <- list(model = model,
                    messages = msg,
                    stream = FALSE,
-                   model_params = model_params,
+                   options = model_params,
                    template = template) |>
     purrr::compact()
 
@@ -97,6 +97,9 @@ screen_answer <- function(x) {
 # the requirements for the data are a little weird as boxes can only show up in
 # very particular places in the json string.
 prep_req_data <- function(tbl) {
+  if (purrr::pluck_exists(tbl, "options")) {
+    tbl$options <- purrr::map(tbl$option, jsonlite::unbox)
+  }
   purrr::map(tbl, function(x) {
     if (!is.list(x)) {
       jsonlite::unbox(x)
