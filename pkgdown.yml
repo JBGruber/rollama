@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   annotation: annotation.html
   image-annotation: image-annotation.html
-last_built: 2024-01-19T16:30Z
+last_built: 2024-01-23T14:33Z
 urls:
   reference: https://jbgruber.github.io/rollama/reference
   article: https://jbgruber.github.io/rollama/articles
