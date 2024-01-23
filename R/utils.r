@@ -152,7 +152,8 @@ pgrs <- function(resp) {
             "at {str_prgs$speed}/s"
           ),
           format_done = paste0(
-            "{cli::col_green(cli::symbol$tick)} Downloaded {str_prgs$f}."
+            "{cli::col_green(cli::symbol$tick)} Downloaded {str_prgs$f}",
+            "{cli::col_grey('[{cli::pb_elapsed}]')}"
           ),
           .envir = the
         )
