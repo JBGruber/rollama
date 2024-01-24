@@ -150,13 +150,12 @@ pgrs <- function(resp) {
           name = the$str_prgs$f,
           type = "download",
           format = paste0(
-            "{cli::pb_spin} Downloading {str_prgs$f} ",
+            "{cli::pb_spin} downloading {str_prgs$f} ",
             "({str_prgs$done_pct} of {prettyunits::pretty_bytes(str_prgs$total)}) ",
             "at {str_prgs$speed}/s"
           ),
           format_done = paste0(
-            "{cli::col_green(cli::symbol$tick)} Downloaded {str_prgs$f}",
-            "{cli::col_grey('[{cli::pb_elapsed}]')}"
+            "{cli::col_green(cli::symbol$tick)} downloaded {str_prgs$f}"
           ),
           .envir = the
         )

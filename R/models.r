@@ -40,6 +40,7 @@ pull_model <- function(model = NULL, server = NULL, insecure = FALSE) {
     httr2::req_perform_stream(callback = pgrs, buffer_kb = 0.1)
 
   cli::cli_process_done(.envir = the)
+  cli::cli_alert_success("model {model} pulled succesfully")
   the$str_prgs <- NULL
 
   invisible(show_model(model))
@@ -111,9 +112,7 @@ create_model <- function(model, modelfile, server = NULL) {
   the$str_prgs <- NULL
 
   model_info <- show_model(model) # move here to test if model was created
-  cli::cli_progress_message(
-    "{cli::col_green(cli::symbol$tick)} model {model} created"
-  )
+  cli::cli_alert_success("model {model} created")
   invisible(model_info)
 }
 
@@ -132,9 +131,7 @@ delete_model <- function(model, server = NULL) {
     httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
     httr2::req_perform()
 
-  cli::cli_progress_message(
-    "{cli::col_green(cli::symbol$tick)} model {model} removed"
-  )
+  cli::cli_alert_success("model {model} removed")
 }
 
 
@@ -154,9 +151,7 @@ copy_model <- function(model,
     httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
     httr2::req_perform()
 
-  cli::cli_progress_message(
-    "{cli::col_green(cli::symbol$tick)} model {model} copied to {destination}"
-  )
+  cli::cli_alert_success("model {model} copied to {destination}")
 }
 
 
