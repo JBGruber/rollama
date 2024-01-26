@@ -77,6 +77,8 @@
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
       <img src="../logo.svg" class="logo" alt=""><h1>image-annotation</h1>
+                        <h4 data-toc-skip class="author">Maximilian
+Weber</h4>
             
       
       <small class="dont-index">Source: <a href="https://github.com/JBGruber/rollama/blob/HEAD/vignettes/image-annotation.Rmd" class="external-link"><code>vignettes/image-annotation.Rmd</code></a></small>
@@ -87,35 +89,41 @@
     
 <p>Ollama also supports multimodal models, which can interact with (but
 not create) images.</p>
-<p>We start by loading the library:</p>
+<p>We start by loading the package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://jbgruber.github.io/rollama/">rollama</a></span><span class="op">)</span></span></code></pre></div>
-<p>After loading the library, we need to pull a model that can handle
+<p>After loading the package, we need to pull a model that can handle
 images. For example, the <a href="https://llava-vl.github.io/" class="external-link">llava</a>
-model. Using pull_model(“llama”) will download the model, or just load
-it if it has already been downloaded before.</p>
+model. Using <code>pull_model("llava")</code> will download the model,
+or just load it if it has already been downloaded before.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/pull_model.html">pull_model</a></span><span class="op">(</span><span class="st">"llava"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/pull_model.html">pull_model</a></span><span class="op">(</span><span class="st">"llava"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ✔ model llava pulled succesfully</span></span></code></pre></div>
 <p>We can use textual and visual input together. For instance, we can
-ask a question and provide a link to a picture or even a local file
-path, such as images = “/home/user/Pictures/IMG_4561.jpg”.</p>
+ask a question and provide a link to a picture or a local file path,
+such as <code>images = "/home/user/Pictures/IMG_4561.jpg"</code>.</p>
 <p>In the first example, we ask the model to describe the logo of this
 package:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="st">"Excitedly desscribe this logo"</span>, model <span class="op">=</span> <span class="st">"llava"</span>,</span>
 <span>      images <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; This logo features a cute white bunny in blue sunglasses and hat, laying on top of grass. The bunny seems to be enjoying itself. Additionally, there is an animal laying</span></span>
-<span><span class="co">#&gt; down near the bottom of the image. The logo design combines elements of both cartoon characters and real animals.</span></span></code></pre></div>
-<p>The second example asks a question.</p>
+<span><span class="co">#&gt; ── Answer ────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; The logo features an anthropomorphic teddy bear lying down in a</span></span>
+<span><span class="co">#&gt; grassy field, wearing a blue hat. It appears to be an animal</span></span>
+<span><span class="co">#&gt; character with a playful and comforting vibe.</span></span>
+<span><span class="co">#&gt; The background consists of a green hue with some patches of blue,</span></span>
+<span><span class="co">#&gt; which give the scene a lush, natural ambiance. This unique design</span></span>
+<span><span class="co">#&gt; effectively conveys a sense of relaxation and fun associated with</span></span>
+<span><span class="co">#&gt; the brand.</span></span></code></pre></div>
+<p>The second example asks a classification question:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="st">"Which animal is in this image: a llama, dog, or walrus?"</span>,</span>
 <span>      model <span class="op">=</span> <span class="st">"llava"</span>,</span>
 <span>      images <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; 1. Llama, 2. Dog</span></span></code></pre></div>
+<span><span class="co">#&gt; ── Answer ────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; Llama</span></span></code></pre></div>
   </main>
 </div>
 
