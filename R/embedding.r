@@ -1,6 +1,10 @@
 #' Generate Embeddings
 #'
 #' @param text text vector to generate embeddings for.
+#' @param verbose Whether to print status messages to the Console
+#'   (\code{TRUE}/\code{FALSE}). The default is to have status messages in
+#'   interactive sessions. Can be changed with \code{options(rollama_verbose =
+#'   FALSE)}.
 #' @inheritParams query
 #'
 #' @return a tibble with embeddings.

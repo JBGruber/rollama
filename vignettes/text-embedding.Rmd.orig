@@ -11,6 +11,7 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   message = FALSE,
+  fig.path = "figures/",
   comment = "#>"
 )
 options(tidyverse.quiet = TRUE)
@@ -34,7 +35,7 @@ glimpse(reviews_df)
 ```
 
 Now this is a rather big dataset, and I don't want to stress my GPU too much, so I only select the first 250 reviews for embedding.
-I also process the data slightly by combineing the title and review text into a single column and turning the rating into a binary variable:
+I also process the data slightly by combining the title and review text into a single column and turning the rating into a binary variable:
 
 ```{r processing}
 reviews <- reviews_df |>

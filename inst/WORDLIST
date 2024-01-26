@@ -1,6 +1,7 @@
 CMD
 ChatGPT
 Embeddings
+Hvitfeldt
 JSON
 LLM
 LLMs
@@ -20,3 +21,4 @@ modelfile
 modelname
 orca
 tibble
+unnesting

@@ -24,6 +24,11 @@ default for the current session. See \link{pull_model} for more details.}
 
 \item{model_params}{a named list of additional model parameters listed in the
 documentation for the Modelfile such as temperature.}
+
+\item{verbose}{Whether to print status messages to the Console
+(\code{TRUE}/\code{FALSE}). The default is to have status messages in
+interactive sessions. Can be changed with \code{options(rollama_verbose =
+  FALSE)}.}
 }
 \value{
 a tibble with embeddings.
