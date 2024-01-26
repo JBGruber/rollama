@@ -106,20 +106,20 @@ multiple tasks.</p>
 <span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">reviews_df</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 23,486</span></span>
 <span><span class="co">#&gt; Columns: 11</span></span>
-<span><span class="co">#&gt; $ ...1                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1…</span></span>
-<span><span class="co">#&gt; $ `Clothing ID`             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 767, 1080, 1077, 1049, 847, 108…</span></span>
-<span><span class="co">#&gt; $ Age                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 33, 34, 60, 50, 47, 49, 39, 39,…</span></span>
-<span><span class="co">#&gt; $ Title                     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, "Some major design flaw…</span></span>
-<span><span class="co">#&gt; $ `Review Text`             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Absolutely wonderful - silky a…</span></span>
-<span><span class="co">#&gt; $ Rating                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4, 5, 3, 5, 5, 2, 5, 4, 5, 5, 3…</span></span>
-<span><span class="co">#&gt; $ `Recommended IND`         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0…</span></span>
-<span><span class="co">#&gt; $ `Positive Feedback Count` <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 4, 0, 0, 6, 4, 1, 4, 0, 0, 1…</span></span>
-<span><span class="co">#&gt; $ `Division Name`           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Initmates", "General", "Genera…</span></span>
-<span><span class="co">#&gt; $ `Department Name`         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Intimate", "Dresses", "Dresses…</span></span>
-<span><span class="co">#&gt; $ `Class Name`              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Intimates", "Dresses", "Dresse…</span></span></code></pre></div>
+<span><span class="co">#&gt; $ ...1                      [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1…</span></span>
+<span><span class="co">#&gt; $ `Clothing ID`             [3m[38;5;246m&lt;dbl&gt;[39m[23m 767, 1080, 1077, 1049, 847, 108…</span></span>
+<span><span class="co">#&gt; $ Age                       [3m[38;5;246m&lt;dbl&gt;[39m[23m 33, 34, 60, 50, 47, 49, 39, 39,…</span></span>
+<span><span class="co">#&gt; $ Title                     [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, "Some major design flaw…</span></span>
+<span><span class="co">#&gt; $ `Review Text`             [3m[38;5;246m&lt;chr&gt;[39m[23m "Absolutely wonderful - silky a…</span></span>
+<span><span class="co">#&gt; $ Rating                    [3m[38;5;246m&lt;dbl&gt;[39m[23m 4, 5, 3, 5, 5, 2, 5, 4, 5, 5, 3…</span></span>
+<span><span class="co">#&gt; $ `Recommended IND`         [3m[38;5;246m&lt;dbl&gt;[39m[23m 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0…</span></span>
+<span><span class="co">#&gt; $ `Positive Feedback Count` [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 4, 0, 0, 6, 4, 1, 4, 0, 0, 1…</span></span>
+<span><span class="co">#&gt; $ `Division Name`           [3m[38;5;246m&lt;chr&gt;[39m[23m "Initmates", "General", "Genera…</span></span>
+<span><span class="co">#&gt; $ `Department Name`         [3m[38;5;246m&lt;chr&gt;[39m[23m "Intimate", "Dresses", "Dresses…</span></span>
+<span><span class="co">#&gt; $ `Class Name`              [3m[38;5;246m&lt;chr&gt;[39m[23m "Intimates", "Dresses", "Dresse…</span></span></code></pre></div>
 <p>Now this is a rather big dataset, and I don’t want to stress my GPU
 too much, so I only select the first 250 reviews for embedding. I also
-process the data slightly by combineing the title and review text into a
+process the data slightly by combining the title and review text into a
 single column and turning the rating into a binary variable:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reviews</span> <span class="op">&lt;-</span> <span class="va">reviews_df</span> <span class="op">|&gt;</span></span>
@@ -244,7 +244,7 @@ packages:</p>
 <span>  <span class="fu">roc_curve</span><span class="op">(</span><span class="va">rating</span>, <span class="va">.pred_5</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
 <span>  <span class="fu">autoplot</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="figure">
-<img src="figure/smldemo.png" alt=""><p class="caption">ROC curve</p>
+<img src="figures/smldemo.png" alt=""><p class="caption">ROC curve</p>
 </div>
   </main>
 </div>
