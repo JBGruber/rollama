@@ -4,7 +4,13 @@
 \alias{embed_text}
 \title{Generate Embeddings}
 \usage{
-embed_text(text, model = NULL, server = NULL, model_params = NULL)
+embed_text(
+  text,
+  model = NULL,
+  server = NULL,
+  model_params = NULL,
+  verbose = getOption("rollama_verbose", default = interactive())
+)
 }
 \arguments{
 \item{text}{text vector to generate embeddings for.}
