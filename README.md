@@ -13,7 +13,7 @@ The goal of `rollama` is to wrap the Ollama API, which allows you to run
 different LLMs locally and create an experience similar to
 ChatGPT/OpenAI’s API. Ollama is very easy to deploy and handles a huge
 number of models. Checkout the project here:
-<https://github.com/jmorganca/ollama>.
+<https://github.com/ollama/ollama>.
 
 ## Installation
 
@@ -170,7 +170,7 @@ new_chat()
 You can configure the server address, the system prompt and the model
 used for a query or chat. If not configured otherwise, `rollama` assumes
 you are using the default port (11434) of a local instance
-(<http://localhost>). Let’s make this explicit by setting the option:
+("http://localhost""). Let’s make this explicit by setting the option:
 
 ``` r
 options(rollama_server = "http://localhost:11434")

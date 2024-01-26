@@ -26,7 +26,7 @@ Custom models are the way to save your system message and model
 parameters in a dedicated shareable way. If you use \code{show_model()}, you can
 look at the configuration of a model in the column modelfile. To get more
 information and a list of valid parameters, check out
-\url{https://github.com/jmorganca/ollama/blob/main/docs/modelfile.md}. Most
+\url{https://github.com/ollama/ollama/blob/main/docs/modelfile.md}. Most
 options are also available through the \code{query} and \code{chat} functions, yet
 are not persistent over sessions.
 }

@@ -95,7 +95,7 @@ query <- function(q,
   if (!is.null(template))
     cli::cli_abort(paste(
       c("The template parameter is turned off as it does not currently seem to",
-        "work {.url https://github.com/jmorganca/ollama/issues/1839}")
+        "work {.url https://github.com/ollama/ollama/issues/1839}")
     ))
 
   if (!is.list(q)) {
