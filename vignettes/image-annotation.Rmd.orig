@@ -1,6 +1,7 @@
 ---
 title: "image-annotation"
 output: rmarkdown::html_vignette
+author: Maximilian Weber
 vignette: >
   %\VignetteIndexEntry{image-annotatio}
   %\VignetteEngine{knitr::rmarkdown}
@@ -14,20 +15,26 @@ knitr::opts_chunk$set(
 )
 options("rollama_verbose" = FALSE)
 ```
+
 Ollama also supports multimodal models, which can interact with (but not create) images.
 
-We start by loading the library:
+We start by loading the package:
 
 ```{r setup}
 library(rollama)
 ```
 
-After loading the library, we need to pull a model that can handle images. For example, the [llava](https://llava-vl.github.io/) model. Using pull_model("llama") will download the model, or just load it if it has already been downloaded before.
+After loading the package, we need to pull a model that can handle images.
+For example, the [llava](https://llava-vl.github.io/) model.
+Using `pull_model("llava")` will download the model, or just load it if it has already been downloaded before.
+
 
 ```{r}
 pull_model("llava")
 ```
-We can use textual and visual input together. For instance, we can ask a question and provide a link to a picture or even a local file path, such as images = "/home/user/Pictures/IMG_4561.jpg".
+
+We can use textual and visual input together.
+For instance, we can ask a question and provide a link to a picture or a local file path, such as `images = "/home/user/Pictures/IMG_4561.jpg"`.
 
 In the first example, we ask the model to describe the logo of this package:
 
@@ -35,15 +42,12 @@ In the first example, we ask the model to describe the logo of this package:
 query("Excitedly desscribe this logo", model = "llava",
       images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
 ```
-The second example asks a question.
+
+The second example asks a classification question:
 
 ```{r}
 query("Which animal is in this image: a llama, dog, or walrus?",
       model = "llava",
       images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
 ```
-
-
-
-
 

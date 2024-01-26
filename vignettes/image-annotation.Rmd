@@ -1,6 +1,7 @@
 ---
 title: "image-annotation"
 output: rmarkdown::html_vignette
+author: Maximilian Weber
 vignette: >
   %\VignetteIndexEntry{image-annotatio}
   %\VignetteEngine{knitr::rmarkdown}
@@ -8,22 +9,29 @@ vignette: >
 ---
 
 
+
 Ollama also supports multimodal models, which can interact with (but not create) images.
 
-We start by loading the library:
+We start by loading the package:
 
 
 ```r
 library(rollama)
 ```
 
-After loading the library, we need to pull a model that can handle images. For example, the [llava](https://llava-vl.github.io/) model. Using pull_model("llama") will download the model, or just load it if it has already been downloaded before.
+After loading the package, we need to pull a model that can handle images.
+For example, the [llava](https://llava-vl.github.io/) model.
+Using `pull_model("llava")` will download the model, or just load it if it has already been downloaded before.
+
 
 
 ```r
 pull_model("llava")
+#> ✔ model llava pulled succesfully
 ```
-We can use textual and visual input together. For instance, we can ask a question and provide a link to a picture or even a local file path, such as images = "/home/user/Pictures/IMG_4561.jpg".
+
+We can use textual and visual input together.
+For instance, we can ask a question and provide a link to a picture or a local file path, such as `images = "/home/user/Pictures/IMG_4561.jpg"`.
 
 In the first example, we ask the model to describe the logo of this package:
 
@@ -32,11 +40,17 @@ In the first example, we ask the model to describe the logo of this package:
 query("Excitedly desscribe this logo", model = "llava",
       images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
 #> 
-#> ── Answer ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> This logo features a cute white bunny in blue sunglasses and hat, laying on top of grass. The bunny seems to be enjoying itself. Additionally, there is an animal laying
-#> down near the bottom of the image. The logo design combines elements of both cartoon characters and real animals.
+#> ── Answer ────────────────────────────────────────────────────────
+#> The logo features an anthropomorphic teddy bear lying down in a
+#> grassy field, wearing a blue hat. It appears to be an animal
+#> character with a playful and comforting vibe.
+#> The background consists of a green hue with some patches of blue,
+#> which give the scene a lush, natural ambiance. This unique design
+#> effectively conveys a sense of relaxation and fun associated with
+#> the brand.
 ```
-The second example asks a question.
+
+The second example asks a classification question:
 
 
 ```r
@@ -44,11 +58,7 @@ query("Which animal is in this image: a llama, dog, or walrus?",
       model = "llava",
       images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
 #> 
-#> ── Answer ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> 1. Llama, 2. Dog
+#> ── Answer ────────────────────────────────────────────────────────
+#> Llama
 ```
-
-
-
-
 
