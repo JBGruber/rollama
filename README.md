@@ -4,7 +4,11 @@
 # `rollama` <img src="man/figures/logo.png" align="right" height="138" alt="rollama-logo" />
 
 <!-- badges: start -->
-[![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+
+[![Lifecycle:
+experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
+[![CRAN
+status](https://www.r-pkg.org/badges/version/rollama)](https://CRAN.R-project.org/package=rollama)
 [![R-CMD-check](https://github.com/JBGruber/rollama/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JBGruber/rollama/actions/workflows/R-CMD-check.yaml)
 [![say-thanks](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/JBGruber)
 <!-- badges: end -->
@@ -17,8 +21,14 @@ number of models. Checkout the project here:
 
 ## Installation
 
-You can install the development version of `rollama` from
-[GitHub](https://github.com/) with:
+You can install this package from CRAN:
+
+``` r
+install.packages("rollama")
+```
+
+Or you can install the development version of `rollama` from
+[GitHub](https://github.com/JBGruber/rollama) with:
 
 ``` r
 # install.packages("remotes")
@@ -27,14 +37,27 @@ remotes::install_github("JBGruber/rollama")
 
 The easiest way to get Ollama itself up and running is through
 [Docker](https://docs.docker.com/desktop/). From the command line
-interface, you can start Ollama locally with one command (add `sudo` if `permission denied`)::
+interface, you can start Ollama locally with one command (add `sudo` if
+`permission denied`):
 
-    docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+``` sh
+docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+```
 
-After restarting, you can run Ollama again with the command  (add `sudo` if `permission denied`):
+After restarting, you can run Ollama again with the command (add `sudo`
+if `permission denied`):
 
-    docker start ollama
+``` sh
+docker start ollama
+```
 
+Alternatively, you can use the Docker Compose file from [this
+gist](https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc):
+
+``` sh
+wget https://gist.githubusercontent.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc/raw/ddf7bd411a6595d0bd770f99de62f2ac8864f6dc/docker-compose.yml
+docker-compose up -d
+```
 
 ## Example
 

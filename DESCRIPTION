@@ -1,6 +1,6 @@
 Package: rollama
-Title: Communicate with Ollama
-Version: 0.0.0.9000
+Title: Communicate with 'Ollama'
+Version: 0.0.2
 Authors@R: 
     c(person(given = "Johannes B.",
            family = "Gruber",
@@ -11,7 +11,8 @@ Authors@R:
            family = "Weber",
            role = c("aut", "ctb"),
            comment = c(ORCID = "0000-0002-1174-449X")))
-Description: Wraps the Ollama API, which can be used to communicate with LLMs locally.
+Description: Wraps the 'Ollama' <https://ollama.ai> API, which can be used to 
+    communicate with generative large language models locally.
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)

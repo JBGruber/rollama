@@ -10,3 +10,4 @@
 ^pkgdown$
 ^update.r
 ^cran-comments\.md$
+^CRAN-SUBMISSION$
