@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">rollama</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.2</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.2.9000</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -209,7 +209,7 @@ parse, you could change the assistant message to
 <span>  <span class="st">"assistant"</span>, <span class="st">"{'Category':'Negative','Confidence':'100%','Important':'terrible'}"</span>,</span>
 <span>  <span class="st">"user"</span>, <span class="st">"text: the service is great\ncategories: positive, neutral, negative"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="va">answer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span>, model_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>num_gpu <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">answer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer ────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; {'Category':'Positive','Confidence':'100%','Important':'great'}</span></span></code></pre></div>
