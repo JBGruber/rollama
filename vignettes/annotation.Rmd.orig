@@ -91,7 +91,7 @@ q <- tribble(
   "assistant", "{'Category':'Negative','Confidence':'100%','Important':'terrible'}",
   "user", "text: the service is great\ncategories: positive, neutral, negative"
 )
-answer <- query(q, model_params = list(num_gpu = 0))
+answer <- query(q)
 ```
 
 This is a valid JSON return and can be parsed into a list with, e.g., `jsonlite::fromJSON()`.

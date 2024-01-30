@@ -1,6 +1,6 @@
 Package: rollama
 Title: Communicate with 'Ollama'
-Version: 0.0.2
+Version: 0.0.2.9000
 Authors@R: 
     c(person(given = "Johannes B.",
            family = "Gruber",
