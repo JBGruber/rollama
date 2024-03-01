@@ -11,3 +11,5 @@ progress.r
 docs
 pkgdown
 docker-compose.yml
+paper/paper.jats
+paper/paper.pdf
