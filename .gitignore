@@ -10,3 +10,5 @@ inst/doc
 progress.r
 docs
 pkgdown
+paper/paper.jats
+paper/paper.pdf
