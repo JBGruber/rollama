@@ -97,12 +97,12 @@
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"JBGruber/rollama"</span><span class="op">)</span></span></code></pre></div>
 <p>The easiest way to get Ollama itself up and running is through <a href="https://docs.docker.com/desktop/" class="external-link">Docker</a>. From the command line interface, you can start Ollama locally with one command (add <code>sudo</code> if <code>permission denied</code>):</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">-v</span> ollama:/root/.ollama <span class="at">-p</span> 11434:11434 <span class="at">--name</span> ollama ollama/ollama</span></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="ex">docker</span> run <span class="at">-d</span> <span class="at">-v</span> ollama:/root/.ollama <span class="at">-p</span> 11434:11434 <span class="at">--name</span> ollama ollama/ollama</span></code></pre></div>
 <p>After restarting, you can run Ollama again with the command (add <code>sudo</code> if <code>permission denied</code>):</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">docker</span> start ollama</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="ex">docker</span> start ollama</span></code></pre></div>
 <p>Alternatively, you can use the Docker Compose file from <a href="https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc" class="external-link">this gist</a>:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> https://gist.githubusercontent.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc/raw/ddf7bd411a6595d0bd770f99de62f2ac8864f6dc/docker-compose.yml</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">docker-compose</span> up <span class="at">-d</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">wget</span> https://gist.githubusercontent.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc/raw/ddf7bd411a6595d0bd770f99de62f2ac8864f6dc/docker-compose.yml</span>
+<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="ex">docker-compose</span> up <span class="at">-d</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>

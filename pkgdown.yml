@@ -1,11 +1,11 @@
-pandoc: 2.19.2
+pandoc: 3.1.11
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   annotation: annotation.html
   image-annotation: image-annotation.html
   text-embedding: text-embedding.html
-last_built: 2024-01-30T11:47Z
+last_built: 2024-03-08T16:53Z
 urls:
   reference: https://jbgruber.github.io/rollama/reference
   article: https://jbgruber.github.io/rollama/articles
