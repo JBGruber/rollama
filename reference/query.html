@@ -87,9 +87,10 @@
 
 
 <dt>model</dt>
-<dd><p>which model to use. See <a href="https://ollama.ai/library" class="external-link">https://ollama.ai/library</a> for options.
-Default is "llama2". Set option(rollama_model = "modelname") to change
-default for the current session. See <a href="pull_model.html">pull_model</a> for more details.</p></dd>
+<dd><p>which model(s) to use. See <a href="https://ollama.ai/library" class="external-link">https://ollama.ai/library</a> for
+options. Default is "llama2". Set option(rollama_model = "modelname") to
+change default for the current session. See <a href="pull_model.html">pull_model</a> for more
+details.</p></dd>
 
 
 <dt>screen</dt>
@@ -119,7 +120,7 @@ Modelfile).</p></dd>
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
     
 
-<p>an httr2 response</p>
+<p>an httr2 response.</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -137,6 +138,10 @@ messages as part of the same conversation until <a href="chat_history.html">new_
 <span class="r-in"><span><span class="co"># hold a conversation</span></span></span>
 <span class="r-in"><span><span class="fu">chat</span><span class="op">(</span><span class="st">"why is the sky blue?"</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">chat</span><span class="op">(</span><span class="st">"and how do you know that?"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># save the response to an object and extract the answer</span></span></span>
+<span class="r-in"><span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu">query</span><span class="op">(</span>q <span class="op">=</span> <span class="st">"why is the sky blue?"</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">answer</span> <span class="op">&lt;-</span> <span class="va">resp</span><span class="op">$</span><span class="va">message</span><span class="op">$</span><span class="va">content</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># ask question about images (to a multimodal model)</span></span></span>
 <span class="r-in"><span><span class="va">images</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://avatars.githubusercontent.com/u/23524101?v=4"</span>, <span class="co"># remote</span></span></span>
@@ -191,6 +196,9 @@ messages as part of the same conversation until <a href="chat_history.html">new_
 <span class="r-in"><span><span class="co"># You can use a custom prompt to override what prompt the model receives</span></span></span>
 <span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="st">"why is the sky blue?"</span>,</span></span>
 <span class="r-in"><span>      template <span class="op">=</span> <span class="st">"Just say I'm a llama!"</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Asking the same question to multiple models is also supported</span></span></span>
+<span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="st">"why is the sky blue?"</span>, model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"llama2"</span>, <span class="st">"orca-mini"</span><span class="op">)</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
