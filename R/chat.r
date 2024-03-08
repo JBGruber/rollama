@@ -127,7 +127,14 @@ query <- function(q,
                     model_params = model_params,
                     template = template)
 
-  if (screen) screen_answer(purrr::pluck(resp, "message", "content"))
+  purrr::map(resp, "message", "content")
+
+  if (screen) purrr::map(resp, function(r) {
+    screen_answer(purrr::pluck(r, "message", "content"),
+                  purrr::pluck(r, "model"))
+
+  })
+  if (length(resp) == 1L) resp <- unlist(resp, recursive = FALSE)
   invisible(resp)
 }
 
