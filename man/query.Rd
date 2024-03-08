@@ -28,9 +28,10 @@ chat(
 \arguments{
 \item{q}{the question as a character string or a conversation object.}
 
-\item{model}{which model to use. See \url{https://ollama.ai/library} for options.
-Default is "llama2". Set option(rollama_model = "modelname") to change
-default for the current session. See \link{pull_model} for more details.}
+\item{model}{which model(s) to use. See \url{https://ollama.ai/library} for
+options. Default is "llama2". Set option(rollama_model = "modelname") to
+change default for the current session. See \link{pull_model} for more
+details.}
 
 \item{screen}{Logical. Should the answer be printed to the screen.}
 
@@ -46,7 +47,7 @@ documentation for the Modelfile such as temperature.}
 Modelfile).}
 }
 \value{
-an httr2 response
+an httr2 response.
 }
 \description{
 Chat with a LLM through Ollama
@@ -64,6 +65,10 @@ query("why is the sky blue?")
 # hold a conversation
 chat("why is the sky blue?")
 chat("and how do you know that?")
+
+# save the response to an object and extract the answer
+resp <- query(q = "why is the sky blue?")
+answer <- resp$message$content
 
 # ask question about images (to a multimodal model)
 images <- c("https://avatars.githubusercontent.com/u/23524101?v=4", # remote
@@ -118,5 +123,8 @@ query("why is the sky blue?",
 # You can use a custom prompt to override what prompt the model receives
 query("why is the sky blue?",
       template = "Just say I'm a llama!")
+
+# Asking the same question to multiple models is also supported
+query("why is the sky blue?", model = c("llama2", "orca-mini"))
 }
 }
