@@ -17,22 +17,24 @@ authors:
 affiliations:
  - name: University of Amsterdam
    index: 1
- - name: Johannes Gutenberg University Mainz
+ - name: Goethe University Frankfurt
    index: 2
-date: 09 March 2024
+date: 11 March 2024
 bibliography: paper.bib
 ---
 
 # Summary
+`rollama` is an R package that wraps the Ollama API, which allows you to run different Generative Large Language Models (GLLM)[^1] locally. The package makes it easy to use Ollama for annotating textual or imagine data with open-source models.
 
 # Statement of need
 
-As researchers embrace the next revolution in computational social science, the arrival of generative large language models (gLLM)[^1], we need open source alternatives to not fall into an reproducibility trap or make ourselves and our research projects too dependent on services offered by for-profit companies.
+As researchers embrace the next revolution in computational social science, the arrival of GLLM, there is a critical need for open-source alternatives. This need arises to avoid falling into a reproducibility trap or becoming overly dependent on services offered by for-profit companies.
 
-- people started using OpenAI's API to GPT models to annotate text [e.g., @GilardiChatGPT2023; @He_Lin_et_al._2023]
-- However, this comes with several shortcomings [@Spirling_2023; @weber2023evaluation]
+After the release of ChatGPT, researchers began utilizing OpenAI's API to annotate textual data with the aid of GPT models  [e.g., @GilardiChatGPT2023; @He_Lin_et_al._2023]. However, this approach presents several shortcomings, including privacy and replication issues associated with relying on proprietary models [@Spirling_2023; @weber2023evaluation].
 
-Luckily, since gLLMs were popularized by OpenAI's ChatGPT a little more than a year ago, a large and active alliance of open source communities and tech companies have made considerable efforts to provide open models that rival or sometimes surpass proprietary ones.
+Fortunately, since GLLMs were popularized by OpenAI's ChatGPT a little more than a year ago, a large and active alliance of open-source communities and technology companies has made considerable efforts to provide open models that rival, and sometimes surpass, proprietary ones.
+
+One method of utilizing open models involves downloading them from a platform known as Hugging Face and setting them up. However, there is now software available that facilitates access to these models in an environment, allowing users to simply specify the model or models they wish to use. This can be done locally on one's computer, and the software is called Ollama.
 
 [^1]: Also referred to generative AI or Generative Pre-trained Transformer (GPT).
 
@@ -40,7 +42,7 @@ Luckily, since gLLMs were popularized by OpenAI's ChatGPT a little more than a y
 
 The easiest way to install Ollama is to use their bash install script.
 However, we prefer to run Ollama through Docker, as this provides additional security, makes Ollama available on Windows[^2], and makes it straightforward to update, roll back, and remove Ollama complelty.
-We provide a Docker Compose file to start a container running Ollama and one running Open WebUI -- a browser interface stronmgly inspired by ChatGPT -- in a GitHub Gist[^3].
+We provide a Docker compose file to start a container running Ollama and one running Open WebUI -- a browser interface strongly inspired by ChatGPT -- in a GitHub Gist[^3].
 
 [^2]: At the time of writing a Windows version of Ollama is not available.
 [^3]: <https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc>
