@@ -19,7 +19,7 @@ affiliations:
    index: 1
  - name: Goethe University Frankfurt
    index: 2
-date: 11 March 2024
+date: 13 March 2024
 bibliography: paper.bib
 ---
 
@@ -40,19 +40,13 @@ One method of utilizing open models involves downloading them from a platform kn
 
 # Background: Ollama
 
-The easiest way to install Ollama is to use their bash install script.
-However, we prefer to run Ollama through Docker, as this provides additional security, makes Ollama available on Windows[^2], and makes it straightforward to update, roll back, and remove Ollama complelty.
-We provide a Docker compose file to start a container running Ollama and one running Open WebUI -- a browser interface strongly inspired by ChatGPT -- in a GitHub Gist[^3].
+Ollama can be installed using dedicated installers for macOS and Windows, or through a bash installation script for Linux[^2]. However, our preferred method is to utilize Docker. This approach enhances security and simplifies the processes of updating, rolling back, and completely removing Ollama. For convenience, we provide a Docker compose file to start a container running Ollama and one running Open WebUI -- a browser interface strongly inspired by ChatGPT -- in a GitHub Gist[^3].
 
-[^2]: At the time of writing a Windows version of Ollama is not available.
+[^2]: <https://ollama.com/download>
 [^3]: <https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc>
 
-# Flexible implementation through `httr2`
-
-
 # Usage
-
-The package can be installed from CRAN (the Comprehensive R Archive Network):
+After Ollama is installed, the R-package `rollama`  can be installed from CRAN (the Comprehensive R Archive Network):
 
 ```r
 install.packages("rollama")
@@ -71,12 +65,13 @@ After that, the user should check whether the Ollama API is up and running.
 ping_ollama()
 ```
 
+# Main functions
 The core of the package are two functions: `query()` and `chat()`.
 The difference is that `chat()` saves the history of the conversation with an Ollama model, while `query()` treats every question as a new conversation.
 
 # Learning material
 
-We provide tutorials for the package at [jbgruber.github.io/rollama](https://jbgruber.github.io/rollama/) and an inital overview is available as a YouTube video[^4].
+We provide tutorials for the package at [jbgruber.github.io/rollama](https://jbgruber.github.io/rollama/) and an initial overview is available as a YouTube video[^4].
 
 [^4]: <https://youtu.be/N-k3RZqiSZY>
 
