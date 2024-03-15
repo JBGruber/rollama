@@ -24,7 +24,8 @@ bibliography: paper.bib
 ---
 
 # Summary
-`rollama` is an R package that wraps the Ollama API, which allows you to run different Generative Large Language Models (GLLM)[^1] locally. The package makes it easy to use Ollama for annotating textual or imagine data with open-source models.
+`rollama` is an R package that wraps the Ollama API, which allows you to run different Generative Large Language Models (GLLM)[^1] locally. The package and learning material focus on making it easy to use Ollama for annotating textual or imagine data with open-source models. But users can use or extend it to do essentially anything else that is possible through OpenAI's API, yet more private, reproducible and for free.
+
 
 # Statement of need
 
@@ -65,9 +66,27 @@ After that, the user should check whether the Ollama API is up and running.
 ping_ollama()
 ```
 
+The first thing you should do after installation is to pull one of the models from https://ollama.ai/library. By calling pull_model() without arguments, you are pulling the (current) default model.
+
 # Main functions
 The core of the package are two functions: `query()` and `chat()`.
 The difference is that `chat()` saves the history of the conversation with an Ollama model, while `query()` treats every question as a new conversation.
+
+So to ask a single question we can use `query()`
+``` r
+query("why is the sky blue?")
+```
+
+To have an interaction like a conversation, we can use `chat()`
+``` r
+chat("why is the sky blue?")
+```
+
+``` r
+chat("and how do you know that?")
+```
+
+
 
 # Learning material
 
