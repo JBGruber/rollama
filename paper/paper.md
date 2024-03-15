@@ -41,7 +41,7 @@ One method of utilizing open models involves downloading them from a platform kn
 
 # Background: Ollama
 
-Ollama can be installed using dedicated installers for macOS and Windows, or through a bash installation script for Linux[^2]. However, our preferred method is to utilize Docker. This approach enhances security and simplifies the processes of updating, rolling back, and completely removing Ollama. For convenience, we provide a Docker compose file to start a container running Ollama and one running Open WebUI -- a browser interface strongly inspired by ChatGPT -- in a GitHub Gist[^3].
+Ollama can be installed using dedicated installers for macOS and Windows, or through a bash installation script for Linux[^2]. However, our preferred method is to utilize Docker. This approach enhances security and simplifies the processes of updating, rolling back, and completely removing Ollama. For convenience, we provide a Docker compose file to start a container running Ollama and Open WebUI -- a browser interface strongly inspired by ChatGPT -- in a GitHub Gist[^3].
 
 [^2]: <https://ollama.com/download>
 [^3]: <https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc>
@@ -66,7 +66,13 @@ After that, the user should check whether the Ollama API is up and running.
 ping_ollama()
 ```
 
-The first thing you should do after installation is to pull one of the models from https://ollama.ai/library. By calling pull_model() without arguments, you are pulling the (current) default model.
+The first thing you should do after installation is to pull one of the models from https://ollama.ai/library by using the model tag. By calling pull_model() without arguments, you are pulling the (current) default model.
+
+``` r
+pull_model()
+# Model tag example 
+pull_model("gemma:2b-instruct-q4_0")
+```
 
 # Main functions
 The core of the package are two functions: `query()` and `chat()`.
@@ -80,18 +86,68 @@ query("why is the sky blue?")
 To have an interaction like a conversation, we can use `chat()`
 ``` r
 chat("why is the sky blue?")
-```
-
-``` r
 chat("and how do you know that?")
 ```
 
+# Examples
+We present several examples to illustrate some functionalities. As mentioned previously, many tasks that can be performed through OpenAI's API can also be accomplished by using open models within Ollama. Moreover, these models can be controlled with a seed, ensuring reproducible results.
+
+## Reproducible outcome
+In the parameter `model_params` from the  `query()` function we can set a seed, when using a seed the temperaure as to be set to "0". 
+
+``` r
+query("Why is the sky blue? Answer in one sentence.",
+      model_params = list(
+        seed = 42,
+        temperature = 0))
+```
+
+## Annotating text
+If you want to annotate textual data, you can use various prompting strategies. For an overview of common approaches, you can read a paper by @weber2023evaluation. These strategies primarily differ in whether or how many examples are given (Zero-shot, One-shot, or Few-shot) and whether reasoning is involved (Chain-of-Thought).
+
+When writing a prompt we can give the model content for the system part, user part and assistant part. The system message typically includes instructions or context that guides the interaction, setting the stage for how the user and the assistant should interact. For an annotation task we could write: “You assign texts into categories. Answer with just the correct category.” The following example is a zero-shot approach only containing a system message and one user message. In practice, you probably never want to annotate just one text, reefer to the package documentation for examples regarding batch annotations[^4] and working with dataframes[^5].
+
+[^4]: <https://jbgruber.github.io/rollama/articles/annotation.html#batch-annotation>
+[^5]: <https://jbgruber.github.io/rollama/articles/annotation.html#another-example-using-a-dataframe>
+
+``` r
+library(tibble)
+library(purrr)
+q <- tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. Answer with just the correct category.",
+  "user",   "text: the pizza tastes terrible\ncategories: positive, neutral, negative"
+)
+query(q, model_params = list(seed = 42,temperature = 0))
+```
+
+## Using multimodal models
+Ollama also supports multimodal models, which can interact with (but not create) images. After loading the package, we need to pull a model that can handle images. For example, the llava model. Using pull_model("llava") will download the model, or just load it if it has already been downloaded before.
+
+``` r
+pull_model("llava")
+query("Excitedly desscribe this logo", model = "llava",
+      images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
+```
+
+## Obtain embeddings 
+Ollama, and hence rollama, can be utilized to generate text embeddings. In short, text embedding uses the knowledge of the meaning of words inferred from the context that is saved in a large language model through its training to turn text into meaningful vectors of numbers. This technique is a powerful preprocessing step for supervised machine learning and often increases the performance of a classification model substantially. 
+To speed up the procedure, one can use embedding models like nomic-embed-text[^6] or all-minilm[^7] instead of the standard model, that is currently llama2. For an more elaborated example to use embendings for classification questions, please reefer to the package documentation[^8]. 
+
+``` r
+pull_model(model = "nomic-embed-text")
+embed_text(text = "It’s a beautiful day", model = "nomic-embed-text")
+```
+
+[^6]: <https://ollama.com/library/nomic-embed-text>
+[^7]: <https://ollama.com/library/all-minilm>
+[^8]: <https://jbgruber.github.io/rollama/articles/text-embedding.html>
 
 
 # Learning material
 
-We provide tutorials for the package at [jbgruber.github.io/rollama](https://jbgruber.github.io/rollama/) and an initial overview is available as a YouTube video[^4].
+We provide tutorials for the package at [jbgruber.github.io/rollama](https://jbgruber.github.io/rollama/) and an initial overview is available as a YouTube video[^9].
 
-[^4]: <https://youtu.be/N-k3RZqiSZY>
+[^9]: <https://youtu.be/N-k3RZqiSZY>
 
 # References
