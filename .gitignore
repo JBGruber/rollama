@@ -10,3 +10,4 @@ inst/doc
 progress.r
 docs
 pkgdown
+docker-compose.yml
