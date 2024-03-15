@@ -382,8 +382,11 @@ large language models through Ollama</h1>
 <h1>Summary</h1>
 <p><code>rollama</code> is an R package that wraps the Ollama API, which
 allows you to run different Generative Large Language Models (GLLM)<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a> locally.
-The package makes it easy to use Ollama for annotating textual or
-imagine data with open-source models.</p>
+The package and learning material focus on making it easy to use Ollama
+for annotating textual or imagine data with open-source models. But
+users can use or extend it to do essentially anything else that is
+possible through OpenAI’s API, yet more private, reproducible and for
+free.</p>
 </div>
 <div id="statement-of-need" class="section level1">
 <h1>Statement of need</h1>
@@ -417,8 +420,8 @@ Windows, or through a bash installation script for Linux<a href="#fn2" class="fo
 preferred method is to utilize Docker. This approach enhances security
 and simplifies the processes of updating, rolling back, and completely
 removing Ollama. For convenience, we provide a Docker compose file to
-start a container running Ollama and one running Open WebUI – a browser
-interface strongly inspired by ChatGPT – in a GitHub Gist<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>.</p>
+start a container running Ollama and Open WebUI – a browser interface
+strongly inspired by ChatGPT – in a GitHub Gist<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a>.</p>
 </div>
 <div id="usage" class="section level1">
 <h1>Usage</h1>
@@ -431,6 +434,13 @@ remotes::install_github(&quot;JBGruber/rollama&quot;)</code></pre>
 <p>After that, the user should check whether the Ollama API is up and
 running.</p>
 <pre class="r"><code>ping_ollama()</code></pre>
+<p>The first thing you should do after installation is to pull one of
+the models from <a href="https://ollama.ai/library" class="uri">https://ollama.ai/library</a> by using the model tag. By
+calling pull_model() without arguments, you are pulling the (current)
+default model.</p>
+<pre class="r"><code>pull_model()
+# Model tag example 
+pull_model(&quot;gemma:2b-instruct-q4_0&quot;)</code></pre>
 </div>
 <div id="main-functions" class="section level1">
 <h1>Main functions</h1>
@@ -438,11 +448,89 @@ running.</p>
 <code>chat()</code>. The difference is that <code>chat()</code> saves
 the history of the conversation with an Ollama model, while
 <code>query()</code> treats every question as a new conversation.</p>
+<p>So to ask a single question we can use <code>query()</code></p>
+<pre class="r"><code>query(&quot;why is the sky blue?&quot;)</code></pre>
+<p>To have an interaction like a conversation, we can use
+<code>chat()</code></p>
+<pre class="r"><code>chat(&quot;why is the sky blue?&quot;)
+chat(&quot;and how do you know that?&quot;)</code></pre>
+</div>
+<div id="examples" class="section level1">
+<h1>Examples</h1>
+<p>We present several examples to illustrate some functionalities. As
+mentioned previously, many tasks that can be performed through OpenAI’s
+API can also be accomplished by using open models within Ollama.
+Moreover, these models can be controlled with a seed, ensuring
+reproducible results.</p>
+<div id="reproducible-outcome" class="section level2">
+<h2>Reproducible outcome</h2>
+<p>In the parameter <code>model_params</code> from the
+<code>query()</code> function we can set a seed, when using a seed the
+temperaure as to be set to “0”.</p>
+<pre class="r"><code>query(&quot;Why is the sky blue? Answer in one sentence.&quot;,
+      model_params = list(
+        seed = 42,
+        temperature = 0))</code></pre>
+</div>
+<div id="annotating-text" class="section level2">
+<h2>Annotating text</h2>
+<p>If you want to annotate textual data, you can use various prompting
+strategies. For an overview of common approaches, you can read a paper
+by <span class="citation">Weber and Reichardt (2023)</span>. These
+strategies primarily differ in whether or how many examples are given
+(Zero-shot, One-shot, or Few-shot) and whether reasoning is involved
+(Chain-of-Thought).</p>
+<p>When writing a prompt we can give the model content for the system
+part, user part and assistant part. The system message typically
+includes instructions or context that guides the interaction, setting
+the stage for how the user and the assistant should interact. For an
+annotation task we could write: “You assign texts into categories.
+Answer with just the correct category.” The following example is a
+zero-shot approach only containing a system message and one user
+message. In practice, you probably never want to annotate just one text,
+reefer to the package documentation for examples regarding batch
+annotations<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> and working with dataframes<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>.</p>
+<pre class="r"><code>library(tibble)
+library(purrr)
+q &lt;- tribble(
+  ~role,    ~content,
+  &quot;system&quot;, &quot;You assign texts into categories. Answer with just the correct category.&quot;,
+  &quot;user&quot;,   &quot;text: the pizza tastes terrible\ncategories: positive, neutral, negative&quot;
+)
+query(q, model_params = list(seed = 42,temperature = 0))</code></pre>
+</div>
+<div id="using-multimodal-models" class="section level2">
+<h2>Using multimodal models</h2>
+<p>Ollama also supports multimodal models, which can interact with (but
+not create) images. After loading the package, we need to pull a model
+that can handle images. For example, the llava model. Using
+pull_model(“llava”) will download the model, or just load it if it has
+already been downloaded before.</p>
+<pre class="r"><code>pull_model(&quot;llava&quot;)
+query(&quot;Excitedly desscribe this logo&quot;, model = &quot;llava&quot;,
+      images = &quot;https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png&quot;)</code></pre>
+</div>
+<div id="obtain-embeddings" class="section level2">
+<h2>Obtain embeddings</h2>
+<p>Ollama, and hence rollama, can be utilized to generate text
+embeddings. In short, text embedding uses the knowledge of the meaning
+of words inferred from the context that is saved in a large language
+model through its training to turn text into meaningful vectors of
+numbers. This technique is a powerful preprocessing step for supervised
+machine learning and often increases the performance of a classification
+model substantially. To speed up the procedure, one can use embedding
+models like nomic-embed-text<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> or all-minilm<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> instead of the
+standard model, that is currently llama2. For an more elaborated example
+to use embendings for classification questions, please reefer to the
+package documentation<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a>.</p>
+<pre class="r"><code>pull_model(model = &quot;nomic-embed-text&quot;)
+embed_text(text = &quot;It’s a beautiful day&quot;, model = &quot;nomic-embed-text&quot;)</code></pre>
+</div>
 </div>
 <div id="learning-material" class="section level1">
 <h1>Learning material</h1>
 <p>We provide tutorials for the package at <a href="https://jbgruber.github.io/rollama/">jbgruber.github.io/rollama</a>
-and an initial overview is available as a YouTube video<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a>.</p>
+and an initial overview is available as a YouTube video<a href="#fn9" class="footnote-ref" id="fnref9"><sup>9</sup></a>.</p>
 </div>
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
@@ -477,7 +565,12 @@ Tasks in the Social Sciences. A Primer Using Open Models.”</span> <a href="htt
 Transformer (GPT).<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
 <li id="fn2"><p><a href="https://ollama.com/download" class="uri">https://ollama.com/download</a><a href="#fnref2" class="footnote-back">↩︎</a></p></li>
 <li id="fn3"><p><a href="https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc" class="uri">https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc</a><a href="#fnref3" class="footnote-back">↩︎</a></p></li>
-<li id="fn4"><p><a href="https://youtu.be/N-k3RZqiSZY" class="uri">https://youtu.be/N-k3RZqiSZY</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p><a href="https://jbgruber.github.io/rollama/articles/annotation.html#batch-annotation" class="uri">https://jbgruber.github.io/rollama/articles/annotation.html#batch-annotation</a><a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p><a href="https://jbgruber.github.io/rollama/articles/annotation.html#another-example-using-a-dataframe" class="uri">https://jbgruber.github.io/rollama/articles/annotation.html#another-example-using-a-dataframe</a><a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+<li id="fn6"><p><a href="https://ollama.com/library/nomic-embed-text" class="uri">https://ollama.com/library/nomic-embed-text</a><a href="#fnref6" class="footnote-back">↩︎</a></p></li>
+<li id="fn7"><p><a href="https://ollama.com/library/all-minilm" class="uri">https://ollama.com/library/all-minilm</a><a href="#fnref7" class="footnote-back">↩︎</a></p></li>
+<li id="fn8"><p><a href="https://jbgruber.github.io/rollama/articles/text-embedding.html" class="uri">https://jbgruber.github.io/rollama/articles/text-embedding.html</a><a href="#fnref8" class="footnote-back">↩︎</a></p></li>
+<li id="fn9"><p><a href="https://youtu.be/N-k3RZqiSZY" class="uri">https://youtu.be/N-k3RZqiSZY</a><a href="#fnref9" class="footnote-back">↩︎</a></p></li>
 </ol>
 </div>
 
