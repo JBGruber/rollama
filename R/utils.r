@@ -137,8 +137,10 @@ pgrs <- function(resp) {
   for (s in status) {
     status_message <- purrr::pluck(s, "status")
     if (!purrr::pluck_exists(s, "total")) {
-      if (status_message == "success") {
+      if (isTRUE(status_message == "success")) {
         cli::cli_progress_message("{cli::col_green(cli::symbol$tick)} success!")
+      } else if (purrr::pluck_exists(s, "error")) {
+        cli::cli_abort(purrr::pluck(s, "error"))
       } else {
         cli::cli_progress_step(purrr::pluck(s, "status"), .envir = the)
       }
