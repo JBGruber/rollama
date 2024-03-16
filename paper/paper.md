@@ -53,7 +53,7 @@ After Ollama is installed, the R-package `rollama`  can be installed from CRAN (
 install.packages("rollama")
 ```
 
-or from GitHub using remotes [@remotes]:
+or from GitHub using remotes:
 
 ``` r
 # install.packages("remotes")
@@ -66,7 +66,7 @@ After that, the user should check whether the Ollama API is up and running.
 ping_ollama()
 ```
 
-The first thing you should do after installation is to pull one of the models from https://ollama.ai/library by using the model tag. By calling pull_model() without arguments, you are pulling the (current) default model.
+The first thing you should do after installation is to pull one of the models from [ollama.ai/library](https://ollama.ai/library) by using the model tag. By calling pull_model() without arguments, you are pulling the (current) default model.
 
 ``` r
 pull_model()
@@ -127,12 +127,12 @@ Ollama also supports multimodal models, which can interact with (but not create)
 ``` r
 pull_model("llava")
 query("Excitedly desscribe this logo", model = "llava",
-      images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
+      images = "https://raw.githubusercontent.com/JBGruber/rollama/main/man/figures/logo.png")
 ```
 
 ## Obtain embeddings 
 Ollama, and hence rollama, can be utilized to generate text embeddings. In short, text embedding uses the knowledge of the meaning of words inferred from the context that is saved in a large language model through its training to turn text into meaningful vectors of numbers. This technique is a powerful preprocessing step for supervised machine learning and often increases the performance of a classification model substantially. 
-To speed up the procedure, one can use embedding models like nomic-embed-text[^6] or all-minilm[^7] instead of the standard model, that is currently llama2. For an more elaborated example to use embendings for classification questions, please reefer to the package documentation[^8]. 
+To speed up the procedure, one can use embedding models like nomic-embed-text[^6] or all-minilm[^7] instead of the standard model, that is currently llama2. For a more detailed example of using embeddings for classification tasks, please refer to the package documentation[^8]. 
 
 ``` r
 pull_model(model = "nomic-embed-text")
