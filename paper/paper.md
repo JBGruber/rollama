@@ -67,7 +67,7 @@ library(rollama)
 ping_ollama()
 ```
 
-After installation, the first step is to pull one of the models from [ollama.ai/library](https://ollama.ai/library) by using the model tag. By calling  `pull_model()` without any arguments will download the default mode
+After installation, the first step is to pull one of the models from [ollama.ai/library](https://ollama.ai/library) by using the model tag. By calling  `pull_model()` without any arguments will download the default model.
 
 ``` r
 # pull the default model
