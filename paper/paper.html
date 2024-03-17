@@ -386,15 +386,15 @@ The package and learning material focus on making it easy to use Ollama
 for annotating textual or imagine data with open-source models. But
 users can use or extend it to do essentially anything else that is
 possible through OpenAI’s API, yet more private, reproducible and for
-free <span class="citation">(Irugalbandara et al. 2024)</span>.</p>
+free.</p>
 </div>
 <div id="statement-of-need" class="section level1">
 <h1>Statement of need</h1>
 <p>As researchers embrace the next revolution in computational social
 science, the arrival of GLLM, there is a critical need for open-source
-alternatives. This need arises to avoid falling into a reproducibility
-trap or becoming overly dependent on services offered by for-profit
-companies.</p>
+alternatives <span class="citation">(Spirling 2023)</span>. This need
+arises to avoid falling into a reproducibility trap or becoming overly
+dependent on services offered by for-profit companies.</p>
 <p>After the release of ChatGPT, researchers started using OpenAI’s API
 for annotating text with GPT models <span class="citation">(e.g.,
 Gilardi, Alizadeh, and Kubli 2023; He et al. 2023)</span>. However, this
@@ -407,11 +407,13 @@ provide open models that rival, and sometimes surpass, proprietary ones
 <span class="citation">(Alizadeh et al. 2023; Irugalbandara et al.
 2024)</span>.</p>
 <p>One method of utilizing open models involves downloading them from a
-platform known as Hugging Face and setting them up. However, there is
-now software available that facilitates access to these models in an
-environment, allowing users to simply specify the model or models they
-wish to use. This can be done locally on one’s computer, and the
-software is called Ollama.</p>
+platform known as Hugging Face and using them via Python scripts.
+However, there is now software available that facilitates access to
+these models in an environment, allowing users to simply specify the
+model or models they wish to use. This can be done locally on one’s
+computer, and the software is called Ollama. The R package
+<code>rollama</code> provides a wrapper to use the Ollama API within
+R.</p>
 </div>
 <div id="background-ollama" class="section level1">
 <h1>Background: Ollama</h1>
@@ -435,12 +437,13 @@ remotes::install_github(&quot;JBGruber/rollama&quot;)</code></pre>
 running.</p>
 <pre class="r"><code>library(rollama)
 ping_ollama()</code></pre>
-<p>The first thing you should do after installation is to pull one of
-the models from <a href="https://ollama.ai/library">ollama.ai/library</a> by using the
-model tag. By calling pull_model() without arguments, you are pulling
-the (current) default model.</p>
-<pre class="r"><code>pull_model()
-# Model tag example 
+<p>After installation, the first step is to pull one of the models from
+<a href="https://ollama.ai/library">ollama.ai/library</a> by using the
+model tag. By calling <code>pull_model()</code> without any arguments
+will download the default mode</p>
+<pre class="r"><code># pull the default model
+pull_model()
+# pull a specified model by providing the model tag
 pull_model(&quot;gemma:2b-instruct-q4_0&quot;)</code></pre>
 </div>
 <div id="main-functions" class="section level1">
@@ -449,10 +452,11 @@ pull_model(&quot;gemma:2b-instruct-q4_0&quot;)</code></pre>
 <code>chat()</code>. The difference is that <code>chat()</code> saves
 the history of the conversation with an Ollama model, while
 <code>query()</code> treats every question as a new conversation.</p>
-<p>So to ask a single question we can use <code>query()</code></p>
+<p>To ask a single question, the <code>query()</code> function can be
+used.</p>
 <pre class="r"><code>query(&quot;why is the sky blue?&quot;)</code></pre>
-<p>To have an interaction like a conversation, we can use
-<code>chat()</code></p>
+<p>For conversational interactions, the <code>chat()</code> function is
+used.</p>
 <pre class="r"><code>chat(&quot;why is the sky blue?&quot;)
 chat(&quot;and how do you know that?&quot;)</code></pre>
 </div>
@@ -465,9 +469,10 @@ Moreover, these models can be controlled with a seed, ensuring
 reproducible results.</p>
 <div id="reproducible-outcome" class="section level2">
 <h2>Reproducible outcome</h2>
-<p>In the parameter <code>model_params</code> from the
-<code>query()</code> function we can set a seed, when using a seed the
-temperaure as to be set to “0”.</p>
+<p>Within the<code>model_params</code> of the <code>query()</code>
+function, setting a seed is possible. When a seed is used, the
+temperature must be set to “0” to ensure consistent output for repeated
+prompts.</p>
 <pre class="r"><code>query(&quot;Why is the sky blue? Answer in one sentence.&quot;,
       model_params = list(
         seed = 42,
@@ -475,9 +480,9 @@ temperaure as to be set to “0”.</p>
 </div>
 <div id="annotating-text" class="section level2">
 <h2>Annotating text</h2>
-<p>If you want to annotate textual data, you can use various prompting
-strategies. For an overview of common approaches, you can read a paper
-by <span class="citation">Weber and Reichardt (2023)</span>. These
+<p>For annotating text data, various prompting strategies are available.
+A comprehensive overview of common methods can be found in a paper by
+<span class="citation">Weber and Reichardt (2023)</span>. These
 strategies primarily differ in whether or how many examples are given
 (Zero-shot, One-shot, or Few-shot) and whether reasoning is involved
 (Chain-of-Thought).</p>
@@ -488,9 +493,9 @@ the stage for how the user and the assistant should interact. For an
 annotation task we could write: “You assign texts into categories.
 Answer with just the correct category.” The following example is a
 zero-shot approach only containing a system message and one user
-message. In practice, you probably never want to annotate just one text,
-reefer to the package documentation for examples regarding batch
-annotations<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> and working with dataframes<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>.</p>
+message. In practice, annotating a single text is rarely the goal. For
+guidance on batch annotations<a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a> and working with dataframes<a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a>, refer to the package
+documentation.</p>
 <pre class="r"><code>library(tibble)
 library(purrr)
 q &lt;- tribble(
@@ -503,10 +508,9 @@ query(q, model_params = list(seed = 42,temperature = 0))</code></pre>
 <div id="using-multimodal-models" class="section level2">
 <h2>Using multimodal models</h2>
 <p>Ollama also supports multimodal models, which can interact with (but
-not create) images. After loading the package, we need to pull a model
-that can handle images. For example, the llava model. Using
-pull_model(“llava”) will download the model, or just load it if it has
-already been downloaded before.</p>
+not create) images. A model designed for image handling, such as the
+llava model, needs to be pulled. Using <code>pull_model(&quot;llava&quot;)</code>
+will download the model.</p>
 <pre class="r"><code>pull_model(&quot;llava&quot;)
 query(&quot;Excitedly desscribe this logo&quot;, model = &quot;llava&quot;,
       images = &quot;https://ollama.com/public/ollama.png&quot;)</code></pre>
@@ -521,9 +525,9 @@ numbers. This technique is a powerful preprocessing step for supervised
 machine learning and often increases the performance of a classification
 model substantially. To speed up the procedure, one can use embedding
 models like nomic-embed-text<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> or all-minilm<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> instead of the
-standard model, that is currently llama2. For a more detailed example of
-using embeddings for classification tasks, please refer to the package
-documentation<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a>.</p>
+standard ollama model, that is currently llama2. For a more detailed
+example of using embeddings for classification tasks, refer to the
+package documentation<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a>.</p>
 <pre class="r"><code>pull_model(model = &quot;nomic-embed-text&quot;)
 embed_text(text = &quot;It’s a beautiful day&quot;, model = &quot;nomic-embed-text&quot;)</code></pre>
 </div>
@@ -540,7 +544,7 @@ and an initial overview is available as a YouTube video<a href="#fn9" class="foo
 Alizadeh, Meysam, Maël Kubli, Zeynab Samei, Shirin Dehghani, Juan Diego
 Bermeo, Maria Korobeynikova, and Fabrizio Gilardi. 2023.
 <span>“Open-Source Large Language Models Outperform Crowd Workers and
-Approach ChatGPT in Text-Annotation Tasks.”</span> <a href="https://arxiv.org/abs/2307.02179">https://arxiv.org/abs/2307.02179</a>.
+Approach ChatGPT in Text-Annotation Tasks.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2307.02179">https://doi.org/10.48550/arXiv.2307.02179</a>.
 </div>
 <div id="ref-GilardiChatGPT2023" class="csl-entry">
 Gilardi, Fabrizio, Meysam Alizadeh, and Maël Kubli. 2023. <span>“ChatGPT
@@ -551,7 +555,7 @@ Outperforms Crowd Workers for Text-Annotation Tasks.”</span>
 He, Xingwei, Zhenghao Lin, Yeyun Gong, A.-Long Jin, Hang Zhang, Chen
 Lin, Jian Jiao, Siu Ming Yiu, Nan Duan, and Weizhu Chen. 2023.
 <span>“AnnoLLM: Making Large Language Models to Be Better Crowdsourced
-Annotators.”</span> arXiv. <a href="http://arxiv.org/abs/2303.16854">http://arxiv.org/abs/2303.16854</a>.
+Annotators.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2303.16854">https://doi.org/10.48550/arXiv.2303.16854</a>.
 </div>
 <div id="ref-irugalbandara_trade-off_2024" class="csl-entry">
 Irugalbandara, Chandra, Ashish Mahendra, Roland Daynauth, Tharuka
@@ -567,7 +571,8 @@ an Ethical Way Forward for Science.”</span> <em>Nature</em> 616 (7957):
 <div id="ref-weber2023evaluation" class="csl-entry">
 Weber, Maximilian, and Merle Reichardt. 2023. <span>“Evaluation Is All
 You Need. Prompting Generative Large Language Models for Annotation
-Tasks in the Social Sciences. A Primer Using Open Models.”</span> <a href="https://arxiv.org/abs/2401.00284">https://arxiv.org/abs/2401.00284</a>.
+Tasks in the Social Sciences. A Primer Using Open Models.”</span> arXiv.
+<a href="https://doi.org/10.48550/arXiv.2401.00284">https://doi.org/10.48550/arXiv.2401.00284</a>.
 </div>
 </div>
 </div>
