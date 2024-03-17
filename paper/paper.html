@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2024-03-13" />
+<meta name="date" content="2024-03-18" />
 
 <title>rollama: An R package for using generative large language models through Ollama</title>
 
@@ -373,7 +373,7 @@ display: none;
 
 <h1 class="title toc-ignore">rollama: An R package for using generative
 large language models through Ollama</h1>
-<h4 class="date">13 March 2024</h4>
+<h4 class="date">18 March 2024</h4>
 
 </div>
 
@@ -386,7 +386,7 @@ The package and learning material focus on making it easy to use Ollama
 for annotating textual or imagine data with open-source models. But
 users can use or extend it to do essentially anything else that is
 possible through OpenAI’s API, yet more private, reproducible and for
-free.</p>
+free <span class="citation">(Irugalbandara et al. 2024)</span>.</p>
 </div>
 <div id="statement-of-need" class="section level1">
 <h1>Statement of need</h1>
@@ -395,17 +395,17 @@ science, the arrival of GLLM, there is a critical need for open-source
 alternatives. This need arises to avoid falling into a reproducibility
 trap or becoming overly dependent on services offered by for-profit
 companies.</p>
-<p>After the release of ChatGPT, researchers began utilizing OpenAI’s
-API to annotate textual data with the aid of GPT models <span class="citation">(e.g., Gilardi, Alizadeh, and Kubli 2023; He et al.
-2023)</span>. However, this approach presents several shortcomings,
-including privacy and replication issues associated with relying on
-proprietary models <span class="citation">(Spirling 2023; Weber and
-Reichardt 2023)</span>.</p>
+<p>After the release of ChatGPT, researchers started using OpenAI’s API
+for annotating text with GPT models <span class="citation">(e.g.,
+Gilardi, Alizadeh, and Kubli 2023; He et al. 2023)</span>. However, this
+approach presents several shortcomings, including privacy and
+replication issues associated with relying on proprietary models <span class="citation">(Spirling 2023; Weber and Reichardt 2023)</span>.</p>
 <p>Fortunately, since GLLMs were popularized by OpenAI’s ChatGPT a
 little more than a year ago, a large and active alliance of open-source
 communities and technology companies has made considerable efforts to
-provide open models that rival, and sometimes surpass, proprietary
-ones.</p>
+provide open models that rival, and sometimes surpass, proprietary ones
+<span class="citation">(Alizadeh et al. 2023; Irugalbandara et al.
+2024)</span>.</p>
 <p>One method of utilizing open models involves downloading them from a
 platform known as Hugging Face and setting them up. However, there is
 now software available that facilitates access to these models in an
@@ -428,16 +428,17 @@ strongly inspired by ChatGPT – in a GitHub Gist<a href="#fn3" class="footnote-
 <p>After Ollama is installed, the R-package <code>rollama</code> can be
 installed from CRAN (the Comprehensive R Archive Network):</p>
 <pre class="r"><code>install.packages(&quot;rollama&quot;)</code></pre>
-<p>or from GitHub using remotes <span class="citation">(<strong>remotes?</strong>)</span>:</p>
+<p>or from GitHub using remotes:</p>
 <pre class="r"><code># install.packages(&quot;remotes&quot;)
 remotes::install_github(&quot;JBGruber/rollama&quot;)</code></pre>
 <p>After that, the user should check whether the Ollama API is up and
 running.</p>
-<pre class="r"><code>ping_ollama()</code></pre>
+<pre class="r"><code>library(rollama)
+ping_ollama()</code></pre>
 <p>The first thing you should do after installation is to pull one of
-the models from <a href="https://ollama.ai/library" class="uri">https://ollama.ai/library</a> by using the model tag. By
-calling pull_model() without arguments, you are pulling the (current)
-default model.</p>
+the models from <a href="https://ollama.ai/library">ollama.ai/library</a> by using the
+model tag. By calling pull_model() without arguments, you are pulling
+the (current) default model.</p>
 <pre class="r"><code>pull_model()
 # Model tag example 
 pull_model(&quot;gemma:2b-instruct-q4_0&quot;)</code></pre>
@@ -508,7 +509,7 @@ pull_model(“llava”) will download the model, or just load it if it has
 already been downloaded before.</p>
 <pre class="r"><code>pull_model(&quot;llava&quot;)
 query(&quot;Excitedly desscribe this logo&quot;, model = &quot;llava&quot;,
-      images = &quot;https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png&quot;)</code></pre>
+      images = &quot;https://ollama.com/public/ollama.png&quot;)</code></pre>
 </div>
 <div id="obtain-embeddings" class="section level2">
 <h2>Obtain embeddings</h2>
@@ -520,9 +521,9 @@ numbers. This technique is a powerful preprocessing step for supervised
 machine learning and often increases the performance of a classification
 model substantially. To speed up the procedure, one can use embedding
 models like nomic-embed-text<a href="#fn6" class="footnote-ref" id="fnref6"><sup>6</sup></a> or all-minilm<a href="#fn7" class="footnote-ref" id="fnref7"><sup>7</sup></a> instead of the
-standard model, that is currently llama2. For an more elaborated example
-to use embendings for classification questions, please reefer to the
-package documentation<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a>.</p>
+standard model, that is currently llama2. For a more detailed example of
+using embeddings for classification tasks, please refer to the package
+documentation<a href="#fn8" class="footnote-ref" id="fnref8"><sup>8</sup></a>.</p>
 <pre class="r"><code>pull_model(model = &quot;nomic-embed-text&quot;)
 embed_text(text = &quot;It’s a beautiful day&quot;, model = &quot;nomic-embed-text&quot;)</code></pre>
 </div>
@@ -535,6 +536,12 @@ and an initial overview is available as a YouTube video<a href="#fn9" class="foo
 <div id="references" class="section level1 unnumbered">
 <h1 class="unnumbered">References</h1>
 <div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-alizadeh2023opensource" class="csl-entry">
+Alizadeh, Meysam, Maël Kubli, Zeynab Samei, Shirin Dehghani, Juan Diego
+Bermeo, Maria Korobeynikova, and Fabrizio Gilardi. 2023.
+<span>“Open-Source Large Language Models Outperform Crowd Workers and
+Approach ChatGPT in Text-Annotation Tasks.”</span> <a href="https://arxiv.org/abs/2307.02179">https://arxiv.org/abs/2307.02179</a>.
+</div>
 <div id="ref-GilardiChatGPT2023" class="csl-entry">
 Gilardi, Fabrizio, Meysam Alizadeh, and Maël Kubli. 2023. <span>“ChatGPT
 Outperforms Crowd Workers for Text-Annotation Tasks.”</span>
@@ -545,6 +552,12 @@ He, Xingwei, Zhenghao Lin, Yeyun Gong, A.-Long Jin, Hang Zhang, Chen
 Lin, Jian Jiao, Siu Ming Yiu, Nan Duan, and Weizhu Chen. 2023.
 <span>“AnnoLLM: Making Large Language Models to Be Better Crowdsourced
 Annotators.”</span> arXiv. <a href="http://arxiv.org/abs/2303.16854">http://arxiv.org/abs/2303.16854</a>.
+</div>
+<div id="ref-irugalbandara_trade-off_2024" class="csl-entry">
+Irugalbandara, Chandra, Ashish Mahendra, Roland Daynauth, Tharuka
+Kasthuri Arachchige, Krisztian Flautner, Lingjia Tang, Yiping Kang, and
+Jason Mars. 2024. <span>“A Trade-Off Analysis of Replacing Proprietary
+LLMs with Open Source SLMs in Production.”</span> arXiv. <a href="https://doi.org/10.48550/arXiv.2312.14972">https://doi.org/10.48550/arXiv.2312.14972</a>.
 </div>
 <div id="ref-Spirling_2023" class="csl-entry">
 Spirling, Arthur. 2023. <span>“Why Open-Source Generative AI Models Are

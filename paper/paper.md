@@ -19,7 +19,7 @@ affiliations:
    index: 1
  - name: Goethe University Frankfurt
    index: 2
-date: 13 March 2024
+date: 18 March 2024
 bibliography: paper.bib
 ---
 
@@ -29,13 +29,13 @@ bibliography: paper.bib
 
 # Statement of need
 
-As researchers embrace the next revolution in computational social science, the arrival of GLLM, there is a critical need for open-source alternatives. This need arises to avoid falling into a reproducibility trap or becoming overly dependent on services offered by for-profit companies.
+As researchers embrace the next revolution in computational social science, the arrival of GLLM, there is a critical need for open-source alternatives [@Spirling_2023]. This need arises to avoid falling into a reproducibility trap or becoming overly dependent on services offered by for-profit companies.
 
-After the release of ChatGPT, researchers began utilizing OpenAI's API to annotate textual data with the aid of GPT models  [e.g., @GilardiChatGPT2023; @He_Lin_et_al._2023]. However, this approach presents several shortcomings, including privacy and replication issues associated with relying on proprietary models [@Spirling_2023; @weber2023evaluation].
+After the release of ChatGPT, researchers started using OpenAI's API for annotating text with GPT models [e.g., @GilardiChatGPT2023; @He_Lin_et_al._2023]. However, this approach presents several shortcomings, including privacy and replication issues associated with relying on proprietary models [@Spirling_2023; @weber2023evaluation].
 
-Fortunately, since GLLMs were popularized by OpenAI's ChatGPT a little more than a year ago, a large and active alliance of open-source communities and technology companies has made considerable efforts to provide open models that rival, and sometimes surpass, proprietary ones.
+Fortunately, since GLLMs were popularized by OpenAI's ChatGPT a little more than a year ago, a large and active alliance of open-source communities and technology companies has made considerable efforts to provide open models that rival, and sometimes surpass, proprietary ones [@alizadeh2023opensource; @irugalbandara_trade-off_2024].
 
-One method of utilizing open models involves downloading them from a platform known as Hugging Face and setting them up. However, there is now software available that facilitates access to these models in an environment, allowing users to simply specify the model or models they wish to use. This can be done locally on one's computer, and the software is called Ollama.
+One method of utilizing open models involves downloading them from a platform known as Hugging Face and using them via Python scripts. However, there is now software available that facilitates access to these models in an environment, allowing users to simply specify the model or models they wish to use. This can be done locally on one's computer, and the software is called Ollama.
 
 [^1]: Also referred to generative AI or Generative Pre-trained Transformer (GPT).
 
@@ -47,7 +47,7 @@ Ollama can be installed using dedicated installers for macOS and Windows, or thr
 [^3]: <https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc>
 
 # Usage
-After Ollama is installed, the R-package `rollama`  can be installed from CRAN (the Comprehensive R Archive Network):
+After Ollama is installed, the R-package `rollama` can be installed from CRAN (the Comprehensive R Archive Network):
 
 ```r
 install.packages("rollama")
@@ -63,6 +63,7 @@ remotes::install_github("JBGruber/rollama")
 After that, the user should check whether the Ollama API is up and running.
 
 ``` r
+library(rollama)
 ping_ollama()
 ```
 
@@ -93,7 +94,7 @@ chat("and how do you know that?")
 We present several examples to illustrate some functionalities. As mentioned previously, many tasks that can be performed through OpenAI's API can also be accomplished by using open models within Ollama. Moreover, these models can be controlled with a seed, ensuring reproducible results.
 
 ## Reproducible outcome
-In the parameter `model_params` from the  `query()` function we can set a seed, when using a seed the temperaure as to be set to "0". 
+In the parameter `model_params` from the `query()` function we can set a seed, when using a seed the temperaure as to be set to "0". 
 
 ``` r
 query("Why is the sky blue? Answer in one sentence.",
@@ -127,12 +128,12 @@ Ollama also supports multimodal models, which can interact with (but not create)
 ``` r
 pull_model("llava")
 query("Excitedly desscribe this logo", model = "llava",
-      images = "https://raw.githubusercontent.com/JBGruber/rollama/main/man/figures/logo.png")
+      images = "https://ollama.com/public/ollama.png")
 ```
 
 ## Obtain embeddings 
 Ollama, and hence rollama, can be utilized to generate text embeddings. In short, text embedding uses the knowledge of the meaning of words inferred from the context that is saved in a large language model through its training to turn text into meaningful vectors of numbers. This technique is a powerful preprocessing step for supervised machine learning and often increases the performance of a classification model substantially. 
-To speed up the procedure, one can use embedding models like nomic-embed-text[^6] or all-minilm[^7] instead of the standard model, that is currently llama2. For a more detailed example of using embeddings for classification tasks, please refer to the package documentation[^8]. 
+To speed up the procedure, one can use embedding models like nomic-embed-text[^6] or all-minilm[^7] instead of the standard ollama model, that is currently llama2. For a more detailed example of using embeddings for classification tasks, please refer to the package documentation[^8]. 
 
 ``` r
 pull_model(model = "nomic-embed-text")
