@@ -6,9 +6,10 @@
 #'
 #'
 #' @param q the question as a character string or a conversation object.
-#' @param model which model to use. See <https://ollama.ai/library> for options.
-#'   Default is "llama2". Set option(rollama_model = "modelname") to change
-#'   default for the current session. See \link{pull_model} for more details.
+#' @param model which model(s) to use. See <https://ollama.ai/library> for
+#'   options. Default is "llama2". Set option(rollama_model = "modelname") to
+#'   change default for the current session. See \link{pull_model} for more
+#'   details.
 #' @param screen Logical. Should the answer be printed to the screen.
 #' @param server URL to an Ollama server (not the API). Defaults to
 #'   "http://localhost:11434".
@@ -18,7 +19,7 @@
 #' @param template the prompt template to use (overrides what is defined in the
 #'   Modelfile).
 #'
-#' @return an httr2 response
+#' @return an httr2 response.
 #' @export
 #'
 #' @examples
@@ -29,6 +30,10 @@
 #' # hold a conversation
 #' chat("why is the sky blue?")
 #' chat("and how do you know that?")
+#'
+#' # save the response to an object and extract the answer
+#' resp <- query(q = "why is the sky blue?")
+#' answer <- resp$message$content
 #'
 #' # ask question about images (to a multimodal model)
 #' images <- c("https://avatars.githubusercontent.com/u/23524101?v=4", # remote
@@ -83,6 +88,9 @@
 #' # You can use a custom prompt to override what prompt the model receives
 #' query("why is the sky blue?",
 #'       template = "Just say I'm a llama!")
+#'
+#' # Asking the same question to multiple models is also supported
+#' query("why is the sky blue?", model = c("llama2", "orca-mini"))
 #' }
 query <- function(q,
                   model = NULL,
@@ -127,7 +135,14 @@ query <- function(q,
                     model_params = model_params,
                     template = template)
 
-  if (screen) screen_answer(purrr::pluck(resp, "message", "content"))
+  purrr::map(resp, "message", "content")
+
+  if (screen) purrr::map(resp, function(r) {
+    screen_answer(purrr::pluck(r, "message", "content"),
+                  purrr::pluck(r, "model"))
+
+  })
+  if (length(resp) == 1L) resp <- unlist(resp, recursive = FALSE)
   invisible(resp)
 }
 

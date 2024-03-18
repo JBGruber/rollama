@@ -40,28 +40,35 @@ build_req <- function(model, msg, server, images, model_params, template) {
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
 
-  req_data <- list(model = model,
-                   messages = msg,
-                   stream = FALSE,
-                   options = model_params,
-                   template = template) |>
-    purrr::compact()
+  req_data <- purrr::map(model, function(m) {
+    list(model = m,
+         messages = msg,
+         stream = FALSE,
+         options = model_params,
+         template = template) |>
+      purrr::compact() |>
+      make_req(server = server,
+               endpoint = "/api/chat",
+               perform = FALSE)
+  })
 
   if (getOption("rollama_verbose", default = interactive())) {
-    cli::cli_progress_step("{model} is thinking {cli::pb_spin}")
-    rp <- callr::r_bg(make_req,
-                      args = list(req_data = req_data,
-                                  server = server,
-                                  endpoint = "/api/chat"),
-                      package = TRUE)
-    while (rp$is_alive()) {
+    cli::cli_progress_step("{model} {?is/are} thinking {cli::pb_spin}")
+
+    rp <- purrr::map(req_data, function(r) callr::r_bg(httr2::req_perform,
+                                                       args = list(req = r),
+                                                       package = TRUE))
+
+    while (any(purrr::map_lgl(rp, function(r) r$is_alive()))) {
       cli::cli_progress_update()
       Sys.sleep(2 / 100)
     }
-    resp <- rp$get_result()
+    resp <- purrr::map(rp, function(r) r$get_result()) |>
+      purrr::map(httr2::resp_body_json)
     cli::cli_progress_done()
   } else {
-    resp <- make_req(req_data, server, "/api/chat")
+    resp <- purrr::map(req_data, httr2::req_perform) |>
+      purrr::map(httr2::resp_body_json)
   }
 
   if (!is.null(resp$error)) {
@@ -75,20 +82,24 @@ build_req <- function(model, msg, server, images, model_params, template) {
 }
 
 
-make_req <- function(req_data, server, endpoint) {
-  httr2::request(server) |>
+make_req <- function(req_data, server, endpoint, perform = TRUE) {
+  r <- httr2::request(server) |>
     httr2::req_url_path_append(endpoint) |>
     httr2::req_body_json(prep_req_data(req_data), auto_unbox = FALSE) |>
     # turn off errors since error messages can't be seen in sub-process
-    httr2::req_error(is_error = function(resp) FALSE) |>
-    httr2::req_perform() |>
-    httr2::resp_body_json()
+    httr2::req_error(is_error = function(resp) FALSE)
+  if (perform) {
+    r <- r |>
+      httr2::req_perform() |>
+      httr2::resp_body_json()
+  }
+  return(r)
 }
 
 
-screen_answer <- function(x) {
+screen_answer <- function(x, model = NULL) {
   pars <- unlist(strsplit(x, "\n", fixed = TRUE))
-  cli::cli_h1("Answer")
+  cli::cli_h1("Answer from {cli::style_bold({model})}")
   # "{i}" instead of i stops glue from evaluating code inside the answer
   for (i in pars) cli::cli_text("{i}")
 }
@@ -126,8 +137,10 @@ pgrs <- function(resp) {
   for (s in status) {
     status_message <- purrr::pluck(s, "status")
     if (!purrr::pluck_exists(s, "total")) {
-      if (status_message == "success") {
+      if (isTRUE(status_message == "success")) {
         cli::cli_progress_message("{cli::col_green(cli::symbol$tick)} success!")
+      } else if (purrr::pluck_exists(s, "error")) {
+        cli::cli_abort(purrr::pluck(s, "error"))
       } else {
         cli::cli_progress_step(purrr::pluck(s, "status"), .envir = the)
       }

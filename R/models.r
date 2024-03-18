@@ -96,7 +96,7 @@ create_model <- function(model, modelfile, server = NULL) {
 
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
-  if (file.exists(modelfile)) {
+  if (isTRUE(file.exists(modelfile))) {
     modelfile <- readChar(modelfile, file.size(modelfile))
   } else if (length(modelfile) > 1) {
     modelfile <- paste0(modelfile, collapse = "\n")
