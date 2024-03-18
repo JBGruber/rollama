@@ -108,8 +108,6 @@ query("Why is the sky blue? Answer in one sentence.",
       ))
 ```
 
-This is considerable advatage of `Ollama`, and `rollama` respectivly, over tools like ChatGPT, which will return different results each time and change the underlying models periodically. 
-
 # Examples
 
 We present several examples to illustrate some functionalities. As mentioned previously, many tasks that can be performed through OpenAI's API can also be accomplished by using open models within `Ollama`. Moreover, these models can be controlled with a seed, ensuring reproducible results.
@@ -148,14 +146,13 @@ query("Excitedly desscribe this logo", model = "llava",
 
 `Ollama`, and hence rollama, can be utilized to generate text embeddings. In short, text embedding uses the knowledge of the meaning of words inferred from the context they are used in and saved in a large language model through its training to turn text into meaningful vectors of numbers [@kroon_transfer-learning2023].
 This technique is a powerful preprocessing step for supervised machine learning and often increases the performance of a classification model substantially [@laurer_benchmarking2024].
-The gLLMs, like the default llama2, which are the focus of `Ollama` can produce high quality document embeddings, however, to speed up the procedure, one can use specialized embedding models like nomic-embed-text[^6] or all-minilm[^7].
+GLLMs can produce high-quality document embeddings, such as the current default model of `Ollama` llama2. However, to speed up the procedure, one can use specialized embedding models like nomic-embed-text[^6] or all-minilm[^7].
 
 ``` r
 pull_model(model = "nomic-embed-text")
 embed_text(text = "It’s a beautiful day", model = "nomic-embed-text")
 ```
 
-These models were previously only available in Python, with the only ... for R users to use them through Python interface provided by `reticulate` [@ushey_reticulate2024] or packages build on top of it [e.g. @chan_grafzahl2023; @kjell_text2023] -- which users regularly struggle with due to the complexity of Python environments.
 For a more detailed example of using embeddings for training supervised machine learning models and doing classification tasks, refer to the package documentation[^8]. 
 
 [^6]: <https://ollama.com/library/nomic-embed-text>
