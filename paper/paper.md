@@ -153,6 +153,9 @@ pull_model(model = "nomic-embed-text")
 embed_text(text = "It’s a beautiful day", model = "nomic-embed-text")
 ```
 
+Transformer based text embedding models were previously only available in Python, with the only pathway for R users to employ them being the Python interface provided by `reticulate` [@ushey_reticulate2024] or packages built on top of it [e.g. @chan_grafzahl2023; @kjell_text2023].
+While these usually work well, non-technical R users regularly struggle with the requirement to set up the necessary Python environments.
+`Ollama`, and hence `rollama`, circumvents this step by packaging the whole application in an executable or Docker image.
 For a more detailed example of using embeddings for training supervised machine learning models and doing classification tasks, refer to the package documentation[^8]. 
 
 [^6]: <https://ollama.com/library/nomic-embed-text>
