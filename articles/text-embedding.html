@@ -33,7 +33,7 @@
     
     <a class="navbar-brand me-2" href="../index.html">rollama</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.2.9000</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.3</small>
 
     
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -109,26 +109,26 @@ multiple tasks.</p>
 <span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">reviews_df</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 23,486</span></span>
 <span><span class="co">#&gt; Columns: 11</span></span>
-<span><span class="co">#&gt; $ ...1                      [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 1…</span></span>
-<span><span class="co">#&gt; $ `Clothing ID`             [3m[38;5;246m&lt;dbl&gt;[39m[23m 767, 1080, 1077, 1049, 847, 108…</span></span>
-<span><span class="co">#&gt; $ Age                       [3m[38;5;246m&lt;dbl&gt;[39m[23m 33, 34, 60, 50, 47, 49, 39, 39,…</span></span>
-<span><span class="co">#&gt; $ Title                     [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, "Some major design flaw…</span></span>
-<span><span class="co">#&gt; $ `Review Text`             [3m[38;5;246m&lt;chr&gt;[39m[23m "Absolutely wonderful - silky a…</span></span>
-<span><span class="co">#&gt; $ Rating                    [3m[38;5;246m&lt;dbl&gt;[39m[23m 4, 5, 3, 5, 5, 2, 5, 4, 5, 5, 3…</span></span>
-<span><span class="co">#&gt; $ `Recommended IND`         [3m[38;5;246m&lt;dbl&gt;[39m[23m 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0…</span></span>
-<span><span class="co">#&gt; $ `Positive Feedback Count` [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 4, 0, 0, 6, 4, 1, 4, 0, 0, 1…</span></span>
-<span><span class="co">#&gt; $ `Division Name`           [3m[38;5;246m&lt;chr&gt;[39m[23m "Initmates", "General", "Genera…</span></span>
-<span><span class="co">#&gt; $ `Department Name`         [3m[38;5;246m&lt;chr&gt;[39m[23m "Intimate", "Dresses", "Dresses…</span></span>
-<span><span class="co">#&gt; $ `Class Name`              [3m[38;5;246m&lt;chr&gt;[39m[23m "Intimates", "Dresses", "Dresse…</span></span></code></pre></div>
+<span><span class="co">#&gt; $ ...1                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 2, 3, 4, 5, 6,…</span></span>
+<span><span class="co">#&gt; $ `Clothing ID`             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 767, 1080, 1077, 104…</span></span>
+<span><span class="co">#&gt; $ Age                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 33, 34, 60, 50, 47, …</span></span>
+<span><span class="co">#&gt; $ Title                     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, "Some major …</span></span>
+<span><span class="co">#&gt; $ `Review Text`             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Absolutely wonderfu…</span></span>
+<span><span class="co">#&gt; $ Rating                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4, 5, 3, 5, 5, 2, 5,…</span></span>
+<span><span class="co">#&gt; $ `Recommended IND`         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 0, 1, 1, 0, 1,…</span></span>
+<span><span class="co">#&gt; $ `Positive Feedback Count` <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 4, 0, 0, 6, 4, 1,…</span></span>
+<span><span class="co">#&gt; $ `Division Name`           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Initmates", "Genera…</span></span>
+<span><span class="co">#&gt; $ `Department Name`         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Intimate", "Dresses…</span></span>
+<span><span class="co">#&gt; $ `Class Name`              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Intimates", "Dresse…</span></span></code></pre></div>
 <p>Now this is a rather big dataset, and I don’t want to stress my GPU
-too much, so I only select the first 250 reviews for embedding. I also
+too much, so I only select the first 500 reviews for embedding. I also
 process the data slightly by combining the title and review text into a
 single column and turning the rating into a binary variable:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reviews</span> <span class="op">&lt;-</span> <span class="va">reviews_df</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">slice_head</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">250</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">slice_head</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">500</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">rename</span><span class="op">(</span>id <span class="op">=</span> <span class="va">...1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>rating <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Rating</span> <span class="op">==</span> <span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"5"</span>, <span class="st">"&lt;5"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>rating <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Rating</span> <span class="op">==</span> <span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"5"</span>, <span class="st">"&lt;5"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">mutate</span><span class="op">(</span>full_text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Title</span><span class="op">)</span>, <span class="st">""</span>, <span class="va">Title</span><span class="op">)</span>, <span class="va">`Review Text`</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>To turn one or multiple texts into embeddings, you can simply use
 <code>embed_text</code>:</p>
@@ -151,37 +151,44 @@ single column and turning the rating into a binary variable:</p>
 <p>To use this on the sample of reviews, I put the embeddings into a new
 column, before unnesting the resulting data.frame. The reason behind
 this is that I want to make sure the embeddings belong to the correct
-review ID:</p>
+review ID. I also use a different model this time: <a href="https://ollama.com/library/nomic-embed-text" class="external-link"><code>nomic-embed-text</code></a>.
+While models like <code>llama2</code> are extremely powerful at handling
+conversations and natural language requests, they are also
+computationally intensive, and hence relatively slow. As of version
+0.1.26, Ollama support using dedicated embedding models, which can
+perform the task a lot faster and with fewer resources. Download the
+model with <code>pull_model("nomic-embed-text")</code> then we can
+run:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">reviews_embeddings</span> <span class="op">&lt;-</span> <span class="va">reviews</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">mutate</span><span class="op">(</span>embeddings <span class="op">=</span> <span class="fu"><a href="../reference/embed_text.html">embed_text</a></span><span class="op">(</span>text <span class="op">=</span> <span class="va">full_text</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">select</span><span class="op">(</span><span class="va">id</span>, <span class="va">rating</span>, <span class="va">embeddings</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<code class="sourceCode R"><span><span class="va">reviews_embeddings</span> <span class="op">&lt;-</span> <span class="va">reviews</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>embeddings <span class="op">=</span> <span class="fu"><a href="../reference/embed_text.html">embed_text</a></span><span class="op">(</span>text <span class="op">=</span> <span class="va">full_text</span>, model <span class="op">=</span> <span class="st">"nomic-embed-text"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">id</span>, <span class="va">rating</span>, <span class="va">embeddings</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">unnest_wider</span><span class="op">(</span><span class="va">embeddings</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ embedded 250 texts [1m 57.8s]       </span></span></code></pre></div>
-<p>The resulting data.frame contains the ID and rating along the 4,096
+<span><span class="co">#&gt; ✔ embedded 500 texts [7m 19.4s]       </span></span></code></pre></div>
+<p>The resulting data.frame contains the ID and rating along the 768
 embedding dimensions:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reviews_embeddings</span></span>
-<span><span class="co">#&gt; # A tibble: 250 × 4,098</span></span>
-<span><span class="co">#&gt;       id rating  dim_1  dim_2  dim_3  dim_4 dim_5  dim_6  dim_7</span></span>
-<span><span class="co">#&gt;    &lt;dbl&gt; &lt;fct&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt;  1     0 &lt;5      1.85  -1.71   1.47   0.478 -1.75  0.771  3.01 </span></span>
-<span><span class="co">#&gt;  2     1 5       1.14  -3.61   2.10  -0.385 -4.11 -3.09   0.990</span></span>
-<span><span class="co">#&gt;  3     2 &lt;5     -3.35   0.172 -3.49  -0.569 -3.14  1.25  -0.102</span></span>
-<span><span class="co">#&gt;  4     3 5       2.41  -3.97  -1.27  -0.839 -4.06 -2.64   0.672</span></span>
-<span><span class="co">#&gt;  5     4 5      -0.144 -1.98   0.367 -0.908 -2.29 -0.805 -0.921</span></span>
-<span><span class="co">#&gt;  6     5 &lt;5     -0.975 -1.47   0.441 -1.90  -3.05 -1.53  -0.941</span></span>
-<span><span class="co">#&gt;  7     6 5       1.35  -0.397  0.874  0.643 -1.26 -2.45   0.659</span></span>
-<span><span class="co">#&gt;  8     7 &lt;5      1.63  -2.00  -0.619 -0.981 -3.44 -1.80   0.440</span></span>
-<span><span class="co">#&gt;  9     8 5      -1.33  -2.35   0.671 -1.46  -3.16 -1.44  -0.880</span></span>
-<span><span class="co">#&gt; 10     9 5       1.39  -2.13   1.36  -0.702 -4.00 -1.37   0.979</span></span>
-<span><span class="co">#&gt; # ℹ 240 more rows</span></span>
-<span><span class="co">#&gt; # ℹ 4,089 more variables: dim_8 &lt;dbl&gt;, dim_9 &lt;dbl&gt;, dim_10 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_11 &lt;dbl&gt;, dim_12 &lt;dbl&gt;, dim_13 &lt;dbl&gt;, dim_14 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_15 &lt;dbl&gt;, dim_16 &lt;dbl&gt;, dim_17 &lt;dbl&gt;, dim_18 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_19 &lt;dbl&gt;, dim_20 &lt;dbl&gt;, dim_21 &lt;dbl&gt;, dim_22 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_23 &lt;dbl&gt;, dim_24 &lt;dbl&gt;, dim_25 &lt;dbl&gt;, dim_26 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_27 &lt;dbl&gt;, dim_28 &lt;dbl&gt;, dim_29 &lt;dbl&gt;, dim_30 &lt;dbl&gt;, …</span></span></code></pre></div>
+<span><span class="co">#&gt; # A tibble: 500 × 770</span></span>
+<span><span class="co">#&gt;       id rating   dim_1 dim_2 dim_3  dim_4   dim_5 dim_6</span></span>
+<span><span class="co">#&gt;    &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1     0 &lt;5      1.23   1.66  -3.35 -0.161 -0.0393 0.113</span></span>
+<span><span class="co">#&gt;  2     1 5       0.881  0.696 -2.34 -0.798 -1.56   1.53 </span></span>
+<span><span class="co">#&gt;  3     2 &lt;5      0.507  1.03  -2.10 -0.398 -0.822  1.78 </span></span>
+<span><span class="co">#&gt;  4     3 5      -0.253  0.866 -3.12 -0.225 -0.562  1.14 </span></span>
+<span><span class="co">#&gt;  5     4 5       0.308  1.05  -2.80 -1.20  -0.466  0.477</span></span>
+<span><span class="co">#&gt;  6     5 &lt;5      0.860  0.894 -2.29 -0.642 -1.38   2.24 </span></span>
+<span><span class="co">#&gt;  7     6 5       0.573  0.257 -2.26 -0.681 -0.592  0.461</span></span>
+<span><span class="co">#&gt;  8     7 &lt;5      0.199  0.628 -2.33 -0.374 -1.51   0.174</span></span>
+<span><span class="co">#&gt;  9     8 5      -0.124  1.19  -3.17 -0.267 -0.705  0.683</span></span>
+<span><span class="co">#&gt; 10     9 5      -0.0137 1.05  -2.54 -0.214 -1.48   0.721</span></span>
+<span><span class="co">#&gt; # ℹ 490 more rows</span></span>
+<span><span class="co">#&gt; # ℹ 762 more variables: dim_7 &lt;dbl&gt;, dim_8 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_9 &lt;dbl&gt;, dim_10 &lt;dbl&gt;, dim_11 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_12 &lt;dbl&gt;, dim_13 &lt;dbl&gt;, dim_14 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_15 &lt;dbl&gt;, dim_16 &lt;dbl&gt;, dim_17 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_18 &lt;dbl&gt;, dim_19 &lt;dbl&gt;, dim_20 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_21 &lt;dbl&gt;, dim_22 &lt;dbl&gt;, dim_23 &lt;dbl&gt;, …</span></span></code></pre></div>
 <p>As said above, these embeddings are often used in supervised machine
 learning. I use part of <a href="https://emilhvitfeldt.com/post/textrecipes-series-pretrained-word-embeddings/" class="external-link">a
 blog post by Emil Hvitfeldt</a> show how this can be done using the data
@@ -195,7 +202,7 @@ packages:</p>
 <span></span>
 <span><span class="va">reviews_train</span> <span class="op">&lt;-</span> <span class="fu">training</span><span class="op">(</span><span class="va">reviews_split</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># set up the model we want to use </span></span>
+<span><span class="co"># set up the model we want to use</span></span>
 <span><span class="va">lasso_spec</span> <span class="op">&lt;-</span> <span class="fu">logistic_reg</span><span class="op">(</span>penalty <span class="op">=</span> <span class="fu">tune</span><span class="op">(</span><span class="op">)</span>, mixture <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">set_engine</span><span class="op">(</span><span class="st">"glmnet"</span><span class="op">)</span></span>
 <span></span>
@@ -217,7 +224,7 @@ packages:</p>
 <span>  <span class="va">wf_fh</span>,</span>
 <span>  resamples <span class="op">=</span> <span class="va">reviews_boot</span>,</span>
 <span>  grid <span class="op">=</span> <span class="va">param_grid</span></span>
-<span><span class="op">)</span> </span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># select the best model</span></span>
 <span><span class="va">wf_fh_final</span> <span class="op">&lt;-</span> <span class="va">wf_fh</span> <span class="op">|&gt;</span></span>
@@ -237,17 +244,17 @@ packages:</p>
 <span><span class="co">#&gt; # A tibble: 4 × 3</span></span>
 <span><span class="co">#&gt;   .metric   .estimator .estimate</span></span>
 <span><span class="co">#&gt;   &lt;chr&gt;     &lt;chr&gt;          &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 accuracy  binary         0.778</span></span>
-<span><span class="co">#&gt; 2 precision binary         0.765</span></span>
-<span><span class="co">#&gt; 3 recall    binary         0.812</span></span>
-<span><span class="co">#&gt; 4 f_meas    binary         0.788</span></span>
+<span><span class="co">#&gt; 1 accuracy  binary         0.752</span></span>
+<span><span class="co">#&gt; 2 precision binary         0.694</span></span>
+<span><span class="co">#&gt; 3 recall    binary         0.847</span></span>
+<span><span class="co">#&gt; 4 f_meas    binary         0.763</span></span>
 <span></span>
 <span><span class="co"># and the ROC curve</span></span>
-<span><span class="va">final_pred</span> <span class="op">|&gt;</span> </span>
-<span>  <span class="fu">roc_curve</span><span class="op">(</span><span class="va">rating</span>, <span class="va">.pred_5</span><span class="op">)</span> <span class="op">|&gt;</span> </span>
+<span><span class="va">final_pred</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">roc_curve</span><span class="op">(</span><span class="va">rating</span>, <span class="va">.pred_5</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">autoplot</span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <div class="float">
-<img src="figures/smldemo.png" alt="ROC curve"><div class="figcaption">ROC curve</div>
+<img src="figures/smldemo-1.png" alt="ROC curve"><div class="figcaption">ROC curve</div>
 </div>
   </main>
 </div>
