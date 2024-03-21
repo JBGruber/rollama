@@ -15,7 +15,7 @@ embed_text(
 \arguments{
 \item{text}{text vector to generate embeddings for.}
 
-\item{model}{which model to use. See \url{https://ollama.ai/library} for options.
+\item{model}{which model to use. See \url{https://ollama.com/library} for options.
 Default is "llama2". Set option(rollama_model = "modelname") to change
 default for the current session. See \link{pull_model} for more details.}
 

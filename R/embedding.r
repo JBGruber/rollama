@@ -1,7 +1,7 @@
 #' Generate Embeddings
 #'
 #' @param text text vector to generate embeddings for.
-#' @param model which model to use. See <https://ollama.ai/library> for options.
+#' @param model which model to use. See <https://ollama.com/library> for options.
 #'   Default is "llama2". Set option(rollama_model = "modelname") to change
 #'   default for the current session. See \link{pull_model} for more details.
 #' @param verbose Whether to print status messages to the Console

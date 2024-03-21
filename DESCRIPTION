@@ -11,7 +11,7 @@ Authors@R:
            family = "Weber",
            role = c("aut", "ctb"),
            comment = c(ORCID = "0000-0002-1174-449X")))
-Description: Wraps the 'Ollama' <https://ollama.ai> API, which can be used to 
+Description: Wraps the 'Ollama' <https://ollama.com> API, which can be used to 
     communicate with generative large language models locally.
 License: GPL (>= 3)
 Encoding: UTF-8

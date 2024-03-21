@@ -62,7 +62,7 @@ docker-compose up -d
 ## Example
 
 The first thing you should do after installation is to pull one of the
-models from <https://ollama.ai/library>. By calling `pull_model()` 
+models from <https://ollama.com/library>. By calling `pull_model()` 
 without arguments, you are pulling the (current) default model  --- "llama2 7b":
 
 ``` r
@@ -218,8 +218,8 @@ query("why is the sky blue?")
 ```
 
 By default, the package uses the "llama2 7B" model. Supported models can be found 
-at <https://ollama.ai/library>. To download a specific model make use of the additional 
-information available in "Tags" <https://ollama.ai/library/mistral/tags>.
+at <https://ollama.com/library>. To download a specific model make use of the additional 
+information available in "Tags" <https://ollama.com/library/mistral/tags>.
 Change this via `rollama_model`:
 
 ``` r
