@@ -11,3 +11,5 @@
 ^update.r
 ^cran-comments\.md$
 ^CRAN-SUBMISSION$
+^docker-compose.yml$
+^paper$

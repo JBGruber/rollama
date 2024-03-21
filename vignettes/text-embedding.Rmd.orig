@@ -34,12 +34,12 @@ reviews_df <- read_csv("https://raw.githubusercontent.com/AFAgarap/ecommerce-rev
 glimpse(reviews_df)
 ```
 
-Now this is a rather big dataset, and I don't want to stress my GPU too much, so I only select the first 250 reviews for embedding.
+Now this is a rather big dataset, and I don't want to stress my GPU too much, so I only select the first 500 reviews for embedding.
 I also process the data slightly by combining the title and review text into a single column and turning the rating into a binary variable:
 
 ```{r processing}
 reviews <- reviews_df |>
-  slice_head(n = 250) |>
+  slice_head(n = 500) |>
   rename(id = ...1) |>
   mutate(rating = factor(Rating == 5, c(TRUE, FALSE), c("5", "<5"))) |>
   mutate(full_text = paste0(ifelse(is.na(Title), "", Title), `Review Text`))
@@ -52,21 +52,24 @@ embed_text(text = reviews$full_text[1:3])
 ```
 
 To use this on the sample of reviews, I put the embeddings into a new column, before unnesting the resulting data.frame.
-The reason behind this is that I want to make sure the embeddings belong to the correct review ID:
+The reason behind this is that I want to make sure the embeddings belong to the correct review ID.
+I also use a different model this time: [`nomic-embed-text`](https://ollama.com/library/nomic-embed-text).
+While models like `llama2` are extremely powerful at handling conversations and natural language requests, they are also computationally intensive, and hence relatively slow.
+As of version 0.1.26, Ollama support using dedicated embedding models, which can perform the task a lot faster and with fewer resources.
+Download the model with `pull_model("nomic-embed-text")` then we can run:
 
 ```{r embedding, message=TRUE}
 reviews_embeddings <- reviews |>
-  mutate(embeddings = embed_text(text = full_text)) |>
+  mutate(embeddings = embed_text(text = full_text, model = "nomic-embed-text")) |>
   select(id, rating, embeddings) |>
   unnest_wider(embeddings)
 ```
 
-The resulting data.frame contains the ID and rating along the 4,096 embedding dimensions:
+The resulting data.frame contains the ID and rating along the 768 embedding dimensions:
 
 ```{r}
 reviews_embeddings
 ```
-
 
 As said above, these embeddings are often used in supervised machine learning.
 I use part of [a blog post by Emil Hvitfeldt](https://emilhvitfeldt.com/post/textrecipes-series-pretrained-word-embeddings/) show how this can be done using the data we embedded above in the powerful `tidymodels` collection of packages:
