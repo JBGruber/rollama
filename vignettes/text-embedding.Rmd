@@ -27,17 +27,17 @@ reviews_df <- read_csv("https://raw.githubusercontent.com/AFAgarap/ecommerce-rev
 glimpse(reviews_df)
 #> Rows: 23,486
 #> Columns: 11
-#> $ ...1                      [3m[38;5;246m<dbl>[39m[23m 0, 1, 2, 3, 4, 5, 6,…
-#> $ `Clothing ID`             [3m[38;5;246m<dbl>[39m[23m 767, 1080, 1077, 104…
-#> $ Age                       [3m[38;5;246m<dbl>[39m[23m 33, 34, 60, 50, 47, …
-#> $ Title                     [3m[38;5;246m<chr>[39m[23m NA, NA, "Some major …
-#> $ `Review Text`             [3m[38;5;246m<chr>[39m[23m "Absolutely wonderfu…
-#> $ Rating                    [3m[38;5;246m<dbl>[39m[23m 4, 5, 3, 5, 5, 2, 5,…
-#> $ `Recommended IND`         [3m[38;5;246m<dbl>[39m[23m 1, 1, 0, 1, 1, 0, 1,…
-#> $ `Positive Feedback Count` [3m[38;5;246m<dbl>[39m[23m 0, 4, 0, 0, 6, 4, 1,…
-#> $ `Division Name`           [3m[38;5;246m<chr>[39m[23m "Initmates", "Genera…
-#> $ `Department Name`         [3m[38;5;246m<chr>[39m[23m "Intimate", "Dresses…
-#> $ `Class Name`              [3m[38;5;246m<chr>[39m[23m "Intimates", "Dresse…
+#> $ ...1                      [3m[38;5;246m<dbl>[39m[23m 0, 1, 2, 3, 4, 5, 6,…
+#> $ `Clothing ID`             [3m[38;5;246m<dbl>[39m[23m 767, 1080, 1077, 104…
+#> $ Age                       [3m[38;5;246m<dbl>[39m[23m 33, 34, 60, 50, 47, …
+#> $ Title                     [3m[38;5;246m<chr>[39m[23m NA, NA, "Some major …
+#> $ `Review Text`             [3m[38;5;246m<chr>[39m[23m "Absolutely wonderfu…
+#> $ Rating                    [3m[38;5;246m<dbl>[39m[23m 4, 5, 3, 5, 5, 2, 5,…
+#> $ `Recommended IND`         [3m[38;5;246m<dbl>[39m[23m 1, 1, 0, 1, 1, 0, 1,…
+#> $ `Positive Feedback Count` [3m[38;5;246m<dbl>[39m[23m 0, 4, 0, 0, 6, 4, 1,…
+#> $ `Division Name`           [3m[38;5;246m<chr>[39m[23m "Initmates", "Genera…
+#> $ `Department Name`         [3m[38;5;246m<chr>[39m[23m "Intimate", "Dresses…
+#> $ `Class Name`              [3m[38;5;246m<chr>[39m[23m "Intimates", "Dresse…
 ```
 
 Now this is a rather big dataset, and I don't want to stress my GPU too much, so I only select the first 500 reviews for embedding.
