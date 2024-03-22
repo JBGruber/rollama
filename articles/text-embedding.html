@@ -109,17 +109,17 @@ multiple tasks.</p>
 <span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">reviews_df</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 23,486</span></span>
 <span><span class="co">#&gt; Columns: 11</span></span>
-<span><span class="co">#&gt; $ ...1                      <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 1, 2, 3, 4, 5, 6,…</span></span>
-<span><span class="co">#&gt; $ `Clothing ID`             <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 767, 1080, 1077, 104…</span></span>
-<span><span class="co">#&gt; $ Age                       <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 33, 34, 60, 50, 47, …</span></span>
-<span><span class="co">#&gt; $ Title                     <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> NA, NA, "Some major …</span></span>
-<span><span class="co">#&gt; $ `Review Text`             <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Absolutely wonderfu…</span></span>
-<span><span class="co">#&gt; $ Rating                    <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 4, 5, 3, 5, 5, 2, 5,…</span></span>
-<span><span class="co">#&gt; $ `Recommended IND`         <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 1, 1, 0, 1, 1, 0, 1,…</span></span>
-<span><span class="co">#&gt; $ `Positive Feedback Count` <span style="color: #949494; font-style: italic;">&lt;dbl&gt;</span> 0, 4, 0, 0, 6, 4, 1,…</span></span>
-<span><span class="co">#&gt; $ `Division Name`           <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Initmates", "Genera…</span></span>
-<span><span class="co">#&gt; $ `Department Name`         <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Intimate", "Dresses…</span></span>
-<span><span class="co">#&gt; $ `Class Name`              <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span> "Intimates", "Dresse…</span></span></code></pre></div>
+<span><span class="co">#&gt; $ ...1                      [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 1, 2, 3, 4, 5, 6,…</span></span>
+<span><span class="co">#&gt; $ `Clothing ID`             [3m[38;5;246m&lt;dbl&gt;[39m[23m 767, 1080, 1077, 104…</span></span>
+<span><span class="co">#&gt; $ Age                       [3m[38;5;246m&lt;dbl&gt;[39m[23m 33, 34, 60, 50, 47, …</span></span>
+<span><span class="co">#&gt; $ Title                     [3m[38;5;246m&lt;chr&gt;[39m[23m NA, NA, "Some major …</span></span>
+<span><span class="co">#&gt; $ `Review Text`             [3m[38;5;246m&lt;chr&gt;[39m[23m "Absolutely wonderfu…</span></span>
+<span><span class="co">#&gt; $ Rating                    [3m[38;5;246m&lt;dbl&gt;[39m[23m 4, 5, 3, 5, 5, 2, 5,…</span></span>
+<span><span class="co">#&gt; $ `Recommended IND`         [3m[38;5;246m&lt;dbl&gt;[39m[23m 1, 1, 0, 1, 1, 0, 1,…</span></span>
+<span><span class="co">#&gt; $ `Positive Feedback Count` [3m[38;5;246m&lt;dbl&gt;[39m[23m 0, 4, 0, 0, 6, 4, 1,…</span></span>
+<span><span class="co">#&gt; $ `Division Name`           [3m[38;5;246m&lt;chr&gt;[39m[23m "Initmates", "Genera…</span></span>
+<span><span class="co">#&gt; $ `Department Name`         [3m[38;5;246m&lt;chr&gt;[39m[23m "Intimate", "Dresses…</span></span>
+<span><span class="co">#&gt; $ `Class Name`              [3m[38;5;246m&lt;chr&gt;[39m[23m "Intimates", "Dresse…</span></span></code></pre></div>
 <p>Now this is a rather big dataset, and I don’t want to stress my GPU
 too much, so I only select the first 500 reviews for embedding. I also
 process the data slightly by combining the title and review text into a
