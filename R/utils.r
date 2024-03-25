@@ -101,9 +101,9 @@ make_req <- function(req_data, server, endpoint, perform = TRUE) {
 get_headers <- function() {
   agent <- the$agent
   if (is.null(agent)) {
-    sess <- sessionInfo()
+    sess <- utils::sessionInfo()
     the$agent <- agent <- paste0(
-      "rollama/", packageVersion("rollama"),
+      "rollama/", utils::packageVersion("rollama"),
       "(", sess$platform, ") ",
       sess$R.version$version.string
     )

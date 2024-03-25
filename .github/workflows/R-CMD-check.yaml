@@ -39,6 +39,13 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
+        # run Ollama Docker image
+      - name: Start Docker Container
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          docker pull ollama/ollama:latest
+          docker run -d --name ollama -p 11434:11434 ollama/ollama:latest
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
@@ -47,3 +54,29 @@ jobs:
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
+
+
+      - name: Test coverage
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          covr::codecov(
+            quiet = FALSE,
+            clean = FALSE,
+            install_path = file.path(Sys.getenv("RUNNER_TEMP"), "package")
+          )
+        shell: Rscript {0}
+
+      - name: Show testthat output
+        if: matrix.config.os == 'ubuntu-latest'
+        run: |
+          ## --------------------------------------------------------------------
+          find ${{ runner.temp }}/package -name 'testthat.Rout*' -exec cat '{}' \; || true
+        shell: bash
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage-test-failures
+          path: ${{ runner.temp }}/package
+

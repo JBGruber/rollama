@@ -13,3 +13,4 @@
 ^CRAN-SUBMISSION$
 ^docker-compose.yml$
 ^paper$
+^codecov\.yml$
