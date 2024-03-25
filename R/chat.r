@@ -135,8 +135,6 @@ query <- function(q,
                     model_params = model_params,
                     template = template)
 
-  purrr::map(resp, "message", "content")
-
   if (screen) purrr::map(resp, function(r) {
     screen_answer(purrr::pluck(r, "message", "content"),
                   purrr::pluck(r, "model"))

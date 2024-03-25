@@ -5,11 +5,11 @@
 
 <!-- badges: start -->
 
-[![Lifecycle:
-experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://lifecycle.r-lib.org/articles/stages.html#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/rollama)](https://CRAN.R-project.org/package=rollama)
 [![R-CMD-check](https://github.com/JBGruber/rollama/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JBGruber/rollama/actions/workflows/R-CMD-check.yaml)
+[![Codecov test
+coverage](https://codecov.io/gh/JBGruber/rollama/branch/main/graph/badge.svg)](https://app.codecov.io/gh/JBGruber/rollama?branch=main)
 [![say-thanks](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/JBGruber)
 <!-- badges: end -->
 
@@ -58,6 +58,11 @@ gist](https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc):
 wget https://gist.githubusercontent.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc/raw/ddf7bd411a6595d0bd770f99de62f2ac8864f6dc/docker-compose.yml
 docker-compose up -d
 ```
+
+If you don’t know how to use Docker Compose, you can follow this video:
+
+[![Install Docker on macOS, Windows and
+Linux](https://img.youtube.com/vi/iMyCdd5nP5U/0.jpg)](https://www.youtube.com/watch?v=iMyCdd5nP5U)
 
 ## Example
 
@@ -193,7 +198,7 @@ new_chat()
 You can configure the server address, the system prompt and the model
 used for a query or chat. If not configured otherwise, `rollama` assumes
 you are using the default port (11434) of a local instance
-("http://localhost""). Let’s make this explicit by setting the option:
+("http://localhost"). Let’s make this explicit by setting the option:
 
 ``` r
 options(rollama_server = "http://localhost:11434")
@@ -217,10 +222,11 @@ query("why is the sky blue?")
 #> that's why the sky is blue! Isn't that amazing? 😍
 ```
 
-By default, the package uses the "llama2 7B" model. Supported models can be found 
-at <https://ollama.com/library>. To download a specific model make use of the additional 
-information available in "Tags" <https://ollama.com/library/mistral/tags>.
-Change this via `rollama_model`:
+By default, the package uses the “llama2 7B” model. Supported models can
+be found at <https://ollama.com/library>. To download a specific model
+make use of the additional information available in “Tags”
+<https://ollama.com/library/mistral/tags>. Change this via
+`rollama_model`:
 
 ``` r
 options(rollama_model = "mixtral")
