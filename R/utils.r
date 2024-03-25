@@ -71,12 +71,15 @@ build_req <- function(model, msg, server, images, model_params, template) {
       purrr::map(httr2::resp_body_json)
   }
 
-  if (!is.null(resp$error)) {
-    if (grepl("model.+not found, try pulling it first", resp$error)) {
-      resp$error <- paste(resp$error, "with {.code pull_model(\"{model}\")}")
+  purrr::walk(resp, function(r) {
+    if (purrr::pluck_exists(r, "error")) {
+      if (grepl("model.+not found, try pulling it first", r$error)) {
+        missing <- gsub("model '|' not found, try pulling it first", "", r$error)
+        r$error <- paste(r$error, "with {.code pull_model(\"{missing}\")}")
+      }
+      cli::cli_abort(r$error)
     }
-    cli::cli_abort(resp$error)
-  }
+  })
 
   return(resp)
 }
