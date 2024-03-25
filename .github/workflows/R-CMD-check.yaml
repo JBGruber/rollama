@@ -41,7 +41,7 @@ jobs:
 
         # run Ollama Docker image
       - name: Start Docker Container
-        if: matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'ubuntu-latest' && matrix.config.r == 'release'
         run: |
           docker pull ollama/ollama:latest
           docker run -d --name ollama -p 11434:11434 ollama/ollama:latest
@@ -57,7 +57,7 @@ jobs:
 
 
       - name: Test coverage
-        if: matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'ubuntu-latest' && matrix.config.r == 'release'
         run: |
           covr::codecov(
             quiet = FALSE,
@@ -67,7 +67,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Show testthat output
-        if: matrix.config.os == 'ubuntu-latest'
+        if: matrix.config.os == 'ubuntu-latest' && matrix.config.r == 'release'
         run: |
           ## --------------------------------------------------------------------
           find ${{ runner.temp }}/package -name 'testthat.Rout*' -exec cat '{}' \; || true

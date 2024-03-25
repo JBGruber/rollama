@@ -30,6 +30,7 @@ Imports:
     tibble
 Suggests: 
     base64enc,
+    covr,
     knitr,
     rmarkdown,
     spelling,
