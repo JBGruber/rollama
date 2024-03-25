@@ -103,6 +103,8 @@
 <p>Alternatively, you can use the Docker Compose file from <a href="https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc" class="external-link">this gist</a>:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">wget</span> https://gist.githubusercontent.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc/raw/ddf7bd411a6595d0bd770f99de62f2ac8864f6dc/docker-compose.yml</span>
 <span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="ex">docker-compose</span> up <span class="at">-d</span></span></code></pre></div>
+<p>If you don’t know how to use Docker Compose, you can follow this video:</p>
+<p><a href="https://www.youtube.com/watch?v=iMyCdd5nP5U" class="external-link"><img src="https://img.youtube.com/vi/iMyCdd5nP5U/0.jpg" alt="Install Docker on macOS, Windows and Linux"></a></p>
 </div>
 <div class="section level2">
 <h2 id="example">Example<a class="anchor" aria-label="anchor" href="#example"></a>
@@ -218,7 +220,7 @@
 <div class="section level2">
 <h2 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a>
 </h2>
-<p>You can configure the server address, the system prompt and the model used for a query or chat. If not configured otherwise, <code>rollama</code> assumes you are using the default port (11434) of a local instance (“<a href="http://localhost" class="external-link uri">http://localhost</a>”“). Let’s make this explicit by setting the option:</p>
+<p>You can configure the server address, the system prompt and the model used for a query or chat. If not configured otherwise, <code>rollama</code> assumes you are using the default port (11434) of a local instance (“<a href="http://localhost" class="external-link uri">http://localhost</a>”). Let’s make this explicit by setting the option:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>rollama_server <span class="op">=</span> <span class="st">"http://localhost:11434"</span><span class="op">)</span></span></code></pre></div>
 <p>You can change how a model answers by setting a configuration or system message in plain English (or another language supported by the model):</p>
@@ -292,9 +294,9 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://lifecycle.r-lib.org/articles/stages.html#experimental" class="external-link"><img src="https://img.shields.io/badge/lifecycle-experimental-orange.svg" alt="Lifecycle: experimental"></a></li>
 <li><a href="https://CRAN.R-project.org/package=rollama" class="external-link"><img src="https://www.r-pkg.org/badges/version/rollama" alt="CRAN status"></a></li>
 <li><a href="https://github.com/JBGruber/rollama/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/JBGruber/rollama/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://app.codecov.io/gh/JBGruber/rollama?branch=main" class="external-link"><img src="https://codecov.io/gh/JBGruber/rollama/branch/main/graph/badge.svg" alt="Codecov test coverage"></a></li>
 <li><a href="https://saythanks.io/to/JBGruber" class="external-link"><img src="https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg" alt="say-thanks"></a></li>
 </ul>
 </div>
