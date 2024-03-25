@@ -87,13 +87,35 @@ make_req <- function(req_data, server, endpoint, perform = TRUE) {
     httr2::req_url_path_append(endpoint) |>
     httr2::req_body_json(prep_req_data(req_data), auto_unbox = FALSE) |>
     # turn off errors since error messages can't be seen in sub-process
-    httr2::req_error(is_error = function(resp) FALSE)
+    httr2::req_error(is_error = function(resp) FALSE) |>
+    httr2::req_headers(!!!get_headers())
   if (perform) {
     r <- r |>
       httr2::req_perform() |>
       httr2::resp_body_json()
   }
   return(r)
+}
+
+
+get_headers <- function() {
+  agent <- the$agent
+  if (is.null(agent)) {
+    sess <- sessionInfo()
+    the$agent <- agent <- paste0(
+      "rollama/", packageVersion("rollama"),
+      "(", sess$platform, ") ",
+      sess$R.version$version.string
+    )
+  }
+  list(
+    "Content-Type" = "application/json",
+    "Accept" = "application/json",
+    "User-Agent" = agent,
+    # get additional headers from option (if set)
+    getOption("rollama_headers")
+  ) |>
+    unlist()
 }
 
 
