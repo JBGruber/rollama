@@ -14,15 +14,18 @@ ping_ollama <- function(server = NULL, silent = FALSE) {
                                            default = "http://localhost:11434")
   res <- try({
     httr2::request(server) |>
+      httr2::req_url_path("api/version") |>
       httr2::req_perform() |>
-      httr2::resp_body_string()
+      httr2::resp_body_json()
   }, silent = TRUE)
 
-  if (!methods::is(res, "try-error") & res == "Ollama is running") {
+  if (!methods::is(res, "try-error") & purrr::pluck_exists(res, "version")) {
     if (!silent) cli::cli_inform(
-      "{cli::col_green(cli::symbol$play)} {res} at {.url {server}}!"
+      "{cli::col_green(cli::symbol$play)} Ollama (v{res$version}) is running at {.url {server}}!"
     )
-    invisible(TRUE)
+    out <- TRUE
+    attr(out, "v") <- res$version
+    invisible(out)
   } else {
     if (!silent) {
       cli::cli_alert_danger("Could not connect to Ollama at {.url {server}}")
