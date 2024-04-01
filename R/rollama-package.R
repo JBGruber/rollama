@@ -1,3 +1,6 @@
+# package environment
+the <- new.env()
+
 #' @keywords internal
 "_PACKAGE"
 
