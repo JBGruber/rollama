@@ -15,8 +15,10 @@
 #'   "http://localhost:11434".
 #' @param images path(s) to images (for multimodal models such as llava).
 #' @param model_params a named list of additional model parameters listed in the
-#'   documentation for the Modelfile such as temperature. Use a seed and set the
-#'   temperature to zero to get reproducible results (see examples).
+#'   [documentation for the
+#'   Modelfile](https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values)
+#'   such as temperature. Use a seed and set the temperature to zero to get
+#'   reproducible results (see examples).
 #' @param format the format to return a response in. Currently the only accepted
 #'   value is `"json"`.
 #' @param template the prompt template to use (overrides what is defined in the

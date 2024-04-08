@@ -42,8 +42,9 @@ details.}
 \item{images}{path(s) to images (for multimodal models such as llava).}
 
 \item{model_params}{a named list of additional model parameters listed in the
-documentation for the Modelfile such as temperature. Use a seed and set the
-temperature to zero to get reproducible results (see examples).}
+\href{https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values}{documentation for the Modelfile}
+such as temperature. Use a seed and set the temperature to zero to get
+reproducible results (see examples).}
 
 \item{format}{the format to return a response in. Currently the only accepted
 value is \code{"json"}.}
