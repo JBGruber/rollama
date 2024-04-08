@@ -119,7 +119,7 @@
 <code class="sourceCode R"><span><span class="co"># ask a single question</span></span>
 <span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="st">"why is the sky blue?"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ──────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama2 ──────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, which</span></span>
 <span><span class="co">#&gt; occurs when light travels through the Earth's atmosphere. In this process,</span></span>
@@ -150,7 +150,7 @@
 <code class="sourceCode R"><span><span class="co"># hold a conversation</span></span>
 <span><span class="fu"><a href="reference/query.html">chat</a></span><span class="op">(</span><span class="st">"why is the sky blue?"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ──────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama2 ──────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering. When</span></span>
 <span><span class="co">#&gt; sunlight enters Earth's atmosphere, it encounters tiny molecules of gases such</span></span>
@@ -178,7 +178,7 @@
 <span><span class="co">#&gt; wavelengths by tiny molecules in Earth's atmosphere.</span></span>
 <span><span class="fu"><a href="reference/query.html">chat</a></span><span class="op">(</span><span class="st">"and how do you know that?"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ──────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama2 ──────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; I know that the sky appears blue due to Rayleigh scattering because it is a</span></span>
 <span><span class="co">#&gt; well-established scientific fact that has been observed, measured, and</span></span>
@@ -218,17 +218,172 @@
 <code class="sourceCode R"><span><span class="fu"><a href="reference/chat_history.html">new_chat</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
+<h2 id="model-parameters">Model parameters<a class="anchor" aria-label="anchor" href="#model-parameters"></a>
+</h2>
+<p>You can set a number of model parameters, either by creating a new model, with a <a href="https://jbgruber.github.io/rollama/reference/create_model.html">modelfile</a>, or by including the parameters in the prompt:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="st">"why is the sky blue?"</span>, model_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
+<span>  seed <span class="op">=</span> <span class="fl">42</span>,</span>
+<span>  temperature <span class="op">=</span> <span class="fl">0</span>,</span>
+<span>  num_gpu <span class="op">=</span> <span class="fl">0</span></span>
+<span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer from llama2 ──────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, which</span></span>
+<span><span class="co">#&gt; occurs when sunlight enters Earth's atmosphere. The sunlight encounters tiny</span></span>
+<span><span class="co">#&gt; molecules of gases such as nitrogen and oxygen, which scatter the light in all</span></span>
+<span><span class="co">#&gt; directions.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; The shorter wavelengths of light, such as blue and violet, are scattered more</span></span>
+<span><span class="co">#&gt; than the longer wavelengths, such as red and orange. This is known as</span></span>
+<span><span class="co">#&gt; Rayleigh's Law. As a result, the blue light is dispersed throughout the</span></span>
+<span><span class="co">#&gt; atmosphere, giving the sky its blue appearance.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; The reason why the sky appears blue under these conditions is due to the way</span></span>
+<span><span class="co">#&gt; that our eyes perceive colors. When white light enters our eyes, it is filtered</span></span>
+<span><span class="co">#&gt; through the lens and hits the retina, which contains cells called cone cells</span></span>
+<span><span class="co">#&gt; that are sensitive to different wavelengths of light. The cells are most</span></span>
+<span><span class="co">#&gt; sensitive to the blue and violet end of the spectrum, so when we look at a blue</span></span>
+<span><span class="co">#&gt; sky, our brains interpret this as the dominant color.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; It's worth noting that the appearance of the sky can vary depending on a number</span></span>
+<span><span class="co">#&gt; of factors, including the time of day, the amount of dust and water vapor in</span></span>
+<span><span class="co">#&gt; the air, and the angle of the sun. For example, during sunrise and sunset, the</span></span>
+<span><span class="co">#&gt; sky can take on hues of red, orange, and pink due to the scattering of light by</span></span>
+<span><span class="co">#&gt; atmospheric particles.</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; In summary, the sky appears blue because of the way that light is scattered in</span></span>
+<span><span class="co">#&gt; the atmosphere, and how our eyes perceive colors.</span></span></code></pre></div>
+<div class="section level4">
+<h4 id="valid-parameters-and-values">Valid Parameters and Values<a class="anchor" aria-label="anchor" href="#valid-parameters-and-values"></a>
+</h4>
+<table class="table">
+<colgroup>
+<col width="4%">
+<col width="84%">
+<col width="3%">
+<col width="6%">
+</colgroup>
+<thead><tr class="header">
+<th>Parameter</th>
+<th>Description</th>
+<th>Value Type</th>
+<th>Example Usage</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>mirostat</td>
+<td>Enable Mirostat sampling for controlling perplexity. (default: 0, 0 = disabled, 1 = Mirostat, 2 = Mirostat 2.0)</td>
+<td>int</td>
+<td>mirostat 0</td>
+</tr>
+<tr class="even">
+<td>mirostat_eta</td>
+<td>Influences how quickly the algorithm responds to feedback from the generated text. A lower learning rate will result in slower adjustments, while a higher learning rate will make the algorithm more responsive. (Default: 0.1)</td>
+<td>float</td>
+<td>mirostat_eta 0.1</td>
+</tr>
+<tr class="odd">
+<td>mirostat_tau</td>
+<td>Controls the balance between coherence and diversity of the output. A lower value will result in more focused and coherent text. (Default: 5.0)</td>
+<td>float</td>
+<td>mirostat_tau 5.0</td>
+</tr>
+<tr class="even">
+<td>num_ctx</td>
+<td>Sets the size of the context window used to generate the next token. (Default: 2048)</td>
+<td>int</td>
+<td>num_ctx 4096</td>
+</tr>
+<tr class="odd">
+<td>num_gqa</td>
+<td>The number of GQA groups in the transformer layer. Required for some models, for example it is 8 for llama2:70b</td>
+<td>int</td>
+<td>num_gqa 1</td>
+</tr>
+<tr class="even">
+<td>num_gpu</td>
+<td>The number of layers to send to the GPU(s). On macOS it defaults to 1 to enable metal support, 0 to disable.</td>
+<td>int</td>
+<td>num_gpu 50</td>
+</tr>
+<tr class="odd">
+<td>num_thread</td>
+<td>Sets the number of threads to use during computation. By default, Ollama will detect this for optimal performance. It is recommended to set this value to the number of physical CPU cores your system has (as opposed to the logical number of cores).</td>
+<td>int</td>
+<td>num_thread 8</td>
+</tr>
+<tr class="even">
+<td>repeat_last_n</td>
+<td>Sets how far back for the model to look back to prevent repetition. (Default: 64, 0 = disabled, -1 = num_ctx)</td>
+<td>int</td>
+<td>repeat_last_n 64</td>
+</tr>
+<tr class="odd">
+<td>repeat_penalty</td>
+<td>Sets how strongly to penalize repetitions. A higher value (e.g., 1.5) will penalize repetitions more strongly, while a lower value (e.g., 0.9) will be more lenient. (Default: 1.1)</td>
+<td>float</td>
+<td>repeat_penalty 1.1</td>
+</tr>
+<tr class="even">
+<td>temperature</td>
+<td>The temperature of the model. Increasing the temperature will make the model answer more creatively. (Default: 0.8)</td>
+<td>float</td>
+<td>temperature 0.7</td>
+</tr>
+<tr class="odd">
+<td>seed</td>
+<td>Sets the random number seed to use for generation. Setting this to a specific number will make the model generate the same text for the same prompt. (Default: 0)</td>
+<td>int</td>
+<td>seed 42</td>
+</tr>
+<tr class="even">
+<td>stop</td>
+<td>Sets the stop sequences to use. When this pattern is encountered the LLM will stop generating text and return. Multiple stop patterns may be set by specifying multiple separate <code>stop</code> parameters in a modelfile.</td>
+<td>string</td>
+<td>stop “AI assistant:”</td>
+</tr>
+<tr class="odd">
+<td>tfs_z</td>
+<td>Tail free sampling is used to reduce the impact of less probable tokens from the output. A higher value (e.g., 2.0) will reduce the impact more, while a value of 1.0 disables this setting. (default: 1)</td>
+<td>float</td>
+<td>tfs_z 1</td>
+</tr>
+<tr class="even">
+<td>num_predict</td>
+<td>Maximum number of tokens to predict when generating text. (Default: 128, -1 = infinite generation, -2 = fill context)</td>
+<td>int</td>
+<td>num_predict 42</td>
+</tr>
+<tr class="odd">
+<td>top_k</td>
+<td>Reduces the probability of generating nonsense. A higher value (e.g. 100) will give more diverse answers, while a lower value (e.g. 10) will be more conservative. (Default: 40)</td>
+<td>int</td>
+<td>top_k 40</td>
+</tr>
+<tr class="even">
+<td>top_p</td>
+<td>Works together with top-k. A higher value (e.g., 0.95) will lead to more diverse text, while a lower value (e.g., 0.5) will generate more focused and conservative text. (Default: 0.9)</td>
+<td>float</td>
+<td>top_p 0.9</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="section level2">
 <h2 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a>
 </h2>
 <p>You can configure the server address, the system prompt and the model used for a query or chat. If not configured otherwise, <code>rollama</code> assumes you are using the default port (11434) of a local instance (“<a href="http://localhost" class="external-link uri">http://localhost</a>”). Let’s make this explicit by setting the option:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>rollama_server <span class="op">=</span> <span class="st">"http://localhost:11434"</span><span class="op">)</span></span></code></pre></div>
 <p>You can change how a model answers by setting a configuration or system message in plain English (or another language supported by the model):</p>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>rollama_config <span class="op">=</span> <span class="st">"You make answers understandable to a 5 year old"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="st">"why is the sky blue?"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ──────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama2 ──────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; Oh, wow! That's a great question! *giggles* You know what? The sky is blue</span></span>
 <span><span class="co">#&gt; because of tiny little things called "water drops" that are up there in the</span></span>
 <span><span class="co">#&gt; air. They reflect sunlight and make the sky look blue! Just like when you hold</span></span>
@@ -238,12 +393,12 @@
 <span><span class="co">#&gt; it's red during sunset, or yellow during sunrise. It's like magic! *smiles* So,</span></span>
 <span><span class="co">#&gt; that's why the sky is blue! Isn't that amazing? 😍</span></span></code></pre></div>
 <p>By default, the package uses the “llama2 7B” model. Supported models can be found at <a href="https://ollama.com/library" class="external-link uri">https://ollama.com/library</a>. To download a specific model make use of the additional information available in “Tags” <a href="https://ollama.com/library/mistral/tags" class="external-link uri">https://ollama.com/library/mistral/tags</a>. Change this via <code>rollama_model</code>:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>rollama_model <span class="op">=</span> <span class="st">"mixtral"</span><span class="op">)</span></span>
 <span><span class="co"># if you don't have the model yet: pull_model("mixtral")</span></span>
 <span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="st">"why is the sky blue?"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer ──────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from mixtral ─────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; When the sun shines, it sends out little bits of light called "sunlight."</span></span>
 <span><span class="co">#&gt; Sunlight is made up of different colors, like red, orange, yellow, green, blue,</span></span>
 <span><span class="co">#&gt; and purple. You can see all these colors in a rainbow!</span></span>
