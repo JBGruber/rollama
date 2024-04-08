@@ -16,9 +16,10 @@ knitr::opts_chunk$set(
 # `rollama` <img src="man/figures/logo.png" align="right" height="138" alt="rollama-logo" />
 
 <!-- badges: start -->
-[![CRAN status](https://www.r-pkg.org/badges/version/rollama)](https://CRAN.R-project.org/package=rollama)
 [![R-CMD-check](https://github.com/JBGruber/rollama/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/JBGruber/rollama/actions/workflows/R-CMD-check.yaml)
 [![Codecov test coverage](https://codecov.io/gh/JBGruber/rollama/branch/main/graph/badge.svg)](https://app.codecov.io/gh/JBGruber/rollama?branch=main)
+[![CRAN status](https://www.r-pkg.org/badges/version/rollama)](https://CRAN.R-project.org/package=rollama)
+[![CRAN_Download_Badge](https://cranlogs.r-pkg.org/badges/grand-total/rollama)](https://cran.r-project.org/package=rollama)
 [![say-thanks](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/JBGruber)
 <!-- badges: end -->
 
