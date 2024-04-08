@@ -109,7 +109,8 @@ details.</p></dd>
 
 <dt>model_params</dt>
 <dd><p>a named list of additional model parameters listed in the
-documentation for the Modelfile such as temperature.</p></dd>
+documentation for the Modelfile such as temperature. Use a seed and set the
+temperature to zero to get reproducible results (see examples).</p></dd>
 
 
 <dt>format</dt>
@@ -137,76 +138,7 @@ messages as part of the same conversation until <a href="chat_history.html">new_
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span></span></span>
-<span class="r-in"><span><span class="co"># ask a single question</span></span></span>
-<span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="st">"why is the sky blue?"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># hold a conversation</span></span></span>
-<span class="r-in"><span><span class="fu">chat</span><span class="op">(</span><span class="st">"why is the sky blue?"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="fu">chat</span><span class="op">(</span><span class="st">"and how do you know that?"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># save the response to an object and extract the answer</span></span></span>
-<span class="r-in"><span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu">query</span><span class="op">(</span>q <span class="op">=</span> <span class="st">"why is the sky blue?"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="va">answer</span> <span class="op">&lt;-</span> <span class="va">resp</span><span class="op">$</span><span class="va">message</span><span class="op">$</span><span class="va">content</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># ask question about images (to a multimodal model)</span></span></span>
-<span class="r-in"><span><span class="va">images</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"https://avatars.githubusercontent.com/u/23524101?v=4"</span>, <span class="co"># remote</span></span></span>
-<span class="r-in"><span>            <span class="st">"/path/to/your/image.jpg"</span><span class="op">)</span> <span class="co"># or local images supported</span></span></span>
-<span class="r-in"><span><span class="fu">query</span><span class="op">(</span>q <span class="op">=</span> <span class="st">"describe these images"</span>,</span></span>
-<span class="r-in"><span>      model <span class="op">=</span> <span class="st">"llava"</span>,</span></span>
-<span class="r-in"><span>      images <span class="op">=</span> <span class="va">images</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># set custom options for the model at runtime (rather than in create_model())</span></span></span>
-<span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="st">"why is the sky blue?"</span>,</span></span>
-<span class="r-in"><span>      model_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>        num_keep <span class="op">=</span> <span class="fl">5</span>,</span></span>
-<span class="r-in"><span>        seed <span class="op">=</span> <span class="fl">42</span>,</span></span>
-<span class="r-in"><span>        num_predict <span class="op">=</span> <span class="fl">100</span>,</span></span>
-<span class="r-in"><span>        top_k <span class="op">=</span> <span class="fl">20</span>,</span></span>
-<span class="r-in"><span>        top_p <span class="op">=</span> <span class="fl">0.9</span>,</span></span>
-<span class="r-in"><span>        tfs_z <span class="op">=</span> <span class="fl">0.5</span>,</span></span>
-<span class="r-in"><span>        typical_p <span class="op">=</span> <span class="fl">0.7</span>,</span></span>
-<span class="r-in"><span>        repeat_last_n <span class="op">=</span> <span class="fl">33</span>,</span></span>
-<span class="r-in"><span>        temperature <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
-<span class="r-in"><span>        repeat_penalty <span class="op">=</span> <span class="fl">1.2</span>,</span></span>
-<span class="r-in"><span>        presence_penalty <span class="op">=</span> <span class="fl">1.5</span>,</span></span>
-<span class="r-in"><span>        frequency_penalty <span class="op">=</span> <span class="fl">1.0</span>,</span></span>
-<span class="r-in"><span>        mirostat <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>        mirostat_tau <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
-<span class="r-in"><span>        mirostat_eta <span class="op">=</span> <span class="fl">0.6</span>,</span></span>
-<span class="r-in"><span>        penalize_newline <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>        stop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"\n"</span>, <span class="st">"user:"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>        numa <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>        num_ctx <span class="op">=</span> <span class="fl">1024</span>,</span></span>
-<span class="r-in"><span>        num_batch <span class="op">=</span> <span class="fl">2</span>,</span></span>
-<span class="r-in"><span>        num_gqa <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>        num_gpu <span class="op">=</span> <span class="fl">1</span>,</span></span>
-<span class="r-in"><span>        main_gpu <span class="op">=</span> <span class="fl">0</span>,</span></span>
-<span class="r-in"><span>        low_vram <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>        f16_kv <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>        vocab_only <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>        use_mmap <span class="op">=</span> <span class="cn">TRUE</span>,</span></span>
-<span class="r-in"><span>        use_mlock <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>        embedding_only <span class="op">=</span> <span class="cn">FALSE</span>,</span></span>
-<span class="r-in"><span>        rope_frequency_base <span class="op">=</span> <span class="fl">1.1</span>,</span></span>
-<span class="r-in"><span>        rope_frequency_scale <span class="op">=</span> <span class="fl">0.8</span>,</span></span>
-<span class="r-in"><span>        num_thread <span class="op">=</span> <span class="fl">8</span></span></span>
-<span class="r-in"><span>      <span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># this might be interesting if you want to turn off the GPU and load the</span></span></span>
-<span class="r-in"><span><span class="co"># model into the system memory (slower, but most people have more RAM than</span></span></span>
-<span class="r-in"><span><span class="co"># VRAM, which might be interesting for larger models)</span></span></span>
-<span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="st">"why is the sky blue?"</span>,</span></span>
-<span class="r-in"><span>       model_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>num_gpu <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># You can use a custom prompt to override what prompt the model receives</span></span></span>
-<span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="st">"why is the sky blue?"</span>,</span></span>
-<span class="r-in"><span>      template <span class="op">=</span> <span class="st">"Just say I'm a llama!"</span><span class="op">)</span></span></span>
-<span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Asking the same question to multiple models is also supported</span></span></span>
-<span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="st">"why is the sky blue?"</span>, model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"llama2"</span>, <span class="st">"orca-mini"</span><span class="op">)</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="op">}</span></span></span>
-</code></pre></div>
+    
     </div>
   </main><aside class="col-md-3"><nav id="toc"><h2>On this page</h2>
     </nav></aside></div>
