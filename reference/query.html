@@ -66,6 +66,7 @@
 <span>  server <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  images <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  model_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  template <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -109,6 +110,11 @@ details.</p></dd>
 <dt>model_params</dt>
 <dd><p>a named list of additional model parameters listed in the
 documentation for the Modelfile such as temperature.</p></dd>
+
+
+<dt>format</dt>
+<dd><p>the format to return a response in. Currently the only accepted
+value is <code>"json"</code>.</p></dd>
 
 
 <dt>template</dt>
