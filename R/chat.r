@@ -15,7 +15,8 @@
 #'   "http://localhost:11434".
 #' @param images path(s) to images (for multimodal models such as llava).
 #' @param model_params a named list of additional model parameters listed in the
-#'   documentation for the Modelfile such as temperature.
+#'   documentation for the Modelfile such as temperature. Use a seed and set the
+#'   temperature to zero to get reproducible results (see examples).
 #' @param format the format to return a response in. Currently the only accepted
 #'   value is `"json"`.
 #' @param template the prompt template to use (overrides what is defined in the
@@ -80,6 +81,9 @@
 #'         rope_frequency_scale = 0.8,
 #'         num_thread = 8
 #'       ))
+#'
+#' # use a seed and zero temperature to get reproducible results
+#' query("why is the sky blue?", model_params = list(seed = 42, temperature = 0)
 #'
 #' # this might be interesting if you want to turn off the GPU and load the
 #' # model into the system memory (slower, but most people have more RAM than

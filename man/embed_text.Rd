@@ -23,7 +23,8 @@ default for the current session. See \link{pull_model} for more details.}
 "http://localhost:11434".}
 
 \item{model_params}{a named list of additional model parameters listed in the
-documentation for the Modelfile such as temperature.}
+documentation for the Modelfile such as temperature. Use a seed and set the
+temperature to zero to get reproducible results (see examples).}
 
 \item{verbose}{Whether to print status messages to the Console
 (\code{TRUE}/\code{FALSE}). The default is to have status messages in
