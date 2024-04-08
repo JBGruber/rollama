@@ -12,6 +12,7 @@ query(
   server = NULL,
   images = NULL,
   model_params = NULL,
+  format = NULL,
   template = NULL
 )
 
@@ -42,6 +43,9 @@ details.}
 
 \item{model_params}{a named list of additional model parameters listed in the
 documentation for the Modelfile such as temperature.}
+
+\item{format}{the format to return a response in. Currently the only accepted
+value is \code{"json"}.}
 
 \item{template}{the prompt template to use (overrides what is defined in the
 Modelfile).}

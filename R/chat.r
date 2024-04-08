@@ -16,6 +16,8 @@
 #' @param images path(s) to images (for multimodal models such as llava).
 #' @param model_params a named list of additional model parameters listed in the
 #'   documentation for the Modelfile such as temperature.
+#' @param format the format to return a response in. Currently the only accepted
+#'   value is `"json"`.
 #' @param template the prompt template to use (overrides what is defined in the
 #'   Modelfile).
 #'
@@ -98,6 +100,7 @@ query <- function(q,
                   server = NULL,
                   images = NULL,
                   model_params = NULL,
+                  format = NULL,
                   template = NULL) {
 
   if (!is.null(template))
@@ -133,6 +136,7 @@ query <- function(q,
                     server = server,
                     images = images,
                     model_params = model_params,
+                    format = format,
                     template = template)
 
   if (screen) purrr::map(resp, function(r) {

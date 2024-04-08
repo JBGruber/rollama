@@ -34,7 +34,7 @@ ping_ollama <- function(server = NULL, silent = FALSE) {
 }
 
 
-build_req <- function(model, msg, server, images, model_params, template) {
+build_req <- function(model, msg, server, images, model_params, format, template) {
 
   if (is.null(model)) model <- getOption("rollama_model", default = "llama2")
   if (is.null(server)) server <- getOption("rollama_server",
@@ -45,8 +45,9 @@ build_req <- function(model, msg, server, images, model_params, template) {
          messages = msg,
          stream = FALSE,
          options = model_params,
+         format = format,
          template = template) |>
-      purrr::compact() |>
+      purrr::compact() |> # remove NULL values
       make_req(server = server,
                endpoint = "/api/chat",
                perform = FALSE)
