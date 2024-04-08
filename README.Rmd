@@ -100,6 +100,25 @@ If you are done with a conversation and want to start a new one, you can do that
 new_chat()
 ```
 
+## Model parameters
+
+You can set a number of model parameters, either by creating a new model, with a [modelfile](https://jbgruber.github.io/rollama/reference/create_model.html), or by including the parameters in the prompt:
+
+```{r}
+query("why is the sky blue?", model_params = list(
+  seed = 42,
+  temperature = 0,
+  num_gpu = 0
+))
+```
+
+```{r include=FALSE, results='asis'}
+l <- readLines("https://raw.githubusercontent.com/ollama/ollama/main/docs/modelfile.md")
+s <- grep("#### Valid Parameters and Values", l, fixed = TRUE)
+e <- grep("### TEMPLATE", l, fixed = TRUE)
+cat(l[s:e - 1], sep = "\n")
+```
+
 
 ## Configuration
 

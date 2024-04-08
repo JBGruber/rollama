@@ -15,13 +15,13 @@ the <- new.env()
 #' \describe{
 #' \item{rollama_server}{\describe{
 #'   This controls the default server where Ollama is expected to run. It assumes
-#'   that you are running Ollama locally in a Docker container.#'
+#'   that you are running Ollama locally in a Docker container.
 #'   \item{default:}{\code{"http://localhost:11434"}}
 #' }}
 #' \item{rollama_model}{\describe{
 #'   The default model is llama2, which is a good overall option with reasonable
 #'   performance and size for most tasks. You can change the model in each
-#'   function call or globally with this option.#'
+#'   function call or globally with this option.
 #'   \item{default:}{\code{"llama2"}}
 #' }}
 #' \item{rollama_verbose}{\describe{
@@ -34,7 +34,7 @@ the <- new.env()
 #' }}
 #' \item{rollama_config}{\describe{
 #'   The default configuration or system message. If NULL, the system message
-#'   defined in the used model is employed.#'
+#'   defined in the used model is employed.
 #'   \item{default:}{None}
 #' }}
 #' }
