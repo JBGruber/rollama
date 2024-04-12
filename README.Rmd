@@ -20,6 +20,7 @@ knitr::opts_chunk$set(
 [![Codecov test coverage](https://codecov.io/gh/JBGruber/rollama/branch/main/graph/badge.svg)](https://app.codecov.io/gh/JBGruber/rollama?branch=main)
 [![CRAN status](https://www.r-pkg.org/badges/version/rollama)](https://CRAN.R-project.org/package=rollama)
 [![CRAN_Download_Badge](https://cranlogs.r-pkg.org/badges/grand-total/rollama)](https://cran.r-project.org/package=rollama)
+[![arXiv:10.48550/arXiv.2404.07654](https://img.shields.io/badge/DOI-arXiv.2404.07654-B31B1B?logo=arxiv)](https://doi.org/10.48550/arXiv.2404.07654)
 [![say-thanks](https://img.shields.io/badge/Say%20Thanks-!-1EAEDB.svg)](https://saythanks.io/to/JBGruber)
 <!-- badges: end -->
 
