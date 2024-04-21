@@ -2,6 +2,7 @@
 
 export(chat)
 export(chat_history)
+export(check_model_installed)
 export(copy_model)
 export(create_model)
 export(delete_model)

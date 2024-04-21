@@ -1,3 +1,7 @@
+# rollama 0.1.0
+
+* adds function `check_model_installed`
+
 # rollama 0.0.3
 
 * add option to query several models at once
