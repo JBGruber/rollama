@@ -1,0 +1,83 @@
+---
+title: "text-embedding"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{text-embedding}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  message = FALSE,
+  fig.path = "figures/",
+  comment = "#>"
+)
+options(tidyverse.quiet = TRUE)
+options(rollama_verbose = FALSE)
+library(rollama)
+library(ggplot2)
+library(bench)
+models <- c("tinyllama:1.1b", "llama2:latest", "llama3:latest")
+server <- NULL
+```
+
+This is the short test:
+
+```{r benchmarks_short, warning=FALSE}
+benchmarks_short <- lapply(models, function(m) {
+  bench::mark(query("Why is the sky blue?",
+                    model = m,
+                    screen = FALSE,
+                    server = server,
+                    model_params = list(seed = 42, temperature = 0)),
+              memory = FALSE,
+              min_iterations = 10L)
+}) |>
+  purrr::list_rbind()
+benchmarks_short$expression <- paste0(models, "_short")
+tab1 <- summary(benchmarks_short, relative = FALSE)
+cli::cat_rule("absolute")
+print(tab1)
+tab2 <- summary(benchmarks_short, relative = TRUE)
+cli::cat_rule("relative")
+print(tab2)
+ggplot2::autoplot(benchmarks_short)
+```
+
+This is the long test:
+
+```{r benchmarks_long, warning=FALSE}
+benchmarks_long <- lapply(models, function(m) {
+  bench::mark(query(paste("Summarize this:",
+                          paste(readLines("annotation.Rmd"),
+                                collapse = "\n")),
+                    model = m,
+                    screen = FALSE,
+                    server = server,
+                    model_params = list(seed = 42, temperature = 0)),
+              memory = FALSE,
+              min_iterations = 10L)
+}) |>
+  purrr::list_rbind()
+benchmarks_long$expression <- paste0(models, "_long")
+tab1 <- summary(benchmarks_long, relative = FALSE)
+cli::cat_rule("absolute")
+print(tab1)
+tab2 <- summary(benchmarks_long, relative = TRUE)
+cli::cat_rule("relative")
+print(tab2)
+ggplot2::autoplot(benchmarks_long)
+```
+
+You can save the result for comparison between computers:
+
+```{r}
+# note down the specs of the pc used
+pc <- "CPU: AMD Ryzen 5 5600X (12) @ 3.7GHz | GPU: NVIDIA GeForce RTX 3060 | Memory: 14.04GiB / 62.72GiB"
+saveRDS(list(short = benchmarks_short,
+             long = benchmarks_long,
+             pc = pc), "bench/5600X-RTX360-DDR464GB.rds")
+```
+
