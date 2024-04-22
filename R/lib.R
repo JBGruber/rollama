@@ -39,7 +39,7 @@ build_req <- function(model, msg, server, images, model_params, format, template
   if (is.null(model)) model <- getOption("rollama_model", default = "llama2")
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
-
+  check_model_installed(model)
   req_data <- purrr::map(model, function(m) {
     list(model = m,
          messages = msg,
@@ -72,15 +72,12 @@ build_req <- function(model, msg, server, images, model_params, format, template
       purrr::map(httr2::resp_body_json)
   }
 
-  purrr::walk(resp, function(r) {
-    if (purrr::pluck_exists(r, "error")) {
-      if (grepl("model.+not found, try pulling it first", r$error)) {
-        missing <- gsub("model '|' not found, try pulling it first", "", r$error)
-        r$error <- paste(r$error, "with {.code pull_model(\"{missing}\")}")
-      }
-      cli::cli_abort(r$error)
-    }
-  })
+  es <- purrr::map(resp, "error") |>
+    unlist()
+  if (length(es) > 0) {
+    names(es) <- rep("!", length(es))
+    cli::cli_abort(es)
+  }
 
   return(resp)
 }
