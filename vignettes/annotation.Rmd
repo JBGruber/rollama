@@ -10,7 +10,7 @@ vignette: >
 
 # Introduction
 
-After you installed Ollama on your machine and downloaded the package rollama you can load the package and pull the default model (`llama2`) by calling:
+After you installed Ollama on your machine and downloaded the package rollama you can load the package and pull the default model (`llama3`) by calling:
 
 
 
@@ -18,7 +18,7 @@ After you installed Ollama on your machine and downloaded the package rollama yo
 ```r
 library(rollama)
 pull_model()
-#> ✔ model llama2 pulled succesfully
+#> ✔ model llama3 pulled succesfully
 ```
 
 
@@ -59,8 +59,8 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer ────────────────────────────────────────────────────────
-#> Category: Negative
+#> ── Answer from llama3 ────────────────────────────────────────────────
+#> negative
 ```
 
 
@@ -80,7 +80,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer ────────────────────────────────────────────────────────
+#> ── Answer from llama3 ────────────────────────────────────────────────
 #> Category: Positive
 ```
 
@@ -98,8 +98,8 @@ q <- tribble(
 )
 answer <- query(q)
 #> 
-#> ── Answer ────────────────────────────────────────────────────────
-#> {'Category':'Positive','Confidence':'100%','Important':'great'}
+#> ── Answer from llama3 ────────────────────────────────────────────────
+#> {'Category':'Positive','Confidence':'100%','Important': 'great'}
 ```
 
 This is a valid JSON return and can be parsed into a list with, e.g., `jsonlite::fromJSON()`.
@@ -126,7 +126,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer ────────────────────────────────────────────────────────
+#> ── Answer from llama3 ────────────────────────────────────────────────
 #> Category: Neutral
 ```
 
@@ -145,19 +145,18 @@ q_thought <- tribble(
 )
 output_thought <- query(q_thought)
 #> 
-#> ── Answer ────────────────────────────────────────────────────────
+#> ── Answer from llama3 ────────────────────────────────────────────────
+#> I would assign a **negative** sentiment to this text.
 #> 
-#> Based on the text "the pizza tastes terrible," I would assign a sentiment of negative. Here's why:
-#> 
-#> * The use of the word "tastes" implies that the speaker has a strong opinion about the taste of the pizza, which is typically associated with negative
-#> emotions.
-#> * The phrase "terrible" is a strong adjective that conveys a sense of disappointment or displeasure.
-#> * The sentiment is further reinforced by the fact that the speaker used the word "tastes," which implies a personal evaluation or judgment about the pizza's
-#> taste, rather than a neutral description.
-#> 
-#> Overall, based on the language and structure of the sentence, it seems clear that the speaker has a negative sentiment towards the pizza.
+#> The use of the word "terrible" is quite strong and indicates that the
+#> speaker has a very low opinion of the pizza's taste. The sentence
+#> structure is also straightforward and lacks any mitigating language,
+#> such as "it's not my favorite" or "it's okay," which would suggest a
+#> more neutral sentiment. Overall, the tone of the text is
+#> overwhelmingly negative, suggesting that the speaker found the pizza
+#> to be quite unpleasant.
 pluck(output_thought, "message", "content")
-#> [1] "\nBased on the text \"the pizza tastes terrible,\" I would assign a sentiment of negative. Here's why:\n\n* The use of the word \"tastes\" implies that the speaker has a strong opinion about the taste of the pizza, which is typically associated with negative emotions.\n* The phrase \"terrible\" is a strong adjective that conveys a sense of disappointment or displeasure.\n* The sentiment is further reinforced by the fact that the speaker used the word \"tastes,\" which implies a personal evaluation or judgment about the pizza's taste, rather than a neutral description.\n\nOverall, based on the language and structure of the sentence, it seems clear that the speaker has a negative sentiment towards the pizza."
+#> [1] "I would assign a **negative** sentiment to this text.\n\nThe use of the word \"terrible\" is quite strong and indicates that the speaker has a very low opinion of the pizza's taste. The sentence structure is also straightforward and lacks any mitigating language, such as \"it's not my favorite\" or \"it's okay,\" which would suggest a more neutral sentiment. Overall, the tone of the text is overwhelmingly negative, suggesting that the speaker found the pizza to be quite unpleasant."
 ```
 
 In the next step we can use the assistant's reasoning and a user prompt with the classification question.
@@ -173,8 +172,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer ────────────────────────────────────────────────────────
-#> 
+#> ── Answer from llama3 ────────────────────────────────────────────────
 #> Negative
 ```
 
@@ -235,9 +233,8 @@ systemmsg <- "You assign texts into categories. Answer with just the correct cat
 q_zs <- create_query(systemmsg, examples = list(), "the pizza tastes terrible", "Categories: positive, neutral, negative")
 query(q_zs)
 #> 
-#> ── Answer ────────────────────────────────────────────────────────
-#> 
-#> Category: Negative
+#> ── Answer from llama3 ────────────────────────────────────────────────
+#> negative
 ```
 
 
@@ -256,7 +253,7 @@ examples_os <- list(
 q_os <- create_query(systemmsg, examples_os, "the service is great", "Categories: positive, neutral, negative")
 query(q_os)
 #> 
-#> ── Answer ────────────────────────────────────────────────────────
+#> ── Answer from llama3 ────────────────────────────────────────────────
 #> Category: Positive
 ```
 
@@ -284,8 +281,8 @@ examples_fs <- list(
 q_fs <- create_query(systemmsg, examples_fs, "I once ate pizza", "Categories: positive, neutral, negative")
 query(q_fs)
 #> 
-#> ── Answer ────────────────────────────────────────────────────────
-#> Category: Positive
+#> ── Answer from llama3 ────────────────────────────────────────────────
+#> Category: Neutral
 ```
 
 
@@ -309,13 +306,13 @@ movie_reviews <- tibble(
 # Print the initial dataframe
 movie_reviews
 #> # A tibble: 5 × 2
-#>   review_id review                                                
-#>       <int> <chr>                                                 
-#> 1         1 A stunning visual spectacle with a gripping storyline.
-#> 2         2 The plot was predictable, but the acting was superb.  
-#> 3         3 An overrated film with underwhelming performances.    
-#> 4         4 A beautiful tale of love and adventure, beautifully s…
-#> 5         5 The movie lacked depth, but the special effects were …
+#>   review_id review                                                    
+#>       <int> <chr>                                                     
+#> 1         1 A stunning visual spectacle with a gripping storyline.    
+#> 2         2 The plot was predictable, but the acting was superb.      
+#> 3         3 An overrated film with underwhelming performances.        
+#> 4         4 A beautiful tale of love and adventure, beautifully shot. 
+#> 5         5 The movie lacked depth, but the special effects were incr…
 ```
 
 We define a system message and a classification question to guide the sentiment analysis:
@@ -354,13 +351,13 @@ annotated_reviews <- process_reviews(movie_reviews)
 # Print the annotated dataframe
 annotated_reviews
 #> # A tibble: 5 × 3
-#>   review_id review                                      annotation
-#>       <int> <chr>                                       <chr>     
-#> 1         1 A stunning visual spectacle with a grippin… "\nPositi…
-#> 2         2 The plot was predictable, but the acting w… "Positive"
-#> 3         3 An overrated film with underwhelming perfo… "Negative"
-#> 4         4 A beautiful tale of love and adventure, be… "Positive"
-#> 5         5 The movie lacked depth, but the special ef… "Negative"
+#>   review_id review                                          annotation
+#>       <int> <chr>                                           <chr>     
+#> 1         1 A stunning visual spectacle with a gripping st… positive  
+#> 2         2 The plot was predictable, but the acting was s… neutral   
+#> 3         3 An overrated film with underwhelming performan… negative  
+#> 4         4 A beautiful tale of love and adventure, beauti… positive  
+#> 5         5 The movie lacked depth, but the special effect… neutral
 ```
 
 This takes a little longer than classic supervised machine learning or even classification with transformer models.

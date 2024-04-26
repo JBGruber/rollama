@@ -8,10 +8,10 @@
 #'
 #' **Model names**: Model names follow a model:tag format, where model can have
 #' an optional namespace such as example/model. Some examples are
-#' orca-mini:3b-q4_1 and llama2:70b. The tag is optional and, if not provided,
+#' orca-mini:3b-q4_1 and llama3:70b. The tag is optional and, if not provided,
 #' will default to latest. The tag is used to identify a specific version.
 #'
-#' @param model name of the model. Defaults to "llama2" when `NULL` (except in
+#' @param model name of the model. Defaults to "llama3" when `NULL` (except in
 #'   `delete_model`).
 #' @param insecure allow insecure connections to the library. Only use this if
 #'   you are pulling from your own library during development. description
@@ -30,7 +30,7 @@
 #' }
 pull_model <- function(model = NULL, server = NULL, insecure = FALSE) {
 
-  if (is.null(model)) model <- getOption("rollama_model", default = "llama2")
+  if (is.null(model)) model <- getOption("rollama_model", default = "llama3")
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
 
@@ -51,7 +51,7 @@ pull_model <- function(model = NULL, server = NULL, insecure = FALSE) {
 #' @export
 show_model <- function(model = NULL, server = NULL) {
 
-  if (is.null(model)) model <- getOption("rollama_model", default = "llama2")
+  if (is.null(model)) model <- getOption("rollama_model", default = "llama3")
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
   if (length(model) != 1L) cli::cli_abort("model needs to be one model name.")
@@ -90,7 +90,7 @@ show_model <- function(model = NULL, server = NULL) {
 #' @examples
 #' modelfile <- system.file("extdata", "modelfile.txt", package = "rollama")
 #' \dontrun{create_model("mario", modelfile)}
-#' modelfile <- "FROM llama2\nSYSTEM You are mario from Super Mario Bros."
+#' modelfile <- "FROM llama3\nSYSTEM You are mario from Super Mario Bros."
 #' \dontrun{create_model("mario", modelfile)}
 create_model <- function(model, modelfile, server = NULL) {
 

@@ -10,7 +10,7 @@ vignette: >
 
 # Introduction
 
-After you installed Ollama on your machine and downloaded the package rollama you can load the package and pull the default model (`llama2`) by calling:
+After you installed Ollama on your machine and downloaded the package rollama you can load the package and pull the default model (`llama3`) by calling:
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
