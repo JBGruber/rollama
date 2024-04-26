@@ -33,6 +33,6 @@ are not persistent over sessions.
 \examples{
 modelfile <- system.file("extdata", "modelfile.txt", package = "rollama")
 \dontrun{create_model("mario", modelfile)}
-modelfile <- "FROM llama2\nSYSTEM You are mario from Super Mario Bros."
+modelfile <- "FROM llama3\nSYSTEM You are mario from Super Mario Bros."
 \dontrun{create_model("mario", modelfile)}
 }

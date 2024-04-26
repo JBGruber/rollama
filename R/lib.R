@@ -36,7 +36,7 @@ ping_ollama <- function(server = NULL, silent = FALSE) {
 
 build_req <- function(model, msg, server, images, model_params, format, template) {
 
-  if (is.null(model)) model <- getOption("rollama_model", default = "llama2")
+  if (is.null(model)) model <- getOption("rollama_model", default = "llama3")
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
   check_model_installed(model)

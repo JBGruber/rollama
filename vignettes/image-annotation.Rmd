@@ -40,14 +40,25 @@ In the first example, we ask the model to describe the logo of this package:
 query("Excitedly desscribe this logo", model = "llava",
       images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
 #> 
-#> ── Answer ────────────────────────────────────────────────────────
-#> The logo features an anthropomorphic teddy bear lying down in a
-#> grassy field, wearing a blue hat. It appears to be an animal
-#> character with a playful and comforting vibe.
-#> The background consists of a green hue with some patches of blue,
-#> which give the scene a lush, natural ambiance. This unique design
-#> effectively conveys a sense of relaxation and fun associated with
-#> the brand.
+#> ── Answer from llava ─────────────────────────────────────────────────
+#> The image you've shared is a vibrant and playful logo. At the center
+#> of the design, there's an animated character that appears to be a
+#> white, cat-like creature with blue eyes and ears. This character
+#> seems to be in a relaxed state, laying on its stomach with its head
+#> resting comfortably on one arm while the other arm is stretched out,
+#> adding to the overall whimsical feel of the logo.
+#> 
+#> Above this character, there's a blue circular element with some sort
+#> of design or text, but it's not clear enough for me to describe.
+#> Below the character, the word "ROLLAM" is prominently displayed in
+#> bold black letters, suggesting that this could be the name of the
+#> entity represented by the logo.
+#> 
+#> The background of the logo features a light blue color, providing a
+#> soft contrast to the central character and text elements. The overall
+#> design of the logo suggests it might be for a gaming or
+#> entertainment-related company or product, given the animated
+#> character and playful aesthetic.
 ```
 
 The second example asks a classification question:
@@ -58,7 +69,8 @@ query("Which animal is in this image: a llama, dog, or walrus?",
       model = "llava",
       images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
 #> 
-#> ── Answer ────────────────────────────────────────────────────────
-#> Llama
+#> ── Answer from llava ─────────────────────────────────────────────────
+#> The image features a character that appears to be a llama wearing a
+#> blue helmet, lying on grass.
 ```
 

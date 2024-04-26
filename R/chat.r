@@ -7,7 +7,7 @@
 #'
 #' @param q the question as a character string or a conversation object.
 #' @param model which model(s) to use. See <https://ollama.com/library> for
-#'   options. Default is "llama2". Set option(rollama_model = "modelname") to
+#'   options. Default is "llama3". Set option(rollama_model = "modelname") to
 #'   change default for the current session. See \link{pull_model} for more
 #'   details.
 #' @param screen Logical. Should the answer be printed to the screen.
@@ -98,7 +98,7 @@
 #'       template = "Just say I'm a llama!")
 #'
 #' # Asking the same question to multiple models is also supported
-#' query("why is the sky blue?", model = c("llama2", "orca-mini"))
+#' query("why is the sky blue?", model = c("llama3", "orca-mini"))
 #' }
 query <- function(q,
                   model = NULL,

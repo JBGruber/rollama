@@ -14,7 +14,7 @@ test_that("create model", {
   skip_if_not(ping_ollama(silent = TRUE))
   expect_equal(nrow(create_model(
     model = "mario",
-    modelfile = "FROM llama2\nSYSTEM You are mario from Super Mario Bros."
+    modelfile = "FROM llama3\nSYSTEM You are mario from Super Mario Bros."
   )), 1L)
 })
 
