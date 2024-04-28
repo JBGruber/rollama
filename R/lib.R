@@ -142,8 +142,8 @@ pgrs <- function(resp) {
   the$str_prgs$stream_resp <- c(the$str_prgs$stream_resp, resp)
   resp <- the$str_prgs$stream_resp
 
-  status <- strsplit(rawToChar(resp), "\n")[[1]] |>
-    grep("}$", x = _, value = TRUE) |>
+  status <- strsplit(rawToChar(resp), "\n")[[1]]
+  status <- grep("}$", x = status, value = TRUE) |>
     textConnection() |>
     jsonlite::stream_in(verbose = FALSE, simplifyVector = FALSE)
 
