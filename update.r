@@ -14,7 +14,7 @@ pkgdown::build_site()
 
 # submit to CRAN
 usethis::use_version("minor")
-devtools::check_rhub(interactive = FALSE)
+rhub::check_for_cran()
 devtools::submit_cran()
 
 # once accepted by CRAN
