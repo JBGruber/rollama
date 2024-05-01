@@ -16,7 +16,7 @@ screen_answer <- function(x, model = NULL) {
 #' @export
 check_model_installed <- function(model, auto_pull = FALSE, server = NULL) {
   models_df <- list_models(server = server)
-  model <- setdiff(model, models_df$name)
+  model <- setdiff(model, models_df[["name"]])
   model_wo_vers <- gsub(":.*", "", models_df$name)
   model <- setdiff(model, model_wo_vers)
   if (length(model) > 0L && !auto_pull) {
