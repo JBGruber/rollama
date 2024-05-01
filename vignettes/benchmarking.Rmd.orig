@@ -21,9 +21,10 @@ library(ggplot2)
 library(bench)
 models <- c("tinyllama:1.1b", "llama2:latest", "llama3:latest")
 server <- NULL
+check_model_installed(models)
 ```
 
-This is the short test:
+This is the short test to be able to compare different machines running (r)ollama:
 
 ```{r benchmarks_short, warning=FALSE}
 benchmarks_short <- lapply(models, function(m) {
@@ -46,7 +47,7 @@ print(tab2)
 ggplot2::autoplot(benchmarks_short)
 ```
 
-This is the long test:
+This is the longer test:
 
 ```{r benchmarks_long, warning=FALSE}
 benchmarks_long <- lapply(models, function(m) {
@@ -71,13 +72,35 @@ print(tab2)
 ggplot2::autoplot(benchmarks_long)
 ```
 
-You can save the result for comparison between computers:
+You can compare this to previously measured results:
 
 ```{r}
-# note down the specs of the pc used
-pc <- "CPU: AMD Ryzen 5 5600X (12) @ 3.7GHz | GPU: NVIDIA GeForce RTX 3060 | Memory: 14.04GiB / 62.72GiB"
-saveRDS(list(short = benchmarks_short,
-             long = benchmarks_long,
-             pc = pc), "bench/5600X-RTX360-DDR464GB.rds")
+data("bench_results", package = "rollama")
+bench_results <- bench_results |> 
+  tibble::add_case(
+    machine = "laptop",
+    specs = "CPU: AMD Ryzen 7 PRO 6850U (16) @ 4.768GHz | GPU: - | Memory: 32GB DDR5",
+    model = c(benchmarks_short$expression, benchmarks_long$expression),
+    benchmark = c(rep("short", 3L), rep("long", 3L)),
+    min = c(benchmarks_short$min, benchmarks_long$min),
+    median = c(benchmarks_short$median, benchmarks_long$median),
+    time = c(benchmarks_short$time, benchmarks_long$time)
+  )
+```
+
+```{r}
+library(ggplot)
+ggplot(bench_results, aes(x = median, y = model, colour = machine)) +
+  geom_point() +
+  scale_x_continuous(labels = \(l) paste0(l, "s")) +
+  labs(x = NULL, y = NULL, title = "Time to run benchmark in seconds") +
+  theme_minimal()
+```
+
+
+```{r}
+#| eval: false
+#| echo: false
+usethis::use_data(bench_results, overwrite = TRUE)
 ```
 

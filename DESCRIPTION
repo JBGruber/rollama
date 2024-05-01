@@ -41,3 +41,4 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Language: en-US
 URL: https://jbgruber.github.io/rollama/, https://github.com/JBGruber/rollama
+LazyData: true
