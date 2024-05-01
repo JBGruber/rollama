@@ -1,4 +1,4 @@
-This is a minor update with some bug fixes.
+This is a resubmission. The Readme contained a link to localhost, which was now removed.
 
 ## R CMD check results
 
