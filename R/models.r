@@ -34,6 +34,8 @@ pull_model <- function(model = NULL, server = NULL, insecure = FALSE) {
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
 
+  # flush progress
+  the$str_prgs <- NULL
   httr2::request(server) |>
     httr2::req_url_path_append("/api/pull") |>
     httr2::req_body_json(list(name = model, insecure = insecure)) |>
@@ -102,6 +104,8 @@ create_model <- function(model, modelfile, server = NULL) {
     modelfile <- paste0(modelfile, collapse = "\n")
   }
 
+  # flush progress
+  the$str_prgs <- NULL
   httr2::request(server) |>
     httr2::req_url_path_append("/api/create") |>
     httr2::req_method("POST") |>
