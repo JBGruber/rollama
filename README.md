@@ -54,7 +54,7 @@ Alternatively, you can use the Docker Compose file from [this
 gist](https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc):
 
 ``` sh
-wget https://gist.githubusercontent.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc/raw/4abf613b60a6e816ef975f31b2758d898baab249/docker-compose.yml
+wget https://gist.githubusercontent.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc/raw/docker-compose.yml
 docker-compose up -d
 ```
 
