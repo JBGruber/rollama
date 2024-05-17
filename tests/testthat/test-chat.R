@@ -8,6 +8,11 @@ test_that("Test chat", {
   expect_message(chat("Please only say 'yes'"), "Yes")
   expect_message(chat("One more time"), "Yes")
   expect_equal(nrow(chat_history()), 4L)
+  # check order of history
+  expect_equal(chat_history()$content[c(1, 3)],
+               c("Please only say 'yes'", "One more time"))
+  expect_equal(chat_history()$role,
+               c("user", "assistant", "user", "assistant"))
   expect_equal({
     new_chat()
     nrow(chat_history())

@@ -169,6 +169,7 @@ chat <- function(q,
   hist <- chat_history()
 
   # save prompt
+  names(q) <- Sys.time()
   the$prompts <- c(the$prompts, q)
 
   q <- data.frame(role = "user", content = q)
@@ -181,7 +182,7 @@ chat <- function(q,
   msg <- do.call(rbind, (list(
     if (!is.null(config)) data.frame(role = "system",
                                      content = config),
-    if (length(hist) > 0) hist,
+    if (nrow(hist) > 0) hist[, c("role", "content")],
     q
   )))
 
@@ -193,7 +194,9 @@ chat <- function(q,
                 template = template)
 
   # save response
-  the$responses <- c(the$responses, purrr::pluck(resp, "message", "content"))
+  r <- purrr::pluck(resp, "message", "content")
+  names(r) <- Sys.time()
+  the$responses <- c(the$responses, r)
 
   invisible(resp)
 }
@@ -201,16 +204,18 @@ chat <- function(q,
 
 #' Handle conversations
 #'
-#' Shows and deletes (`new_chat`) the local prompt and response history to start a new conversation.
+#' Shows and deletes (`new_chat`) the local prompt and response history to start
+#' a new conversation.
 #'
 #' @return chat_history: tibble with chat history
 #' @export
 chat_history <- function() {
-  hist <- c(the$prompts, the$responses)
-  tibble::tibble(
-    role = rep(c("user", "assistant"), length(hist) / 2),
-    content = hist
+  out <- tibble::tibble(
+    role = c(rep("user", length(the$prompts)), rep("assistant", length(the$responses))),
+    content = unname(c(the$prompts, the$responses)),
+    time = as.POSIXct(names(c(the$prompts, the$responses)))
   )
+  out[order(out$time), ]
 }
 
 
