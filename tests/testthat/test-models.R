@@ -8,6 +8,8 @@ test_that("pull model", {
 test_that("show model", {
   skip_if_not(ping_ollama(silent = TRUE))
   expect_equal(nrow(show_model()), 1L)
+  expect_equal(ncol(list_models()), 11L)
+  expect_s3_class(list_models(), "tbl_df")
 })
 
 test_that("create model", {

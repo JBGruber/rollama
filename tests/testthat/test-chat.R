@@ -13,6 +13,8 @@ test_that("Test chat", {
                c("Please only say 'yes'", "One more time"))
   expect_equal(chat_history()$role,
                c("user", "assistant", "user", "assistant"))
+  expect_error(query(q = tibble::tibble(role = "assistant", content = "Pos")),
+               "needs.at.least.one.user.message")
   expect_equal({
     new_chat()
     nrow(chat_history())
