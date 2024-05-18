@@ -39,7 +39,7 @@ build_req <- function(model, msg, server, images, model_params, format, template
   if (is.null(model)) model <- getOption("rollama_model", default = "llama3")
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
-  check_model_installed(model)
+  check_model_installed(model, server = server)
   req_data <- purrr::map(model, function(m) {
     list(model = m,
          messages = msg,

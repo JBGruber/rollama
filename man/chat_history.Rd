@@ -15,5 +15,6 @@ chat_history: tibble with chat history
 new_chat: Does not return a value
 }
 \description{
-Shows and deletes (\code{new_chat}) the local prompt and response history to start a new conversation.
+Shows and deletes (\code{new_chat}) the local prompt and response history to start
+a new conversation.
 }
