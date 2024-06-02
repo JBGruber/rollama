@@ -11,10 +11,10 @@
 #' orca-mini:3b-q4_1 and llama3:70b. The tag is optional and, if not provided,
 #' will default to latest. The tag is used to identify a specific version.
 #'
-#' @param model name of the model. Defaults to "llama3" when `NULL` (except in
-#'   `delete_model`).
+#' @param model name of the model(s). Defaults to "llama3" when `NULL` (except
+#'   in `delete_model`).
 #' @param insecure allow insecure connections to the library. Only use this if
-#'   you are pulling from your own library during development. description
+#'   you are pulling from your own library during development.
 #' @param destination name of the copied model.
 #' @inheritParams query
 #'
@@ -33,6 +33,10 @@ pull_model <- function(model = NULL, server = NULL, insecure = FALSE) {
   if (is.null(model)) model <- getOption("rollama_model", default = "llama3")
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
+
+  if (length(model) > 1L) {
+    for (m in model) pull_model(m, server, insecure)
+  }
 
   # flush progress
   the$str_prgs <- NULL

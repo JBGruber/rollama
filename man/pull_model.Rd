@@ -16,14 +16,14 @@ delete_model(model, server = NULL)
 copy_model(model, destination = paste0(model, "-copy"), server = NULL)
 }
 \arguments{
-\item{model}{name of the model. Defaults to "llama3" when \code{NULL} (except in
-\code{delete_model}).}
+\item{model}{name of the model(s). Defaults to "llama3" when \code{NULL} (except
+in \code{delete_model}).}
 
 \item{server}{URL to an Ollama server (not the API). Defaults to
 "http://localhost:11434".}
 
 \item{insecure}{allow insecure connections to the library. Only use this if
-you are pulling from your own library during development. description}
+you are pulling from your own library during development.}
 
 \item{destination}{name of the copied model.}
 }
