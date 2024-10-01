@@ -56,9 +56,10 @@ is isolated from the rest of your system, behvaes the same on different
 systems, and is easy to download and update. You can also get a nice web
 interface. After making sure [Docker](https://docs.docker.com/desktop/)
 is installed, you can simply use the Docker Compose file from [this
-gist](https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc):
+gist](https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc).
 
-If you don’t know how to use Docker Compose, you can follow this video:
+If you don’t know how to use Docker Compose, you can follow this video 
+to use the compose file and start Ollama and Open WebUI:
 
 [![Install Docker on macOS, Windows and
 Linux](https://img.youtube.com/vi/iMyCdd5nP5U/0.jpg)](https://www.youtube.com/watch?v=iMyCdd5nP5U)
