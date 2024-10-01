@@ -1,3 +1,7 @@
+# rollama (development version)
+
+* improved performance of embed_text
+
 # rollama 0.1.0
 
 * adds function `check_model_installed`
