@@ -20,8 +20,10 @@ check_model_installed <- function(model, auto_pull = FALSE, server = NULL) {
   model_wo_vers <- gsub(":.*", "", models_df$name)
   model <- setdiff(model, model_wo_vers)
   if (length(model) > 0L && !auto_pull) {
-    cli::cli_alert_info("Model{?s} {model} not installed. Would you like to download {?it/them}?")
-    if (interactive()) auto_pull <- utils::askYesNo("")
+    if (interactive()) {
+      cli::cli_alert_info("Model{?s} {model} not installed. Would you like to download {?it/them}?")
+      auto_pull <- utils::askYesNo("")
+    }
     if (!auto_pull) {
       cli::cli_abort("Model{?s} {model} not installed.")
       invisible(FALSE)

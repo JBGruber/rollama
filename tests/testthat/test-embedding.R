@@ -6,5 +6,5 @@ test_that("embedding", {
 test_that("missing model", {
   skip_if_not(ping_ollama(silent = TRUE))
   expect_error(embed_text("test", model = "missing"),
-               "try.pulling.it.first")
+               "not.installed")
 })
