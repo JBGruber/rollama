@@ -34,3 +34,15 @@ check_model_installed <- function(model, auto_pull = FALSE, server = NULL) {
   }
   invisible(TRUE)
 }
+
+
+# makes sure list can be turned into tibble
+as_tibble_onerow <- function(l) {
+  l <- purrr::map(l, function(c) {
+    if (length(c) != 1) {
+      return(list(c))
+    }
+    return(c)
+  })
+  tibble::as_tibble(l)
+}

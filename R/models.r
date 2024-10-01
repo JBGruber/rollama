@@ -69,8 +69,7 @@ show_model <- function(model = NULL, server = NULL) {
     httr2::req_perform() |>
     httr2::resp_body_json() |>
     purrr::list_flatten(name_spec = "{inner}") |>
-    purrr::compact() |>
-    tibble::as_tibble()
+    as_tibble_onerow()
 }
 
 
