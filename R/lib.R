@@ -26,7 +26,6 @@ ping_ollama <- function(server = NULL, silent = FALSE) {
   } else {
     if (!silent) {
       cli::cli_alert_danger("Could not connect to Ollama at {.url {server}}")
-      print(res)
     }
     invisible(FALSE)
   }
@@ -36,7 +35,7 @@ ping_ollama <- function(server = NULL, silent = FALSE) {
 
 build_req <- function(model, msg, server, images, model_params, format, template) {
 
-  if (is.null(model)) model <- getOption("rollama_model", default = "llama3")
+  if (is.null(model)) model <- getOption("rollama_model", default = "llama3.1")
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
   check_model_installed(model, server = server)
@@ -52,6 +51,27 @@ build_req <- function(model, msg, server, images, model_params, format, template
                endpoint = "/api/chat",
                perform = FALSE)
   })
+  return(req_data)
+}
+
+
+make_req <- function(req_data, server, endpoint, perform = TRUE) {
+  r <- httr2::request(server) |>
+    httr2::req_url_path_append(endpoint) |>
+    httr2::req_body_json(prep_req_data(req_data), auto_unbox = FALSE) |>
+    # turn off errors since error messages can't be seen in sub-process
+    httr2::req_error(is_error = function(resp) FALSE) |>
+    httr2::req_headers(!!!get_headers())
+  if (perform) {
+    r <- r |>
+      httr2::req_perform() |>
+      httr2::resp_body_json()
+  }
+  return(r)
+}
+
+
+perform_reqs <- function(req_data, model) {
 
   if (getOption("rollama_verbose", default = interactive())) {
     cli::cli_progress_step("{model} {?is/are} thinking {cli::pb_spin}")
@@ -80,22 +100,6 @@ build_req <- function(model, msg, server, images, model_params, format, template
   }
 
   return(resp)
-}
-
-
-make_req <- function(req_data, server, endpoint, perform = TRUE) {
-  r <- httr2::request(server) |>
-    httr2::req_url_path_append(endpoint) |>
-    httr2::req_body_json(prep_req_data(req_data), auto_unbox = FALSE) |>
-    # turn off errors since error messages can't be seen in sub-process
-    httr2::req_error(is_error = function(resp) FALSE) |>
-    httr2::req_headers(!!!get_headers())
-  if (perform) {
-    r <- r |>
-      httr2::req_perform() |>
-      httr2::resp_body_json()
-  }
-  return(r)
 }
 
 
@@ -140,6 +144,7 @@ prep_req_data <- function(tbl) {
 pgrs <- function(resp) {
   if (!getOption("rollama_verbose", default = interactive())) return(TRUE)
   the$str_prgs$stream_resp <- c(the$str_prgs$stream_resp, resp)
+  the_test <<- the
   resp <- the$str_prgs$stream_resp
 
   status <- strsplit(rawToChar(resp), "\n")[[1]]
@@ -167,10 +172,10 @@ pgrs <- function(resp) {
         paste(round(the$str_prgs$done / the$str_prgs$total * 100, 0), "%")
       if (the$str_prgs$done != the$str_prgs$total) {
         the$str_prgs$speed <-
-          prettyunits::pretty_bytes(
-            the$str_prgs$done /
-              (as.integer(Sys.time()) - as.integer(the$str_prgs$pb_start))
-          )
+          the$str_prgs$done /
+          (as.integer(Sys.time()) - as.integer(the$str_prgs$pb_start))
+        if (is.numeric(the$str_prgs$speed))
+          the$str_prgs$speed <- prettyunits::pretty_bytes(the$str_prgs$speed)
       } else the$str_prgs$speed <- 1L
 
       if (!isTRUE(the$str_prgs$pb == the$str_prgs$f)) {

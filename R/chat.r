@@ -7,7 +7,7 @@
 #'
 #' @param q the question as a character string or a conversation object.
 #' @param model which model(s) to use. See <https://ollama.com/library> for
-#'   options. Default is "llama3". Set option(rollama_model = "modelname") to
+#'   options. Default is "llama3.1". Set option(rollama_model = "modelname") to
 #'   change default for the current session. See \link{pull_model} for more
 #'   details.
 #' @param screen Logical. Should the answer be printed to the screen.
@@ -98,7 +98,7 @@
 #'       template = "Just say I'm a llama!")
 #'
 #' # Asking the same question to multiple models is also supported
-#' query("why is the sky blue?", model = c("llama3", "orca-mini"))
+#' query("why is the sky blue?", model = c("llama3.1", "orca-mini"))
 #' }
 query <- function(q,
                   model = NULL,
@@ -137,13 +137,15 @@ query <- function(q,
                            "least one user message. See {.help query}."))
   }
 
-  resp <- build_req(model = model,
+  reqs <- build_req(model = model,
                     msg = msg,
                     server = server,
                     images = images,
                     model_params = model_params,
                     format = format,
                     template = template)
+
+  resp <- perform_reqs(reqs, model)
 
   if (screen) purrr::map(resp, function(r) {
     screen_answer(purrr::pluck(r, "message", "content"),
