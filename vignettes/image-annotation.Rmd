@@ -15,7 +15,7 @@ Ollama also supports multimodal models, which can interact with (but not create)
 We start by loading the package:
 
 
-```r
+``` r
 library(rollama)
 ```
 
@@ -25,7 +25,7 @@ Using `pull_model("llava")` will download the model, or just load it if it has a
 
 
 
-```r
+``` r
 pull_model("llava")
 #> ✔ model llava pulled succesfully
 ```
@@ -36,7 +36,7 @@ For instance, we can ask a question and provide a link to a picture or a local f
 In the first example, we ask the model to describe the logo of this package:
 
 
-```r
+``` r
 query("Excitedly desscribe this logo", model = "llava",
       images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
 #> 
@@ -64,12 +64,12 @@ query("Excitedly desscribe this logo", model = "llava",
 The second example asks a classification question:
 
 
-```r
+``` r
 query("Which animal is in this image: a llama, dog, or walrus?",
       model = "llava",
       images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
 #> 
-#> ── Answer from llava ─────────────────────────────────────────────────
+#> ── Answer from llava ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> The image features a character that appears to be a llama wearing a
 #> blue helmet, lying on grass.
 ```
