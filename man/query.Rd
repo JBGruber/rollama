@@ -13,7 +13,6 @@ query(
   images = NULL,
   model_params = NULL,
   format = NULL,
-  output = c("httr2_response", "text", "list", "data.frame", "httr2_request"),
   template = NULL
 )
 
@@ -48,12 +47,7 @@ such as temperature. Use a seed and set the temperature to zero to get
 reproducible results (see examples).}
 
 \item{format}{the format to return a response in. Currently the only accepted
-value is \code{"json"}. This is a parameter send to Ollama to influence how the
-model behaves. To select an output format use the \code{output} parameter.}
-
-\item{output}{what the function should return. Possible values are
-"httr2_response", "text", "list", "data.frame" or "httr2_request" (in case
-you want to perform requests yourself).}
+value is \code{"json"}.}
 
 \item{template}{the prompt template to use (overrides what is defined in the
 Modelfile).}

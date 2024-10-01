@@ -144,7 +144,6 @@ prep_req_data <- function(tbl) {
 pgrs <- function(resp) {
   if (!getOption("rollama_verbose", default = interactive())) return(TRUE)
   the$str_prgs$stream_resp <- c(the$str_prgs$stream_resp, resp)
-  the_test <<- the
   resp <- the$str_prgs$stream_resp
 
   status <- strsplit(rawToChar(resp), "\n")[[1]]
