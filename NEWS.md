@@ -1,6 +1,7 @@
 # rollama (development version)
 
 * improved performance of embed_text
+* changes default model to llama3.1
 
 # rollama 0.1.0
 

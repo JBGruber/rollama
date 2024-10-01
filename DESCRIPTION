@@ -16,7 +16,7 @@ Description: Wraps the 'Ollama' <https://ollama.com> API, which can be used to
 License: GPL (>= 3)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2
 Imports: 
     callr,
     cli,

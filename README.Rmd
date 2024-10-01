@@ -44,25 +44,21 @@ Or you can install the development version  of `rollama` from [GitHub](https://g
 remotes::install_github("JBGruber/rollama")
 ```
 
-The easiest way to get Ollama itself up and running is through [Docker](https://docs.docker.com/desktop/).
-From the command line interface, you can start Ollama locally with one command (add `sudo` if `permission denied`):
+However, `rollama` is just the client package.
+The models are run in `Ollama`, which you need to install on your system, on a remote system or through [Docker](https://docs.docker.com/desktop/).
+The easiest way is to simply download and install the Ollama application from [their website](https://ollama.com/).
+Once `Ollama` is running, you can see if you can access it with:
 
-```sh
-docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+```{r}
+rollama::ping_ollama()
 ```
 
-After restarting, you can run Ollama again with the command  (add `sudo` if `permission denied`):
 
-```sh
-docker start ollama
-```
+### Installation of Ollama through Docker
 
-Alternatively, you can use the Docker Compose file from [this gist](https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc):
-
-```sh
-wget https://gist.githubusercontent.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc/raw/docker-compose.yml
-docker-compose up -d
-```
+The advantage of running things through Docker is that the application is isolated from the rest of your system, behvaes the same on different systems, and is easy to download and update.
+You can also get a nice web interface.
+After making sure  [Docker](https://docs.docker.com/desktop/) is installed, you can simply use the Docker Compose file from [this gist](https://gist.github.com/JBGruber/73f9f49f833c6171b8607b976abc0ddc):
 
 If you don't know how to use Docker Compose, you can follow this video:
 
@@ -71,7 +67,7 @@ If you don't know how to use Docker Compose, you can follow this video:
 ## Example
 
 The first thing you should do after installation is to pull one of the models from <https://ollama.com/library>.
-By calling `pull_model()` without arguments, you are pulling the (current) default model  --- "llama3 8b":
+By calling `pull_model()` without arguments, you are pulling the (current) default model  --- "llama3.1 8b":
 
 ```{r lib}
 library(rollama)
@@ -139,7 +135,7 @@ options(rollama_config = "You make answers understandable to a 5 year old")
 query("why is the sky blue?")
 ```
 
-By default, the package uses the "llama3 8B" model. Supported models can be found at <https://ollama.com/library>.
+By default, the package uses the "llama3.1 8B" model. Supported models can be found at <https://ollama.com/library>.
 To download a specific model make use of the additional information available in "Tags" <https://ollama.com/library/mistral/tags>.
 Change this via `rollama_model`:
 

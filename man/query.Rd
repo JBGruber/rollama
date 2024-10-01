@@ -13,6 +13,7 @@ query(
   images = NULL,
   model_params = NULL,
   format = NULL,
+  output = c("httr2_response", "text", "list", "data.frame", "httr2_request"),
   template = NULL
 )
 
@@ -30,7 +31,7 @@ chat(
 \item{q}{the question as a character string or a conversation object.}
 
 \item{model}{which model(s) to use. See \url{https://ollama.com/library} for
-options. Default is "llama3". Set option(rollama_model = "modelname") to
+options. Default is "llama3.1". Set option(rollama_model = "modelname") to
 change default for the current session. See \link{pull_model} for more
 details.}
 
@@ -47,7 +48,12 @@ such as temperature. Use a seed and set the temperature to zero to get
 reproducible results (see examples).}
 
 \item{format}{the format to return a response in. Currently the only accepted
-value is \code{"json"}.}
+value is \code{"json"}. This is a parameter send to Ollama to influence how the
+model behaves. To select an output format use the \code{output} parameter.}
+
+\item{output}{what the function should return. Possible values are
+"httr2_response", "text", "list", "data.frame" or "httr2_request" (in case
+you want to perform requests yourself).}
 
 \item{template}{the prompt template to use (overrides what is defined in the
 Modelfile).}
@@ -134,6 +140,6 @@ query("why is the sky blue?",
       template = "Just say I'm a llama!")
 
 # Asking the same question to multiple models is also supported
-query("why is the sky blue?", model = c("llama3", "orca-mini"))
+query("why is the sky blue?", model = c("llama3.1", "orca-mini"))
 }
 }

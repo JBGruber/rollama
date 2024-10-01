@@ -16,7 +16,7 @@ delete_model(model, server = NULL)
 copy_model(model, destination = paste0(model, "-copy"), server = NULL)
 }
 \arguments{
-\item{model}{name of the model(s). Defaults to "llama3" when \code{NULL} (except
+\item{model}{name of the model(s). Defaults to "llama3.1" when \code{NULL} (except
 in \code{delete_model}).}
 
 \item{server}{URL to an Ollama server (not the API). Defaults to
@@ -44,7 +44,7 @@ Pull, show and delete models
 
 \strong{Model names}: Model names follow a model:tag format, where model can have
 an optional namespace such as example/model. Some examples are
-orca-mini:3b-q4_1 and llama3:70b. The tag is optional and, if not provided,
+orca-mini:3b-q4_1 and llama3.1:70b. The tag is optional and, if not provided,
 will default to latest. The tag is used to identify a specific version.
 }
 \examples{

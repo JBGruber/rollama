@@ -16,7 +16,7 @@ embed_text(
 \item{text}{text vector to generate embeddings for.}
 
 \item{model}{which model to use. See \url{https://ollama.com/library} for options.
-Default is "llama3". Set option(rollama_model = "modelname") to change
+Default is "llama3.1". Set option(rollama_model = "modelname") to change
 default for the current session. See \link{pull_model} for more details.}
 
 \item{server}{URL to an Ollama server (not the API). Defaults to
