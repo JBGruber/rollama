@@ -23,6 +23,10 @@
 #'   value is `"json"`.
 #' @param template the prompt template to use (overrides what is defined in the
 #'   Modelfile).
+#' @param verbose Whether to print status messages to the Console
+#'   (\code{TRUE}/\code{FALSE}). The default is to have status messages in
+#'   interactive sessions. Can be changed with \code{options(rollama_verbose =
+#'   FALSE)}.
 #'
 #' @return an httr2 response.
 #' @export
@@ -107,7 +111,8 @@ query <- function(q,
                   images = NULL,
                   model_params = NULL,
                   format = NULL,
-                  template = NULL) {
+                  template = NULL,
+                  verbose = getOption("rollama_verbose", default = interactive())) {
 
   if (!is.null(template))
     cli::cli_abort(paste(
@@ -145,7 +150,8 @@ query <- function(q,
                     format = format,
                     template = template)
 
-  resp <- perform_reqs(reqs, model)
+
+  resp <- perform_reqs(reqs, verbose)
 
   if (screen) purrr::map(resp, function(r) {
     screen_answer(purrr::pluck(r, "message", "content"),

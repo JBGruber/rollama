@@ -13,7 +13,8 @@ query(
   images = NULL,
   model_params = NULL,
   format = NULL,
-  template = NULL
+  template = NULL,
+  verbose = getOption("rollama_verbose", default = interactive())
 )
 
 chat(
@@ -51,6 +52,11 @@ value is \code{"json"}.}
 
 \item{template}{the prompt template to use (overrides what is defined in the
 Modelfile).}
+
+\item{verbose}{Whether to print status messages to the Console
+(\code{TRUE}/\code{FALSE}). The default is to have status messages in
+interactive sessions. Can be changed with \code{options(rollama_verbose =
+  FALSE)}.}
 }
 \value{
 an httr2 response.

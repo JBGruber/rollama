@@ -16,7 +16,7 @@ ping_ollama <- function(server = NULL, silent = FALSE) {
       httr2::resp_body_json()
   }, silent = TRUE)
 
-  if (!methods::is(res, "try-error") & purrr::pluck_exists(res, "version")) {
+  if (!methods::is(res, "try-error") && purrr::pluck_exists(res, "version")) {
     if (!silent) cli::cli_inform(
       "{cli::col_green(cli::symbol$play)} Ollama (v{res$version}) is running at {.url {server}}!"
     )
@@ -71,35 +71,41 @@ make_req <- function(req_data, server, endpoint, perform = TRUE) {
 }
 
 
-perform_reqs <- function(req_data, model) {
+perform_reqs <- function(reqs, verbose) {
 
-  if (getOption("rollama_verbose", default = interactive())) {
-    cli::cli_progress_step("{model} {?is/are} thinking {cli::pb_spin}")
-
-    rp <- purrr::map(req_data, function(r) callr::r_bg(httr2::req_perform,
-                                                       args = list(req = r),
-                                                       package = TRUE))
-
-    while (any(purrr::map_lgl(rp, function(r) r$is_alive()))) {
-      cli::cli_progress_update()
-      Sys.sleep(2 / 100)
-    }
-    resp <- purrr::map(rp, function(r) r$get_result()) |>
-      purrr::map(httr2::resp_body_json)
-    cli::cli_progress_done()
-  } else {
-    resp <- purrr::map(req_data, httr2::req_perform) |>
-      purrr::map(httr2::resp_body_json)
+  pb <- FALSE
+  if (verbose) {
+    pb <- list(
+      clear = FALSE,
+      format = "{model} {?is/are} thinking about {cli::pb_total - cli::pb_current} question{?s} {cli::pb_spin}",
+      extra = list(model = model)
+    )
   }
 
-  es <- purrr::map(resp, "error") |>
-    unlist()
-  if (length(es) > 0) {
-    names(es) <- rep("!", length(es))
-    cli::cli_abort(es)
+  model <- purrr::map_chr(reqs, c("body", "data", "model")) |>
+    unique()
+
+  op <- options(cli.progress_show_after = 0)
+  on.exit(options(op))
+  resps <- httr2::req_perform_parallel(
+    reqs = reqs,
+    on_error = "continue",
+    progress = pb
+  )
+
+  fails <- httr2::resps_failures(resps) |>
+    purrr::map_chr("message")
+
+  # all fails
+  if (length(fails) == length(reqs)) {
+    cli::cli_abort(fails)
+  } else if (length(fails) < length(reqs) && length(fails) > 0) {
+    cli::cli_alert_danger(fails)
   }
 
-  return(resp)
+  httr2::resps_successes(resps) |>
+    purrr::map(httr2::resp_body_json)
+
 }
 
 

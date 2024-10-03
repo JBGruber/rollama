@@ -52,7 +52,7 @@ rollama::ping_ollama()
 ### Installation of Ollama through Docker
 
 The advantage of running things through Docker is that the application
-is isolated from the rest of your system, behvaes the same on different
+is isolated from the rest of your system, behaves the same on different
 systems, and is easy to download and update. You can also get a nice web
 interface. After making sure [Docker](https://docs.docker.com/desktop/)
 is installed, you can simply use the Docker Compose file from [this
