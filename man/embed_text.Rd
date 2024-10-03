@@ -15,9 +15,10 @@ embed_text(
 \arguments{
 \item{text}{text vector to generate embeddings for.}
 
-\item{model}{which model to use. See \url{https://ollama.com/library} for options.
-Default is "llama3.1". Set option(rollama_model = "modelname") to change
-default for the current session. See \link{pull_model} for more details.}
+\item{model}{which model to use. See \url{https://ollama.com/library} for
+options. Default is "llama3.1". Set option(rollama_model = "modelname") to
+change default for the current session. See \link{pull_model} for more
+details.}
 
 \item{server}{URL to an Ollama server (not the API). Defaults to
 "http://localhost:11434".}
@@ -38,7 +39,8 @@ Generate Embeddings
 }
 \examples{
 \dontrun{
-embed_text(c("Here is an article about llamas...",
-             "R is a language and environment for statistical computing and graphics."))
+embed_text(c(
+  "Here is an article about llamas...",
+  "R is a language and environment for statistical computing and graphics."))
 }
 }

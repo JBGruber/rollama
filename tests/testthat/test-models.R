@@ -39,5 +39,3 @@ test_that("model missing", {
   expect_error(check_model_installed("NOMODEL"),
                "Model NOMODEL not installed.")
 })
-
-

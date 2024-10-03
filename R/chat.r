@@ -112,7 +112,8 @@ query <- function(q,
                   model_params = NULL,
                   format = NULL,
                   template = NULL,
-                  verbose = getOption("rollama_verbose", default = interactive())) {
+                  verbose = getOption("rollama_verbose",
+                                      default = interactive())) {
 
   if (!is.null(template))
     cli::cli_abort(paste(
@@ -219,7 +220,8 @@ chat <- function(q,
 #' @export
 chat_history <- function() {
   out <- tibble::tibble(
-    role = c(rep("user", length(the$prompts)), rep("assistant", length(the$responses))),
+    role = c(rep("user", length(the$prompts)),
+             rep("assistant", length(the$responses))),
     content = unname(c(the$prompts, the$responses)),
     time = as.POSIXct(names(c(the$prompts, the$responses)))
   )

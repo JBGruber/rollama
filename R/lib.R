@@ -33,7 +33,13 @@ ping_ollama <- function(server = NULL, silent = FALSE) {
 }
 
 
-build_req <- function(model, msg, server, images, model_params, format, template) {
+build_req <- function(model,
+                      msg,
+                      server,
+                      images,
+                      model_params,
+                      format,
+                      template) {
 
   if (is.null(model)) model <- getOption("rollama_model", default = "llama3.1")
   if (is.null(server)) server <- getOption("rollama_server",
@@ -181,7 +187,9 @@ pgrs <- function(resp) {
           (as.integer(Sys.time()) - as.integer(the$str_prgs$pb_start))
         if (is.numeric(the$str_prgs$speed))
           the$str_prgs$speed <- prettyunits::pretty_bytes(the$str_prgs$speed)
-      } else the$str_prgs$speed <- 1L
+      } else {
+        the$str_prgs$speed <- 1L
+      }
 
       if (!isTRUE(the$str_prgs$pb == the$str_prgs$f)) {
         cli::cli_progress_bar(

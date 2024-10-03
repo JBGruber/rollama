@@ -4,8 +4,8 @@
 \alias{rollama-options}
 \title{rollama Options}
 \description{
-The behaviour of \code{rollama} can be controlled through \code{options()}. Specifically,
-the options below can be set.
+The behaviour of \code{rollama} can be controlled through
+\code{options()}. Specifically, the options below can be set.
 }
 \details{
 \describe{

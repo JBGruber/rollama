@@ -7,9 +7,8 @@ the <- new.env()
 #' @title rollama Options
 #' @name rollama-options
 #'
-#' @description
-#' The behaviour of `rollama` can be controlled through `options()`. Specifically,
-#' the options below can be set.
+#' @description The behaviour of `rollama` can be controlled through
+#' `options()`. Specifically, the options below can be set.
 #'
 #' @details
 #' \describe{
