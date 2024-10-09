@@ -80,6 +80,9 @@ make_req <- function(req_data, server, endpoint, perform = TRUE) {
 perform_reqs <- function(reqs, verbose) {
 
   pb <- FALSE
+  model <- purrr::map_chr(reqs, c("body", "data", "model")) |>
+    unique()
+
   if (verbose) {
     pb <- list(
       clear = FALSE,
@@ -87,9 +90,6 @@ perform_reqs <- function(reqs, verbose) {
       extra = list(model = model)
     )
   }
-
-  model <- purrr::map_chr(reqs, c("body", "data", "model")) |>
-    unique()
 
   op <- options(cli.progress_show_after = 0)
   on.exit(options(op))
