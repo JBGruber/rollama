@@ -20,3 +20,33 @@ test_that("Test chat", {
     nrow(chat_history())
   }, 0L)
 })
+
+test_that("Test output parameter", {
+  expect_s3_class(
+    query("Please only say 'yes'", output = "httr2_request")[[1]],
+    "httr2_request"
+  )
+  expect_error(query("Please only say 'yes'", output = "invalid"),
+               "should.be.one.of")
+
+  skip_if_not(ping_ollama(silent = TRUE))
+  # "httr2_response", "text", "list", "data.frame", "httr2_request"
+  expect_s3_class(
+    query("Please only say 'yes'", screen = FALSE,
+          output = "httr2_response")[[1]],
+    "httr2_response"
+  )
+  expect_equal(
+    names(query("Please only say 'yes'", screen = FALSE,
+                output = "list")[[1]]),
+    c("request", "response")
+  )
+  expect_equal(
+    colnames(query("Please only say 'yes'", screen = FALSE,
+                   output = "data.frame")),
+    c("model", "role", "response")
+  )
+})
+
+
+query("why is the sky blue?", output = "httr2_request")

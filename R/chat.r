@@ -2,13 +2,25 @@
 #'
 #' @details `query` sends a single question to the API, without knowledge about
 #'   previous questions (only the config message is relevant). `chat` treats new
-#'   messages as part of the same conversation until \link{new_chat} is called.
+#'   messages as part of the same conversation until [new_chat] is called.
+#'
+#'   For the output of `query`, there are a couple of options:
+#'
+#'   - `response`: the response of the Ollama server
+#'   - `httr2_response`: the response of the Ollama server including HTML
+#'      headers in the `httr2` response format
+#'   - `text`: only the answer as a character vector
+#'   - `data.frame`: a data.frame containing model and response
+#'   - `list`: a list containing the prompt to Ollama and the response
+#'   - `httr2_request`: httr2_request objects in a list, in case you want to run
+#'      them with [httr2::req_perform()], [httr2::req_perform_sequential()], or
+#'      [httr2::req_perform_parallel()] yourself.
 #'
 #'
 #' @param q the question as a character string or a conversation object.
 #' @param model which model(s) to use. See <https://ollama.com/library> for
-#'   options. Default is "llama3.1". Set option(rollama_model = "modelname") to
-#'   change default for the current session. See \link{pull_model} for more
+#'   options. Default is "llama3.1". Set `option(rollama_model = "modelname")` to
+#'   change default for the current session. See [pull_model] for more
 #'   details.
 #' @param screen Logical. Should the answer be printed to the screen.
 #' @param server URL to an Ollama server (not the API). Defaults to
@@ -19,16 +31,19 @@
 #'   Modelfile](https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values)
 #'   such as temperature. Use a seed and set the temperature to zero to get
 #'   reproducible results (see examples).
+#' @param output what the function should return. Possible values are
+#'   "response", "httr2_response", "text", "list", "data.frame" or
+#'   "httr2_request" see details.
 #' @param format the format to return a response in. Currently the only accepted
 #'   value is `"json"`.
 #' @param template the prompt template to use (overrides what is defined in the
 #'   Modelfile).
 #' @param verbose Whether to print status messages to the Console
-#'   (\code{TRUE}/\code{FALSE}). The default is to have status messages in
-#'   interactive sessions. Can be changed with \code{options(rollama_verbose =
-#'   FALSE)}.
+#'   (`TRUE`/`FALSE`). The default is to have status messages in
+#'   interactive sessions. Can be changed with `options(rollama_verbose =
+#'   FALSE)`.
 #'
-#' @return an httr2 response.
+#' @return list of objects set in output parameter.
 #' @export
 #'
 #' @examples
@@ -43,6 +58,9 @@
 #' # save the response to an object and extract the answer
 #' resp <- query(q = "why is the sky blue?")
 #' answer <- resp$message$content
+#'
+#' # or just get the answer directly
+#' answer <- query(q = "why is the sky blue?", output = "text")
 #'
 #' # ask question about images (to a multimodal model)
 #' images <- c("https://avatars.githubusercontent.com/u/23524101?v=4", # remote
@@ -110,10 +128,13 @@ query <- function(q,
                   server = NULL,
                   images = NULL,
                   model_params = NULL,
+                  output = c("response", "httr2_response", "text", "list", "data.frame", "httr2_request"),
                   format = NULL,
                   template = NULL,
                   verbose = getOption("rollama_verbose",
                                       default = interactive())) {
+
+  output <- match.arg(output)
 
   if (!is.null(template))
     cli::cli_abort(paste(
@@ -151,16 +172,31 @@ query <- function(q,
                     format = format,
                     template = template)
 
+  if (output == "httr2_request") return(invisible(reqs))
 
-  resp <- perform_reqs(reqs, verbose)
+  resps <- perform_reqs(reqs, verbose)
 
-  if (screen) purrr::map(resp, function(r) {
-    screen_answer(purrr::pluck(r, "message", "content"),
-                  purrr::pluck(r, "model"))
+  res <- NULL
+  if (screen) {
+    res <- purrr::map(resps, httr2::resp_body_json)
+    purrr::map(res, function(r) {
+      screen_answer(purrr::pluck(r, "message", "content"),
+                    purrr::pluck(r, "model"))
+    })
+  }
 
-  })
-  if (length(resp) == 1L) resp <- unlist(resp, recursive = FALSE)
-  invisible(resp)
+  if (output == "httr2_response") return(invisible(resps))
+
+  if (is.null(res)) {
+    res <- purrr::map(resps, httr2::resp_body_json)
+  }
+
+  switch(output,
+         "response" = res,
+         "text" = purrr::map_chr(res, c("message", "content")),
+         "list" = process2list(res, reqs),
+         "data.frame" = process2df(res)
+  )
 }
 
 
@@ -203,7 +239,7 @@ chat <- function(q,
                 template = template)
 
   # save response
-  r <- purrr::pluck(resp, "message", "content")
+  r <- purrr::pluck(resp, 1, "message", "content")
   names(r) <- Sys.time()
   the$responses <- c(the$responses, r)
 

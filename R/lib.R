@@ -109,9 +109,7 @@ perform_reqs <- function(reqs, verbose) {
     cli::cli_alert_danger(fails)
   }
 
-  httr2::resps_successes(resps) |>
-    purrr::map(httr2::resp_body_json)
-
+  httr2::resps_successes(resps)
 }
 
 

@@ -38,6 +38,35 @@ check_model_installed <- function(model, auto_pull = FALSE, server = NULL) {
 }
 
 
+# process responses to list
+process2list <- function(resps, reqs) {
+  purrr::map2(resps, reqs, function(resp, req) {
+    list(
+      request = list(
+        model = purrr::pluck(req, "body", "data", "model"),
+        role = purrr::pluck(req, "body", "data", "messages", "role"),
+        message = purrr::pluck(req, "body", "data", "messages", "content")
+      ),
+      response = list(
+        model = purrr::pluck(resp, "model"),
+        role = purrr::pluck(resp, "message", "role"),
+        message = purrr::pluck(resp, "message", "content")
+      )
+    )
+  })
+}
+
+
+# process responses to data.frame
+process2df <- function(resps) {
+  tibble::tibble(
+    model = purrr::map_chr(resps, "model"),
+    role = purrr::map_chr(resps, c("message", "role")),
+    response = purrr::map_chr(resps, c("message", "content"))
+  )
+}
+
+
 # makes sure list can be turned into tibble
 as_tibble_onerow <- function(l) {
   l <- purrr::map(l, function(c) {
