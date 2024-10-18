@@ -31,9 +31,9 @@ embed_text <- function(text,
                                            default = interactive())) {
 
   if (is.null(model)) model <- getOption("rollama_model", default = "llama3.1")
-  check_model_installed(model)
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
+  check_model_installed(model, server = server)
 
   pb <- FALSE
   if (verbose) pb <- list(

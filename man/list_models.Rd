@@ -7,7 +7,7 @@
 list_models(server = NULL)
 }
 \arguments{
-\item{server}{URL to an Ollama server (not the API). Defaults to
+\item{server}{URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".}
 }
 \value{

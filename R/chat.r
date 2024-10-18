@@ -23,7 +23,7 @@
 #'   change default for the current session. See [pull_model] for more
 #'   details.
 #' @param screen Logical. Should the answer be printed to the screen.
-#' @param server URL to an Ollama server (not the API). Defaults to
+#' @param server URL to one or several Ollama servers (not the API). Defaults to
 #'   "http://localhost:11434".
 #' @param images path(s) to images (for multimodal models such as llava).
 #' @param model_params a named list of additional model parameters listed in the
@@ -142,7 +142,8 @@ query <- function(q,
         "work {.url https://github.com/ollama/ollama/issues/1839}")
     ))
 
-  if (!is.list(q)) {
+  # q can be a string, a data.frame, or list of data.frames
+  if (is.character(q)) {
     config <- getOption("rollama_config", default = NULL)
 
     msg <- do.call(rbind, list(
@@ -156,12 +157,11 @@ query <- function(q,
       images <- purrr::map_chr(images, \(i) base64enc::base64encode(i))
       msg <- tibble::add_column(msg, images = list(images))
     }
-
+    msg <- list(msg)
+  } else if (is.data.frame(q)) {
+    msg <- list(check_conversation(q))
   } else {
-    msg <- q
-    if (!"user" %in% msg$role && nchar(msg$content) > 0)
-      cli::cli_abort(paste("If you supply a conversation object, it needs at",
-                           "least one user message. See {.help query}."))
+    msg <- purrr::map(q, check_conversation)
   }
 
   reqs <- build_req(model = model,
@@ -179,7 +179,7 @@ query <- function(q,
   res <- NULL
   if (screen) {
     res <- purrr::map(resps, httr2::resp_body_json)
-    purrr::map(res, function(r) {
+    purrr::walk(res, function(r) {
       screen_answer(purrr::pluck(r, "message", "content"),
                     purrr::pluck(r, "model"))
     })
@@ -191,12 +191,13 @@ query <- function(q,
     res <- purrr::map(resps, httr2::resp_body_json)
   }
 
-  switch(output,
+  out <- switch(output,
          "response" = res,
          "text" = purrr::map_chr(res, c("message", "content")),
          "list" = process2list(res, reqs),
          "data.frame" = process2df(res)
   )
+  invisible(out)
 }
 
 

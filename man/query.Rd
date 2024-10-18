@@ -38,7 +38,7 @@ details.}
 
 \item{screen}{Logical. Should the answer be printed to the screen.}
 
-\item{server}{URL to an Ollama server (not the API). Defaults to
+\item{server}{URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".}
 
 \item{images}{path(s) to images (for multimodal models such as llava).}
@@ -98,6 +98,9 @@ chat("and how do you know that?")
 # save the response to an object and extract the answer
 resp <- query(q = "why is the sky blue?")
 answer <- resp$message$content
+
+# or just get the answer directly
+answer <- query(q = "why is the sky blue?", output = "text")
 
 # ask question about images (to a multimodal model)
 images <- c("https://avatars.githubusercontent.com/u/23524101?v=4", # remote

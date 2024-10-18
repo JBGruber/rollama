@@ -20,7 +20,7 @@ options. Default is "llama3.1". Set option(rollama_model = "modelname") to
 change default for the current session. See \link{pull_model} for more
 details.}
 
-\item{server}{URL to an Ollama server (not the API). Defaults to
+\item{server}{URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".}
 
 \item{model_params}{a named list of additional model parameters listed in the

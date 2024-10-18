@@ -9,27 +9,28 @@ ping_ollama <- function(server = NULL, silent = FALSE) {
 
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
-  res <- try({
-    httr2::request(server) |>
-      httr2::req_url_path("api/version") |>
-      httr2::req_perform() |>
-      httr2::resp_body_json()
-  }, silent = TRUE)
 
-  if (!methods::is(res, "try-error") && purrr::pluck_exists(res, "version")) {
-    if (!silent) cli::cli_inform(
-      "{cli::col_green(cli::symbol$play)} Ollama (v{res$version}) is running at {.url {server}}!"
-    )
-    out <- TRUE
-    attr(out, "v") <- res$version
-    invisible(out)
-  } else {
-    if (!silent) {
-      cli::cli_alert_danger("Could not connect to Ollama at {.url {server}}")
+  out <- purrr::map_lgl(server, function(sv) {
+    res <- try({
+      httr2::request(sv) |>
+        httr2::req_url_path("api/version") |>
+        httr2::req_perform() |>
+        httr2::resp_body_json()
+    }, silent = TRUE)
+
+    if (!methods::is(res, "try-error") && purrr::pluck_exists(res, "version")) {
+      if (!silent) cli::cli_inform(
+        "{cli::col_green(cli::symbol$play)} Ollama (v{res$version}) is running at {.url {sv}}!"
+      )
+      return(TRUE)
+    } else {
+      if (!silent) {
+        cli::cli_alert_danger("Could not connect to Ollama at {.url {sv}}")
+      }
+      return(FALSE)
     }
-    invisible(FALSE)
-  }
-
+  })
+  invisible(all(out))
 }
 
 
@@ -45,18 +46,22 @@ build_req <- function(model,
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
   check_model_installed(model, server = server)
-  req_data <- purrr::map(model, function(m) {
-    list(model = m,
-         messages = msg,
-         stream = FALSE,
-         options = model_params,
-         format = format,
-         template = template) |>
-      purrr::compact() |> # remove NULL values
-      make_req(server = server,
-               endpoint = "/api/chat",
-               perform = FALSE)
-  })
+  req_data <- purrr::map(msg, function(ms) {
+    purrr::map(model, function(m) {
+      list(model = m,
+           messages = ms,
+           stream = FALSE,
+           options = model_params,
+           format = format,
+           template = template) |>
+        purrr::compact() |> # remove NULL values
+        make_req(server = sample(server, 1, prob = as_prob(names(server))),
+                 endpoint = "/api/chat",
+                 perform = FALSE)
+    })
+  }) |>
+    unlist(recursive = FALSE)
+
   return(req_data)
 }
 
