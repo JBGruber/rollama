@@ -90,9 +90,8 @@ perform_reqs <- function(reqs, verbose) {
 
   if (verbose) {
     pb <- list(
-      clear = FALSE,
-      format = "{model} {?is/are} thinking about {cli::pb_total - cli::pb_current} question{?s} {cli::pb_spin}",
-      extra = list(model = model)
+      clear = TRUE,
+      format = "{cli::pb_spin} Ollama is thinking about {cli::pb_total - cli::pb_current}/{cli::pb_total} question{?s}"
     )
   }
 
