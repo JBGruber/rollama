@@ -20,21 +20,25 @@ check_model_installed <- function(model,
                                                      default = "http://localhost:11434")) {
   for (sv in server) {
     models_df <- list_models(server = sv)
-    model <- setdiff(model, models_df[["name"]])
+    mdl <- setdiff(model, models_df[["name"]])
     model_wo_vers <- gsub(":.*", "", models_df[["name"]])
-    model <- setdiff(model, model_wo_vers)
-    if (length(model) > 0L && !auto_pull) {
+    mdl <- setdiff(mdl, model_wo_vers)
+    if (length(mdl) > 0L && !auto_pull) {
       if (interactive()) {
-        cli::cli_alert_info("{sv}: Model{?s} {model} not installed on. Would you like to download {?it/them}?")
-        auto_pull <- utils::askYesNo("")
+        msg <- c(
+          "{cli::col_cyan(cli::symbol$info)} {sv}:",
+          " Model{?s} {.emph {mdl}} not installed on.",
+          " Would you like to download {?it/them}?"
+        )
+        auto_pull <- utils::askYesNo(cli::cli_text(msg))
       }
       if (!auto_pull) {
-        cli::cli_abort("Model {model} not installed on {sv}.")
+        cli::cli_abort("Model {mdl} not installed on {sv}.")
         return(invisible(FALSE))
       }
     }
     if (auto_pull) {
-      for (m in model) {
+      for (m in mdl) {
         pull_model(m, server = sv)
       }
     }
