@@ -119,21 +119,25 @@ perform_reqs <- function(reqs, verbose) {
 
 perform_req <- function(reqs, verbose) {
 
-  model <- purrr::map_chr(reqs, c("body", "data", "model")) |>
-    unique()
+  if (verbose) {
+    model <- purrr::map_chr(reqs, c("body", "data", "model")) |>
+      unique()
 
-  id <- cli::cli_progress_bar(format = "{cli::pb_spin} {model} {?is/are} thinking",
-                              clear = TRUE)
+    id <- cli::cli_progress_bar(format = "{cli::pb_spin} {model} {?is/are} thinking",
+                                clear = TRUE)
 
-  rp <- callr::r_bg(httr2::req_perform,
-                    args = list(req = reqs[[1]]),
-                    package = TRUE)
+    rp <- callr::r_bg(httr2::req_perform,
+                      args = list(req = reqs[[1]]),
+                      package = TRUE)
 
-  while (rp$is_alive()) {
-    cli::cli_progress_update(id = id)
-    Sys.sleep(2 / 100)
+    while (rp$is_alive()) {
+      cli::cli_progress_update(id = id)
+      Sys.sleep(2 / 100)
+    }
+    return(list(rp$get_result()))
   }
-  return(list(rp$get_result()))
+
+  list(httr2::req_perform(reqs[[1]]))
 }
 
 
