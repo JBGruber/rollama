@@ -84,24 +84,24 @@ make_req <- function(req_data, server, endpoint, perform = TRUE) {
 
 perform_reqs <- function(reqs, verbose) {
 
-  pb <- FALSE
   model <- purrr::map_chr(reqs, c("body", "data", "model")) |>
     unique()
-
+  pb <- FALSE
   if (verbose) {
     pb <- list(
       clear = TRUE,
-      format = "{cli::pb_spin} Ollama is thinking about {cli::pb_total - cli::pb_current}/{cli::pb_total} question{?s}"
+      format = c("{cli::pb_spin} {getOption('model')} {?is/are} thinking about",
+                 "{cli::pb_total - cli::pb_current}/{cli::pb_total} question{?s}")
     )
   }
 
-  op <- options(cli.progress_show_after = 0)
-  on.exit(options(op))
-  resps <- httr2::req_perform_parallel(
-    reqs = reqs,
-    on_error = "continue",
-    progress = pb
-  )
+  withr::with_options(list(cli.progress_show_after = 0, model = model), {
+    resps <- httr2::req_perform_parallel(
+      reqs = reqs,
+      on_error = "continue",
+      progress = pb
+    )
+  })
 
   fails <- httr2::resps_failures(resps) |>
     purrr::map_chr("message")
