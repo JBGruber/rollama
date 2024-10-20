@@ -42,6 +42,7 @@ test_that("Test inputs", {
 })
 
 test_that("Test output parameter", {
+  skip_if_not(ping_ollama(silent = TRUE))
   expect_s3_class(
     query("Please only say 'yes'", output = "httr2_request")[[1]],
     "httr2_request"
