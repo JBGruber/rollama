@@ -26,7 +26,8 @@ Imports:
     prettyunits,
     purrr,
     rlang,
-    tibble
+    tibble,
+    withr
 Suggests: 
     base64enc,
     covr,
