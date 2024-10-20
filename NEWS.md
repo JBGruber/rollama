@@ -2,6 +2,10 @@
 
 * improved performance of embed_text
 * changes default model to llama3.1
+* improved performance of query
+* added more output formats
+* added option to employ multiple servers
+* some bug fixes
 
 # rollama 0.1.0
 
