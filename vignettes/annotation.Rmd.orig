@@ -130,8 +130,7 @@ q_thought <- tribble(
   "system", "You assign texts into categories. ",
   "user",   "text: the pizza tastes terrible\nWhat sentiment (positive, neutral, or negative) would you assign? Provide some thoughts."
 )
-output_thought <- query(q_thought)
-pluck(output_thought, "message", "content")
+output_thought <- query(q_thought, output = "text")
 ```
 
 In the next step we can use the assistant's reasoning and a user prompt with the classification question.
@@ -141,10 +140,10 @@ q <- tribble(
   ~role,    ~content,
   "system", "You assign texts into categories. ",
   "user",   "text: the pizza tastes terrible\nWhat sentiment (positive, neutral, or negative) would you assign? Provide some thoughts.",
-  "assistant", output_thought$message$content,
+  "assistant", output_thought,
   "user",   "Now answer with just the correct category (positive, neutral, or negative)"
 )
-query(q)
+resps <- query(q)
 ```
 
 
@@ -228,15 +227,15 @@ This scenario uses multiple examples to enrich the context for the new classific
 examples_fs <- list(
   list(
     usermsg = "text: the pizza tastes terrible",
-    assistantmsg = "Category: Negative"
+    assistantmsg = "{Negative}"
   ),
   list(
     usermsg = "text: the service is great",
-    assistantmsg = "Category: Positive"
+    assistantmsg = "{Positive}"
   ),
   list(
     usermsg = "text: I once came here with my wife",
-    assistantmsg = "Category: Neutral"
+    assistantmsg = "{Neutral}"
   )
 )
 q_fs <- create_query(systemmsg, examples_fs, "I once ate pizza", "Categories: positive, neutral, negative")
@@ -246,7 +245,8 @@ query(q_fs)
 
 # Another example using a dataframe
 
-This example demonstrates how to perform sentiment analysis on a set of movie reviews. The process involves creating a dataframe of reviews, processing each review to classify its sentiment, and appending the results as a new column in the dataframe.
+This example demonstrates how to perform sentiment analysis on a set of movie reviews.
+The process involves creating a dataframe of reviews, processing each review to classify its sentiment, and appending the results as a new column in the dataframe.
 
 We create a dataframe named `movie_reviews` with two columns:
 
@@ -264,41 +264,31 @@ movie_reviews <- tibble(
 movie_reviews
 ```
 
-We define a system message and a classification question to guide the sentiment analysis:
-
-The function `process_reviews`
-
-- Iterates through each review.
-- Constructs a query using `create_query`.
-- Obtains sentiment classification (by `query(q)` function).
-- Stores the result in the `annotations` vector.
-- Appends `annotations` as a new column in the dataframe.
-
-
+We can use `create_query` again to define a query for each of these reviews.
+What we want to do is to perform a sentiment analysis, guided by a system message and a classification question.
 
 ```{r}
 systemmsg <- "Classify the sentiment of the movie review. Answer with just the correct category."
 classification_question <- "Categories: positive, neutral, negative"
 
-# Function to process each review and append the result to a new column
-process_reviews <- function(reviews) {
-  annotations <- vector("character", length = nrow(reviews))
+queries <- lapply(movie_reviews$review, function(t) create_query(
+  systemmsg = systemmsg,
+  examples = examples_fs,
+  texttoclassify = t,
+  classification_question = classification_question
+))
+```
 
-  for (i in seq_along(reviews$review)) {
-    q <- create_query(systemmsg, examples = list(), reviews$review[i], classification_question)
-    output <- query(q, screen = FALSE)
-    annotations[i] <- pluck(output, "message", "content")
-  }
-  reviews$annotation <- annotations
-  return(reviews)
-}
+The `query` function accepts lists of queries, so we can get the annotations simply using:
 
+```{r}
 # Process and annotate the movie reviews
-annotated_reviews <- process_reviews(movie_reviews)
+movie_reviews$annotation <- query(queries, screen = FALSE, output = "text")
 
 # Print the annotated dataframe
-annotated_reviews
+movie_reviews
 ```
+
 
 This takes a little longer than classic supervised machine learning or even classification with transformer models.
 However, the advantage is that instructions can be provided using plain English, the models need very few examples to perform surprisingly well, and the best models, like `mixtral`, can often deal more complex categories than other approaches.

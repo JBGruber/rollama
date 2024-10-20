@@ -18,6 +18,11 @@ test_that("create model", {
     model = "mario",
     modelfile = "FROM llama3.1\nSYSTEM You are mario from Super Mario Bros."
   )), 1L)
+  # also test modelfile
+  expect_equal(nrow(create_model(
+    model = "mario",
+    modelfile = system.file("extdata", "modelfile.txt", package = "rollama")
+  )), 1L)
 })
 
 test_that("copy model", {

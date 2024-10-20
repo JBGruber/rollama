@@ -7,7 +7,7 @@
 ping_ollama(server = NULL, silent = FALSE)
 }
 \arguments{
-\item{server}{URL to an Ollama server (not the API). Defaults to
+\item{server}{URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".}
 
 \item{silent}{suppress warnings and status (only return \code{TRUE}/\code{FALSE}).}
