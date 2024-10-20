@@ -174,7 +174,11 @@ query <- function(q,
 
   if (output == "httr2_request") return(invisible(reqs))
 
-  resps <- perform_reqs(reqs, verbose)
+  if (length(reqs) > 1L) {
+    resps <- perform_reqs(reqs, verbose)
+  } else {
+    resps <- perform_req(reqs, verbose)
+  }
 
   res <- NULL
   if (screen) {
@@ -192,10 +196,10 @@ query <- function(q,
   }
 
   out <- switch(output,
-         "response" = res,
-         "text" = purrr::map_chr(res, c("message", "content")),
-         "list" = process2list(res, reqs),
-         "data.frame" = process2df(res)
+                "response" = res,
+                "text" = purrr::map_chr(res, c("message", "content")),
+                "list" = process2list(res, reqs),
+                "data.frame" = process2df(res)
   )
   invisible(out)
 }

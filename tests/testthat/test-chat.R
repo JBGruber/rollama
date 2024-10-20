@@ -68,6 +68,3 @@ test_that("Test output parameter", {
     c("model", "role", "response")
   )
 })
-
-
-query("why is the sky blue?", output = "httr2_request")
