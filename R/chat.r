@@ -7,11 +7,11 @@
 #'   For the output of `query`, there are a couple of options:
 #'
 #'   - `response`: the response of the Ollama server
-#'   - `httr2_response`: the response of the Ollama server including HTML
-#'      headers in the `httr2` response format
 #'   - `text`: only the answer as a character vector
 #'   - `data.frame`: a data.frame containing model and response
 #'   - `list`: a list containing the prompt to Ollama and the response
+#'   - `httr2_response`: the response of the Ollama server including HTML
+#'      headers in the `httr2` response format
 #'   - `httr2_request`: httr2_request objects in a list, in case you want to run
 #'      them with [httr2::req_perform()], [httr2::req_perform_sequential()], or
 #'      [httr2::req_perform_parallel()] yourself.

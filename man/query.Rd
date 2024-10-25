@@ -12,7 +12,7 @@ query(
   server = NULL,
   images = NULL,
   model_params = NULL,
-  output = c("response", "httr2_response", "text", "list", "data.frame", "httr2_request"),
+  output = c("response", "text", "list", "data.frame", "httr2_response", "httr2_request"),
   format = NULL,
   template = NULL,
   verbose = getOption("rollama_verbose", default = interactive())
