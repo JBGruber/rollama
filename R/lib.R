@@ -90,7 +90,7 @@ perform_reqs <- function(reqs, verbose) {
   if (verbose) {
     pb <- list(
       clear = TRUE,
-      format = c("{cli::pb_spin} {getOption('model')} {?is/are} thinking about",
+      format = c("{cli::pb_spin} {getOption('model')} {?is/are} thinking about ",
                  "{cli::pb_total - cli::pb_current}/{cli::pb_total} question{?s}")
     )
   }

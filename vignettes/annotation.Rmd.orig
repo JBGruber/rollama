@@ -10,8 +10,6 @@ vignette: >
 
 # Introduction
 
-After you installed Ollama on your machine and downloaded the package rollama you can load the package and pull the default model (`llama3.1`) by calling:
-
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
@@ -20,11 +18,16 @@ knitr::opts_chunk$set(
 options("rollama_verbose" = FALSE)
 ```
 
+After you installed Ollama on your machine and downloaded the package rollama you can load the package and pull a model.
+The default model (`llama3.1`), is a good all-round chat model.
+For annotation, however, the instruction tuned llama models are often better suited, as they follow instructions more diligently and are less likey to trail off into a conversation.
+By changing the option `rollama_model`, we can change which model is used by default in the current session:
+
 ```{r}
 library(rollama)
+options(rollama_model = "llama3.2:3b-instruct-q8_0")
 pull_model()
 ```
-
 
 # Prompting Strategies
 
@@ -81,12 +84,26 @@ query(q)
 ```
 
 A nice side effect of the one-shot strategy (and all n>0-strategies) is that you can tune the format the model uses in its replies.
-For example, if you want to have an output that is easy to parse, you could change the assistant message to `"{'Category':'Negative','Confidence':'100%','Important':'terrible'}"`
+For example, if you want to have an output that easy to parse, you could change the assistant message to `"{'Category':'Negative','Important':'terrible'}"`
 
 ```{r}
 q <- tribble(
   ~role,    ~content,
   "system", "You assign texts into categories. Answer with just the correct category.",
+  "user", "text: the pizza tastes terrible\ncategories: positive, neutral, negative",
+  "assistant", "{'Category':'Negative'}",
+  "user", "text: the service is great\ncategories: positive, neutral, negative"
+)
+answer <- query(q)
+```
+
+This is a valid JSON return and can be parsed into a list with, e.g., `jsonlite::fromJSON()`.
+Using this logic, we could request a more informative output:
+
+```{r}
+q <- tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. Provide the following information: category, confidence, and the word that is most important for your coding decision.",
   "user", "text: the pizza tastes terrible\ncategories: positive, neutral, negative",
   "assistant", "{'Category':'Negative','Confidence':'100%','Important':'terrible'}",
   "user", "text: the service is great\ncategories: positive, neutral, negative"
@@ -94,7 +111,7 @@ q <- tribble(
 answer <- query(q)
 ```
 
-This is a valid JSON return and can be parsed into a list with, e.g., `jsonlite::fromJSON()`.
+
 By using `pluck(answer, "message", "content")`, you can directly extract the result and don't need to copy it from screen.
 
 
