@@ -84,7 +84,7 @@ query(q)
 ```
 
 A nice side effect of the one-shot strategy (and all n>0-strategies) is that you can tune the format the model uses in its replies.
-For example, if you want to have an output that easy to parse, you could change the assistant message to `"{'Category':'Negative','Important':'terrible'}"`
+For example, if you want to have an output that easy to parse, you could change the assistant message to `"{'Category':'Negative'}"`
 
 ```{r}
 q <- tribble(
