@@ -32,7 +32,7 @@
 #'   such as temperature. Use a seed and set the temperature to zero to get
 #'   reproducible results (see examples).
 #' @param output what the function should return. Possible values are
-#'   "response", "httr2_response", "text", "list", "data.frame" or
+#'   "response", "text", "list", "data.frame", "httr2_response" or
 #'   "httr2_request" see details.
 #' @param format the format to return a response in. Currently the only accepted
 #'   value is `"json"`.
@@ -128,7 +128,7 @@ query <- function(q,
                   server = NULL,
                   images = NULL,
                   model_params = NULL,
-                  output = c("response", "httr2_response", "text", "list", "data.frame", "httr2_request"),
+                  output = c("response", "text", "list", "data.frame", "httr2_response", "httr2_request"),
                   format = NULL,
                   template = NULL,
                   verbose = getOption("rollama_verbose",
