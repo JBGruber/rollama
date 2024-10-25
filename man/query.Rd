@@ -49,7 +49,7 @@ such as temperature. Use a seed and set the temperature to zero to get
 reproducible results (see examples).}
 
 \item{output}{what the function should return. Possible values are
-"response", "httr2_response", "text", "list", "data.frame" or
+"response", "text", "list", "data.frame", "httr2_response" or
 "httr2_request" see details.}
 
 \item{format}{the format to return a response in. Currently the only accepted
@@ -76,11 +76,11 @@ messages as part of the same conversation until \link{new_chat} is called.
 For the output of \code{query}, there are a couple of options:
 \itemize{
 \item \code{response}: the response of the Ollama server
-\item \code{httr2_response}: the response of the Ollama server including HTML
-headers in the \code{httr2} response format
 \item \code{text}: only the answer as a character vector
 \item \code{data.frame}: a data.frame containing model and response
 \item \code{list}: a list containing the prompt to Ollama and the response
+\item \code{httr2_response}: the response of the Ollama server including HTML
+headers in the \code{httr2} response format
 \item \code{httr2_request}: httr2_request objects in a list, in case you want to run
 them with \code{\link[httr2:req_perform]{httr2::req_perform()}}, \code{\link[httr2:req_perform_sequential]{httr2::req_perform_sequential()}}, or
 \code{\link[httr2:req_perform_parallel]{httr2::req_perform_parallel()}} yourself.

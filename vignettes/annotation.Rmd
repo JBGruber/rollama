@@ -14,7 +14,7 @@ vignette: >
 
 After you installed Ollama on your machine and downloaded the package rollama you can load the package and pull a model.
 The default model (`llama3.1`), is a good all-round chat model.
-For annotation, however, the instruction tuned llama models are often better suited, as they follow instructions more diligently and are less likey to trail off into a conversation.
+For annotation, however, the instruction tuned llama models are often better suited, as they follow instructions more diligently and are less likely to trail off into a conversation.
 By changing the option `rollama_model`, we can change which model is used by default in the current session:
 
 
