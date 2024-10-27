@@ -84,7 +84,8 @@ as_tibble_onerow <- function(l) {
     }
     return(c)
   })
-  tibble::as_tibble(l)
+  # .name_repair required for older versions of Ollama
+  tibble::as_tibble(l, .name_repair = "minimal")
 }
 
 
