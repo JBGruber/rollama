@@ -97,13 +97,10 @@ perform_reqs <- function(reqs, verbose) {
                  "{cli::pb_total - cli::pb_current}/{cli::pb_total} question{?s}")
     )
   }
-  # TODO: document the variable
-  max_cons <- as.integer(Sys.getenv("OLLAMA_CONS", unset = 4))
 
   withr::with_options(list(cli.progress_show_after = 0, model = model), {
     resps <- httr2::req_perform_parallel(
       reqs = reqs,
-      pool = curl::new_pool(total_con = 100, host_con = max_cons),
       on_error = "continue",
       progress = pb
     )
