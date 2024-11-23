@@ -72,6 +72,9 @@ make_req <- function(req_data, server, endpoint, perform = TRUE) {
     httr2::req_body_json(prep_req_data(req_data), auto_unbox = FALSE) |>
     # turn off errors since error messages can't be seen in sub-process
     httr2::req_error(is_error = function(resp) FALSE) |>
+    # see https://github.com/JBGruber/rollama/issues/23
+    httr2::req_options(timeout_ms = 1000 * 60 * 60 * 24,
+                       connecttimeout_ms = 1000 * 60 * 60 * 24) |>
     httr2::req_headers(!!!get_headers())
   if (perform) {
     r <- r |>
@@ -94,10 +97,13 @@ perform_reqs <- function(reqs, verbose) {
                  "{cli::pb_total - cli::pb_current}/{cli::pb_total} question{?s}")
     )
   }
+  # TODO: document the variable
+  max_cons <- as.integer(Sys.getenv("OLLAMA_CONS", unset = 4))
 
   withr::with_options(list(cli.progress_show_after = 0, model = model), {
     resps <- httr2::req_perform_parallel(
       reqs = reqs,
+      pool = curl::new_pool(total_con = 100, host_con = max_cons),
       on_error = "continue",
       progress = pb
     )
@@ -110,7 +116,17 @@ perform_reqs <- function(reqs, verbose) {
   if (length(fails) == length(reqs)) {
     cli::cli_abort(fails)
   } else if (length(fails) < length(reqs) && length(fails) > 0) {
-    cli::cli_alert_danger(fails)
+    error_counts <- table(fails)
+    for (f in names(error_counts)) {
+      if (error_counts[f] > 2) {
+        cli::cli_alert_danger("error ({error_counts[f]} times): {f}")
+      } else {
+        cli::cli_alert_danger("error: {f}")
+      }
+    }
+    for (f in fails) {
+      cli::cli_alert_danger(f)
+    }
   }
 
   httr2::resps_successes(resps)
