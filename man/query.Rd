@@ -87,7 +87,7 @@ them with \code{\link[httr2:req_perform]{httr2::req_perform()}}, \code{\link[htt
 }
 }
 \examples{
-\dontrun{
+\dontshow{if (ping_ollama()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
 # ask a single question
 query("why is the sky blue?")
 
@@ -161,5 +161,5 @@ query("why is the sky blue?",
 
 # Asking the same question to multiple models is also supported
 query("why is the sky blue?", model = c("llama3.1", "orca-mini"))
-}
+\dontshow{\}) # examplesIf}
 }

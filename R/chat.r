@@ -46,8 +46,7 @@
 #' @return list of objects set in output parameter.
 #' @export
 #'
-#' @examples
-#' \dontrun{
+#' @examplesIf ping_ollama()
 #' # ask a single question
 #' query("why is the sky blue?")
 #'
@@ -121,7 +120,6 @@
 #'
 #' # Asking the same question to multiple models is also supported
 #' query("why is the sky blue?", model = c("llama3.1", "orca-mini"))
-#' }
 query <- function(q,
                   model = NULL,
                   screen = TRUE,
