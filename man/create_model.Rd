@@ -12,7 +12,7 @@ create_model(model, modelfile, server = NULL)
 \item{modelfile}{either a path to a model file to be read or the contents of
 the model file as a character vector.}
 
-\item{server}{URL to an Ollama server (not the API). Defaults to
+\item{server}{URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".}
 }
 \value{

@@ -19,7 +19,7 @@ copy_model(model, destination = paste0(model, "-copy"), server = NULL)
 \item{model}{name of the model(s). Defaults to "llama3.1" when \code{NULL} (except
 in \code{delete_model}).}
 
-\item{server}{URL to an Ollama server (not the API). Defaults to
+\item{server}{URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".}
 
 \item{insecure}{allow insecure connections to the library. Only use this if

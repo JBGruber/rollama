@@ -9,27 +9,28 @@ ping_ollama <- function(server = NULL, silent = FALSE) {
 
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
-  res <- try({
-    httr2::request(server) |>
-      httr2::req_url_path("api/version") |>
-      httr2::req_perform() |>
-      httr2::resp_body_json()
-  }, silent = TRUE)
 
-  if (!methods::is(res, "try-error") && purrr::pluck_exists(res, "version")) {
-    if (!silent) cli::cli_inform(
-      "{cli::col_green(cli::symbol$play)} Ollama (v{res$version}) is running at {.url {server}}!"
-    )
-    out <- TRUE
-    attr(out, "v") <- res$version
-    invisible(out)
-  } else {
-    if (!silent) {
-      cli::cli_alert_danger("Could not connect to Ollama at {.url {server}}")
+  out <- purrr::map_lgl(server, function(sv) {
+    res <- try({
+      httr2::request(sv) |>
+        httr2::req_url_path("api/version") |>
+        httr2::req_perform() |>
+        httr2::resp_body_json()
+    }, silent = TRUE)
+
+    if (!methods::is(res, "try-error") && purrr::pluck_exists(res, "version")) {
+      if (!silent) cli::cli_inform(
+        "{cli::col_green(cli::symbol$play)} Ollama (v{res$version}) is running at {.url {sv}}!"
+      )
+      return(TRUE)
+    } else {
+      if (!silent) {
+        cli::cli_alert_danger("Could not connect to Ollama at {.url {sv}}")
+      }
+      return(FALSE)
     }
-    invisible(FALSE)
-  }
-
+  })
+  invisible(all(out))
 }
 
 
@@ -45,18 +46,22 @@ build_req <- function(model,
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
   check_model_installed(model, server = server)
-  req_data <- purrr::map(model, function(m) {
-    list(model = m,
-         messages = msg,
-         stream = FALSE,
-         options = model_params,
-         format = format,
-         template = template) |>
-      purrr::compact() |> # remove NULL values
-      make_req(server = server,
-               endpoint = "/api/chat",
-               perform = FALSE)
-  })
+  req_data <- purrr::map(msg, function(ms) {
+    purrr::map(model, function(m) {
+      list(model = m,
+           messages = ms,
+           stream = FALSE,
+           options = model_params,
+           format = format,
+           template = template) |>
+        purrr::compact() |> # remove NULL values
+        make_req(server = sample(server, 1, prob = as_prob(names(server))),
+                 endpoint = "/api/chat",
+                 perform = FALSE)
+    })
+  }) |>
+    unlist(recursive = FALSE)
+
   return(req_data)
 }
 
@@ -67,6 +72,9 @@ make_req <- function(req_data, server, endpoint, perform = TRUE) {
     httr2::req_body_json(prep_req_data(req_data), auto_unbox = FALSE) |>
     # turn off errors since error messages can't be seen in sub-process
     httr2::req_error(is_error = function(resp) FALSE) |>
+    # see https://github.com/JBGruber/rollama/issues/23
+    httr2::req_options(timeout_ms = 1000 * 60 * 60 * 24,
+                       connecttimeout_ms = 1000 * 60 * 60 * 24) |>
     httr2::req_headers(!!!get_headers())
   if (perform) {
     r <- r |>
@@ -79,25 +87,24 @@ make_req <- function(req_data, server, endpoint, perform = TRUE) {
 
 perform_reqs <- function(reqs, verbose) {
 
-  pb <- FALSE
   model <- purrr::map_chr(reqs, c("body", "data", "model")) |>
     unique()
-
+  pb <- FALSE
   if (verbose) {
     pb <- list(
-      clear = FALSE,
-      format = "{model} {?is/are} thinking about {cli::pb_total - cli::pb_current} question{?s} {cli::pb_spin}",
-      extra = list(model = model)
+      clear = TRUE,
+      format = c("{cli::pb_spin} {getOption('model')} {?is/are} thinking about ",
+                 "{cli::pb_total - cli::pb_current}/{cli::pb_total} question{?s}")
     )
   }
 
-  op <- options(cli.progress_show_after = 0)
-  on.exit(options(op))
-  resps <- httr2::req_perform_parallel(
-    reqs = reqs,
-    on_error = "continue",
-    progress = pb
-  )
+  withr::with_options(list(cli.progress_show_after = 0, model = model), {
+    resps <- httr2::req_perform_parallel(
+      reqs = reqs,
+      on_error = "continue",
+      progress = pb
+    )
+  })
 
   fails <- httr2::resps_failures(resps) |>
     purrr::map_chr("message")
@@ -106,12 +113,44 @@ perform_reqs <- function(reqs, verbose) {
   if (length(fails) == length(reqs)) {
     cli::cli_abort(fails)
   } else if (length(fails) < length(reqs) && length(fails) > 0) {
-    cli::cli_alert_danger(fails)
+    error_counts <- table(fails)
+    for (f in names(error_counts)) {
+      if (error_counts[f] > 2) {
+        cli::cli_alert_danger("error ({error_counts[f]} times): {f}")
+      } else {
+        cli::cli_alert_danger("error: {f}")
+      }
+    }
+    for (f in fails) {
+      cli::cli_alert_danger(f)
+    }
   }
 
-  httr2::resps_successes(resps) |>
-    purrr::map(httr2::resp_body_json)
+  httr2::resps_successes(resps)
+}
 
+
+perform_req <- function(reqs, verbose) {
+
+  if (verbose) {
+    model <- purrr::map_chr(reqs, c("body", "data", "model")) |>
+      unique()
+
+    id <- cli::cli_progress_bar(format = "{cli::pb_spin} {model} {?is/are} thinking",
+                                clear = TRUE)
+
+    rp <- callr::r_bg(httr2::req_perform,
+                      args = list(req = reqs[[1]]),
+                      package = TRUE)
+
+    while (rp$is_alive()) {
+      cli::cli_progress_update(id = id)
+      Sys.sleep(2 / 100)
+    }
+    return(list(rp$get_result()))
+  }
+
+  list(httr2::req_perform(reqs[[1]]))
 }
 
 

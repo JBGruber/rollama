@@ -10,17 +10,20 @@ vignette: >
 
 # Introduction
 
-After you installed Ollama on your machine and downloaded the package rollama you can load the package and pull the default model (`llama3.1`) by calling:
 
 
+After you installed Ollama on your machine and downloaded the package rollama you can load the package and pull a model.
+The default model (`llama3.1`), is a good all-round chat model.
+For annotation, however, the instruction tuned llama models are often better suited, as they follow instructions more diligently and are less likely to trail off into a conversation.
+By changing the option `rollama_model`, we can change which model is used by default in the current session:
 
 
 ``` r
 library(rollama)
+options(rollama_model = "llama3.2:3b-instruct-q8_0")
 pull_model()
-#> ✔ model llama3 pulled succesfully
+#> ✔ model llama3.2:3b-instruct-q8_0 pulled succesfully
 ```
-
 
 # Prompting Strategies
 
@@ -59,7 +62,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer from llama3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> negative
 ```
 
@@ -80,12 +83,12 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer from llama3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> Category: Positive
 ```
 
 A nice side effect of the one-shot strategy (and all n>0-strategies) is that you can tune the format the model uses in its replies.
-For example, if you want to have an output that is easy to parse, you could change the assistant message to `"{'Category':'Negative','Confidence':'100%','Important':'terrible'}"`
+For example, if you want to have an output that easy to parse, you could change the assistant message to `"{'Category':'Negative'}"`
 
 
 ``` r
@@ -93,16 +96,34 @@ q <- tribble(
   ~role,    ~content,
   "system", "You assign texts into categories. Answer with just the correct category.",
   "user", "text: the pizza tastes terrible\ncategories: positive, neutral, negative",
+  "assistant", "{'Category':'Negative'}",
+  "user", "text: the service is great\ncategories: positive, neutral, negative"
+)
+answer <- query(q)
+#> 
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> {'Category':'Positive'}
+```
+
+This is a valid JSON return and can be parsed into a list with, e.g., `jsonlite::fromJSON()`.
+Using this logic, we could request a more informative output:
+
+
+``` r
+q <- tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. Provide the following information: category, confidence, and the word that is most important for your coding decision.",
+  "user", "text: the pizza tastes terrible\ncategories: positive, neutral, negative",
   "assistant", "{'Category':'Negative','Confidence':'100%','Important':'terrible'}",
   "user", "text: the service is great\ncategories: positive, neutral, negative"
 )
 answer <- query(q)
 #> 
-#> ── Answer from llama3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> Positive
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> {'Category':'Positive','Confidence':'100%','Important':'great'}
 ```
 
-This is a valid JSON return and can be parsed into a list with, e.g., `jsonlite::fromJSON()`.
+
 By using `pluck(answer, "message", "content")`, you can directly extract the result and don't need to copy it from screen.
 
 
@@ -126,7 +147,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer from llama3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> Category: Neutral
 ```
 
@@ -143,18 +164,18 @@ q_thought <- tribble(
   "system", "You assign texts into categories. ",
   "user",   "text: the pizza tastes terrible\nWhat sentiment (positive, neutral, or negative) would you assign? Provide some thoughts."
 )
-output_thought <- query(q_thought)
+output_thought <- query(q_thought, output = "text")
 #> 
-#> ── Answer from llama3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> I would assign this text a negative sentiment.
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> I would assign the sentiment of this text as "negative".
 #> 
-#> The use of the word "terrible" is quite strong and unambiguous, indicating a very low opinion of the pizza's taste. This language suggests that the speaker has a strong negative emotional response to the pizza, which reinforces the
-#> overall negative sentiment. Additionally, the statement "the pizza tastes terrible" is a straightforward and direct expression of dissatisfaction, further supporting the classification as negative.
-```
-
-``` r
-pluck(output_thought, "message", "content")
-#> [1] "I would assign this text a negative sentiment.\n\nThe use of the word \"terrible\" is quite strong and unambiguous, indicating a very low opinion of the pizza's taste. This language suggests that the speaker has a strong negative emotional response to the pizza, which reinforces the overall negative sentiment. Additionally, the statement \"the pizza tastes terrible\" is a straightforward and direct expression of dissatisfaction, further supporting the classification as negative."
+#> The phrase "tastes terrible" is a strong expression of dislike for the pizza, implying that it's unpalatable and unpleasant to eat. The use of the word "terrible" also indicates a strong negative emotion, rather than a mild
+#> disappointment or dissatisfaction.
+#> 
+#> Additionally, there's no balance or mitigating language in the text, which further reinforces the negative sentiment. There are no words like "it could be better" or "I'm not sure if I like it", which would suggest a more neutral or
+#> even positive tone.
+#> 
+#> Overall, the text conveys a strong negative opinion about the pizza, making "negative" the most suitable sentiment assignment.
 ```
 
 In the next step we can use the assistant's reasoning and a user prompt with the classification question.
@@ -165,12 +186,12 @@ q <- tribble(
   ~role,    ~content,
   "system", "You assign texts into categories. ",
   "user",   "text: the pizza tastes terrible\nWhat sentiment (positive, neutral, or negative) would you assign? Provide some thoughts.",
-  "assistant", output_thought$message$content,
+  "assistant", output_thought,
   "user",   "Now answer with just the correct category (positive, neutral, or negative)"
 )
-query(q)
+resps <- query(q)
 #> 
-#> ── Answer from llama3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> Negative
 ```
 
@@ -231,8 +252,8 @@ systemmsg <- "You assign texts into categories. Answer with just the correct cat
 q_zs <- create_query(systemmsg, examples = list(), "the pizza tastes terrible", "Categories: positive, neutral, negative")
 query(q_zs)
 #> 
-#> ── Answer from llama3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> Negative
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> negative
 ```
 
 
@@ -251,7 +272,7 @@ examples_os <- list(
 q_os <- create_query(systemmsg, examples_os, "the service is great", "Categories: positive, neutral, negative")
 query(q_os)
 #> 
-#> ── Answer from llama3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 #> Category: Positive
 ```
 
@@ -265,28 +286,29 @@ This scenario uses multiple examples to enrich the context for the new classific
 examples_fs <- list(
   list(
     usermsg = "text: the pizza tastes terrible",
-    assistantmsg = "Category: Negative"
+    assistantmsg = "{Negative}"
   ),
   list(
     usermsg = "text: the service is great",
-    assistantmsg = "Category: Positive"
+    assistantmsg = "{Positive}"
   ),
   list(
     usermsg = "text: I once came here with my wife",
-    assistantmsg = "Category: Neutral"
+    assistantmsg = "{Neutral}"
   )
 )
 q_fs <- create_query(systemmsg, examples_fs, "I once ate pizza", "Categories: positive, neutral, negative")
 query(q_fs)
 #> 
-#> ── Answer from llama3 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
-#> Category: Neutral
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+#> {Neutral}
 ```
 
 
 # Another example using a dataframe
 
-This example demonstrates how to perform sentiment analysis on a set of movie reviews. The process involves creating a dataframe of reviews, processing each review to classify its sentiment, and appending the results as a new column in the dataframe.
+This example demonstrates how to perform sentiment analysis on a set of movie reviews.
+The process involves creating a dataframe of reviews, processing each review to classify its sentiment, and appending the results as a new column in the dataframe.
 
 We create a dataframe named `movie_reviews` with two columns:
 
@@ -313,50 +335,41 @@ movie_reviews
 #> 5         5 The movie lacked depth, but the special effects were incredible.
 ```
 
-We define a system message and a classification question to guide the sentiment analysis:
-
-The function `process_reviews`
-
-- Iterates through each review.
-- Constructs a query using `create_query`.
-- Obtains sentiment classification (by `query(q)` function).
-- Stores the result in the `annotations` vector.
-- Appends `annotations` as a new column in the dataframe.
-
-
+We can use `create_query` again to define a query for each of these reviews.
+What we want to do is to perform a sentiment analysis, guided by a system message and a classification question.
 
 
 ``` r
 systemmsg <- "Classify the sentiment of the movie review. Answer with just the correct category."
 classification_question <- "Categories: positive, neutral, negative"
 
-# Function to process each review and append the result to a new column
-process_reviews <- function(reviews) {
-  annotations <- vector("character", length = nrow(reviews))
+queries <- lapply(movie_reviews$review, function(t) create_query(
+  systemmsg = systemmsg,
+  examples = examples_fs,
+  texttoclassify = t,
+  classification_question = classification_question
+))
+```
 
-  for (i in seq_along(reviews$review)) {
-    q <- create_query(systemmsg, examples = list(), reviews$review[i], classification_question)
-    output <- query(q, screen = FALSE)
-    annotations[i] <- pluck(output, "message", "content")
-  }
-  reviews$annotation <- annotations
-  return(reviews)
-}
+The `query` function accepts lists of queries, so we can get the annotations simply using:
 
+
+``` r
 # Process and annotate the movie reviews
-annotated_reviews <- process_reviews(movie_reviews)
+movie_reviews$annotation <- query(queries, screen = FALSE, output = "text")
 
 # Print the annotated dataframe
-annotated_reviews
+movie_reviews
 #> # A tibble: 5 × 3
 #>   review_id review                                                    annotation
 #>       <int> <chr>                                                     <chr>     
-#> 1         1 A stunning visual spectacle with a gripping storyline.    positive  
-#> 2         2 The plot was predictable, but the acting was superb.      neutral   
-#> 3         3 An overrated film with underwhelming performances.        negative  
-#> 4         4 A beautiful tale of love and adventure, beautifully shot. positive  
-#> 5         5 The movie lacked depth, but the special effects were inc… neutral
+#> 1         1 A stunning visual spectacle with a gripping storyline.    {Positive}
+#> 2         2 The plot was predictable, but the acting was superb.      {Neutral} 
+#> 3         3 An overrated film with underwhelming performances.        {Negative}
+#> 4         4 A beautiful tale of love and adventure, beautifully shot. {Positive}
+#> 5         5 The movie lacked depth, but the special effects were inc… {Neutral}
 ```
+
 
 This takes a little longer than classic supervised machine learning or even classification with transformer models.
 However, the advantage is that instructions can be provided using plain English, the models need very few examples to perform surprisingly well, and the best models, like `mixtral`, can often deal more complex categories than other approaches.

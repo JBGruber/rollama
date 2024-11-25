@@ -12,6 +12,7 @@ query(
   server = NULL,
   images = NULL,
   model_params = NULL,
+  output = c("response", "text", "list", "data.frame", "httr2_response", "httr2_request"),
   format = NULL,
   template = NULL,
   verbose = getOption("rollama_verbose", default = interactive())
@@ -31,13 +32,13 @@ chat(
 \item{q}{the question as a character string or a conversation object.}
 
 \item{model}{which model(s) to use. See \url{https://ollama.com/library} for
-options. Default is "llama3.1". Set option(rollama_model = "modelname") to
+options. Default is "llama3.1". Set \code{option(rollama_model = "modelname")} to
 change default for the current session. See \link{pull_model} for more
 details.}
 
 \item{screen}{Logical. Should the answer be printed to the screen.}
 
-\item{server}{URL to an Ollama server (not the API). Defaults to
+\item{server}{URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".}
 
 \item{images}{path(s) to images (for multimodal models such as llava).}
@@ -47,6 +48,10 @@ details.}
 such as temperature. Use a seed and set the temperature to zero to get
 reproducible results (see examples).}
 
+\item{output}{what the function should return. Possible values are
+"response", "text", "list", "data.frame", "httr2_response" or
+"httr2_request" see details.}
+
 \item{format}{the format to return a response in. Currently the only accepted
 value is \code{"json"}.}
 
@@ -55,11 +60,10 @@ Modelfile).}
 
 \item{verbose}{Whether to print status messages to the Console
 (\code{TRUE}/\code{FALSE}). The default is to have status messages in
-interactive sessions. Can be changed with \code{options(rollama_verbose =
-  FALSE)}.}
+interactive sessions. Can be changed with \code{options(rollama_verbose = FALSE)}.}
 }
 \value{
-an httr2 response.
+list of objects set in output parameter.
 }
 \description{
 Chat with a LLM through Ollama
@@ -68,6 +72,19 @@ Chat with a LLM through Ollama
 \code{query} sends a single question to the API, without knowledge about
 previous questions (only the config message is relevant). \code{chat} treats new
 messages as part of the same conversation until \link{new_chat} is called.
+
+For the output of \code{query}, there are a couple of options:
+\itemize{
+\item \code{response}: the response of the Ollama server
+\item \code{text}: only the answer as a character vector
+\item \code{data.frame}: a data.frame containing model and response
+\item \code{list}: a list containing the prompt to Ollama and the response
+\item \code{httr2_response}: the response of the Ollama server including HTML
+headers in the \code{httr2} response format
+\item \code{httr2_request}: httr2_request objects in a list, in case you want to run
+them with \code{\link[httr2:req_perform]{httr2::req_perform()}}, \code{\link[httr2:req_perform_sequential]{httr2::req_perform_sequential()}}, or
+\code{\link[httr2:req_perform_parallel]{httr2::req_perform_parallel()}} yourself.
+}
 }
 \examples{
 \dontrun{
@@ -81,6 +98,9 @@ chat("and how do you know that?")
 # save the response to an object and extract the answer
 resp <- query(q = "why is the sky blue?")
 answer <- resp$message$content
+
+# or just get the answer directly
+answer <- query(q = "why is the sky blue?", output = "text")
 
 # ask question about images (to a multimodal model)
 images <- c("https://avatars.githubusercontent.com/u/23524101?v=4", # remote
