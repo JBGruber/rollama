@@ -164,47 +164,21 @@ resps <- query(q)
 ```
 
 
-# Batch annotation
-
-In practice, you probably never want to annotate just one text.
-In this section, we show you how you can wrap `rollama::query()` into another function to ask the model to annotate a batch of texts.
-We might add this function to the package in the future, but at the moment, we want to keep it simple.
-
 
 ## Function to create a query
 
-The `create_query` function is designed to facilitate the creation of a structured query for text classification.
+The `make_query` function is designed to facilitate the creation of a structured query for text classification.
 
 Components:
 
-- **System Message**: Provides context or instructions for the classification task.
-- **Examples**: Prior examples consisting of user messages and assistant responses (for one-shot and few-shot learning).
-- **Text to Classify**: The new text to be categorized.
-- **Classification Question**: Lists the possible categories for classification.
+- **Text** to Classify: The new text(s) to be annotated.
+- **Prompt**: Lists the possible categories for classification.
+- **User Template**: Defines the structure for user messages. Defines the structure for user messages. The template can include placeholders like {text}, {prompt_pre}, and {prompt_suff} to dynamically format input.
+- **System Prompt**: Provides context or instructions for the classification task (optional).
+- **prompt_pre**: A string to prepend to user queries (optional).
+- **prompt_suff**: A string to append to user queries (optional).
+- **Examples**: Prior examples consisting of user messages and assistant responses (for one-shot and few-shot learning)(optional).
 
-
-```{r}
-create_query <- function(systemmsg, examples, texttoclassify, classification_question) {
-  # Start with the system message
-  q <- tribble(
-    ~role,    ~content,
-    "system", systemmsg
-  )
-
-  # Add examples (if any), appending the classification question to the user messages
-  for(example in examples) {
-    usermsg_with_question <- paste(example$usermsg, "\n", classification_question)
-    q <- add_row(q, role = "user", content = usermsg_with_question)
-    q <- add_row(q, role = "assistant", content = example$assistantmsg)
-  }
-
-  # Add the current text to classify along with the classification question
-  usermsg_final <- paste("text:", texttoclassify, "\n", classification_question)
-  q <- add_row(q, role = "user", content = usermsg_final)
-
-  return(q)
-}
-```
 
 
 ## Example usage
@@ -214,25 +188,41 @@ create_query <- function(systemmsg, examples, texttoclassify, classification_que
 In this example, the function is used without any examples.
 
 ```{r}
-systemmsg <- "You assign texts into categories. Answer with just the correct category."
-q_zs <- create_query(systemmsg, examples = list(), "the pizza tastes terrible", "Categories: positive, neutral, negative")
+# Call the make_query function
+q_zs <- make_query(
+  user_template = "{text}\n{prompt}",
+  text = "the pizza tastes terrible",
+  prompt = "Categories: positive, neutral, negative",
+  systemprompt = "You assign texts into categories. Answer with just the correct category.",
+)
+
+# Print the query
+print(q_zs)
+# Run the query
 query(q_zs)
 ```
 
 
-### One-shot example with one example
+### One-shot example
 
 Here, one prior example is provided to aid the classification:
 
 ```{r}
-examples_os <- list(
-  list(
-    usermsg = "text: the pizza tastes terrible",
-    assistantmsg = "Category: Negative"
-  )
+examples_os <- tibble::tribble(
+  ~text, ~answer,
+  "the pizza tastes terrible", "negative"
 )
-q_os <- create_query(systemmsg, examples_os, "the service is great", "Categories: positive, neutral, negative")
+
+q_os <- make_query(
+  text = "the service is great",
+  user_template = "{text}\n{prompt}",
+  prompt = "Categories: positive, neutral, negative",
+  systemprompt = "You assign texts into categories. Answer with just the correct category.",
+)
+print(q_os)
+
 query(q_os)
+
 ```
 
 
@@ -241,26 +231,30 @@ query(q_os)
 This scenario uses multiple examples to enrich the context for the new classification:
 
 ```{r}
-examples_fs <- list(
-  list(
-    usermsg = "text: the pizza tastes terrible",
-    assistantmsg = "{Negative}"
-  ),
-  list(
-    usermsg = "text: the service is great",
-    assistantmsg = "{Positive}"
-  ),
-  list(
-    usermsg = "text: I once came here with my wife",
-    assistantmsg = "{Neutral}"
-  )
+examples_fs <- tibble::tribble(
+  ~text, ~answer,
+  "the pizza tastes terrible", "negative",
+  "the service is great", "positive",
+  "I once came here with my wife", "neutral"
 )
-q_fs <- create_query(systemmsg, examples_fs, "I once ate pizza", "Categories: positive, neutral, negative")
+
+q_fs <- make_query(
+  text = "I once ate pizza",
+  prompt = "Categories: positive, neutral, negative",
+  user_template = "{text}\n{prompt}",
+  systemprompt = "You assign texts into categories. Answer with just the correct category.",
+  examples = examples_fs
+)
+
 query(q_fs)
 ```
+# Batch annotation
+
+In practice, you probably never want to annotate just one text.
+In this section, we show you how we you can use `rollama::make_query()` function to ask the model to annotate a batch of texts.
 
 
-# Another example using a dataframe
+# Example using a dataframe
 
 This example demonstrates how to perform sentiment analysis on a set of movie reviews.
 The process involves creating a dataframe of reviews, processing each review to classify its sentiment, and appending the results as a new column in the dataframe.
@@ -269,7 +263,7 @@ We create a dataframe named `movie_reviews` with two columns:
 
 ```{r}
 # Create an example dataframe with 5 movie reviews
-movie_reviews <- tibble(
+movie_reviews <- tibble::tibble(
   review_id = 1:5,
   review = c("A stunning visual spectacle with a gripping storyline.",
              "The plot was predictable, but the acting was superb.",
@@ -281,19 +275,18 @@ movie_reviews <- tibble(
 movie_reviews
 ```
 
-We can use `create_query` again to define a query for each of these reviews.
+We can use `make_query` again to define a query for each of these reviews.
 What we want to do is to perform a sentiment analysis, guided by a system message and a classification question.
 
 ```{r}
-systemmsg <- "Classify the sentiment of the movie review. Answer with just the correct category."
-classification_question <- "Categories: positive, neutral, negative"
-
-queries <- lapply(movie_reviews$review, function(t) create_query(
-  systemmsg = systemmsg,
-  examples = examples_fs,
-  texttoclassify = t,
-  classification_question = classification_question
-))
+# Process each review using make_query
+queries <- make_query(
+  text = movie_reviews$review,
+  prompt = "Categories: positive, neutral, negative",
+  user_template = "{prompt_pre}{text}\n{prompt}",
+  systemprompt = "Classify the sentiment of the movie review. Answer with just the correct category.",
+  prompt_pre = "Text to classify: "
+)
 ```
 
 The `query` function accepts lists of queries, so we can get the annotations simply using:

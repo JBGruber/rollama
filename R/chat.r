@@ -275,3 +275,103 @@ new_chat <- function() {
   the$responses <- NULL
   the$prompts <- NULL
 }
+
+
+
+#' Generate and format queries for a language model
+#'
+#' `make_query` generates structured input for a language model, including system messages, user messages, and optional examples.
+#'
+#' @details The function supports the inclusion of examples, which are dynamically added to the structured input. Each example follows the same format as the primary user query.
+#'
+#' @param text A character vector of primary texts (queries) for which the input will be formatted.
+#' @param prompt A string defining the main task or question to be passed to the language model.
+#' @param user_template A string template for formatting user queries, containing placeholders like `{text}`, `{prompt_pre}`, and `{prompt_suff}`.
+#' @param systemprompt An optional string to specify a system-level instruction or context.
+#' @param prompt_pre A prefix string to prepend to each user query.
+#' @param prompt_suff A suffix string to append to each user query.
+#' @param examples A `tibble` with columns `text` and `answer`, representing example user messages and corresponding assistant responses.
+#' 
+#' @return A list of tibbles, one for each input `text`, containing structured rows for system messages, user messages, and assistant responses.
+#' @export
+#'
+#' @examples
+#' user_template <- "{prompt_pre}{text}\n\n{prompt}{prompt_suff}"
+#' examples <- tibble::tribble(
+#'   ~text, ~answer,
+#'   "This movie was amazing, with great acting and story.", "positive",
+#'   "The film was okay, but not particularly memorable.", "neutral",
+#'   "I found this movie boring and poorly made.", "negative"
+#' )
+#' make_query(
+#'   text = c("A stunning visual spectacle.", "Predictable but well-acted."),
+#'   prompt = "Classify sentiment as positive, neutral, or negative.",
+#'   user_template = user_template,
+#'   systemprompt = "Provide a sentiment classification.",
+#'   prompt_pre = "Review: ",
+#'   prompt_suff = " Please classify.",
+#'   examples = examples
+#' )
+make_query <- function(text,
+                       prompt,
+                       user_template,
+                       systemprompt = NULL,
+                       prompt_pre = NULL,
+                       prompt_suff = NULL,
+                       examples = NULL) {
+  # Ensure optional parameters have default values
+  prompt_pre <- if (is.null(prompt_pre)) "" else prompt_pre
+  prompt_suff <- if (is.null(prompt_suff)) "" else prompt_suff
+  
+  # Process each input text
+  queries <- lapply(text, function(txt) {
+    # Initialize structured query
+    full_query <- tibble::tibble(role = character(), content = character())
+    
+    # Add system message if provided
+    if (!is.null(systemprompt)) {
+      full_query <- full_query |> 
+        dplyr::add_row(role = "system", content = systemprompt)
+    }
+    
+    # Add examples if provided
+    if (!is.null(examples)) {
+      examples <- tibble::as_tibble(examples) |>
+        dplyr::rowwise() |>
+        dplyr::mutate(
+          user_content = glue::glue(
+            user_template,
+            text = text,
+            prompt = prompt,
+            prompt_pre = prompt_pre,
+            prompt_suff = prompt_suff
+          )
+        ) |> 
+        dplyr::ungroup()
+      
+      for (i in seq_len(nrow(examples))) {
+        full_query <- full_query |> 
+          dplyr::add_row(role = "user", content = examples$user_content[i]) |>
+          dplyr::add_row(role = "assistant", content = examples$answer[i])
+      }
+    }
+    
+    # Add main user query
+    main_query <- glue::glue(
+      user_template,
+      text = txt,
+      prompt = prompt,
+      prompt_pre = prompt_pre,
+      prompt_suff = prompt_suff
+    )
+    full_query <- full_query |> dplyr::add_row(role = "user", content = main_query)
+    
+    return(full_query)
+  })
+  
+  return(queries)
+}
+
+
+
+
