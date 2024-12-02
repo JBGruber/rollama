@@ -62,7 +62,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
 #> negative
 ```
 
@@ -83,7 +83,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
 #> Category: Positive
 ```
 
@@ -101,7 +101,7 @@ q <- tribble(
 )
 answer <- query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
 #> {'Category':'Positive'}
 ```
 
@@ -119,7 +119,7 @@ q <- tribble(
 )
 answer <- query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
 #> {'Category':'Positive','Confidence':'100%','Important':'great'}
 ```
 
@@ -147,7 +147,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
 #> Category: Neutral
 ```
 
@@ -166,22 +166,16 @@ q_thought <- tribble(
 )
 output_thought <- query(q_thought, output = "text")
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────────────────
-#> I would assign a negative sentiment to this text.
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
+#> I would assign the sentiment of "negative" to this text.
 #> 
-#> The language used is quite direct and explicit in conveying dissatisfaction with the pizza. The
-#> word "terrible" is a strong adjective that indicates a strong negative emotion. Additionally,
-#> there's no attempt to provide constructive feedback or soften the criticism, which further
-#> reinforces the negative tone.
+#> My reasoning is that the phrase "tastes terrible" directly expresses a strong dislike for the food, which is a clear
+#> indicator of a negative experience. The use of the word "terrible" also implies a high level of dissatisfaction,
+#> suggesting that the speaker was not only disappointed but also strongly unimpressed with the pizza.
 #> 
-#> To break it down:
-#> 
-#> * "Tastes" is a neutral verb, as it doesn't carry any emotional connotation.
-#> * "Terrible" is a clear and direct expression of dislike, indicating that the speaker strongly
-#> disapproves of the pizza's flavor or quality.
-#> 
-#> Overall, the text expresses a strong negative sentiment, suggesting that the speaker was
-#> thoroughly unimpressed with the pizza.
+#> Additionally, there are no positive or neutral words or phrases in this text to balance out the negativity, which
+#> further reinforces my classification as a negative sentiment. Overall, the statement is straightforward and clearly
+#> conveys a strong negative emotion, making it easy to categorize as such.
 ```
 
 In the next step we can use the assistant's reasoning and a user prompt with the classification question.
@@ -197,7 +191,7 @@ q <- tribble(
 )
 resps <- query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
 #> Negative
 ```
 
@@ -209,13 +203,13 @@ The `make_query` function is designed to facilitate the creation of a structured
 
 Components:
 
-- **Text** to Classify: The new text(s) to be annotated.
-- **Prompt**: Lists the possible categories for classification.
-- **User Template**: Defines the structure for user messages. Defines the structure for user messages. The template can include placeholders like {text}, {prompt_pre}, and {prompt_suff} to dynamically format input.
-- **System Prompt**: Provides context or instructions for the classification task (optional).
-- **prompt_pre**: A string to prepend to user queries (optional).
-- **prompt_suff**: A string to append to user queries (optional).
-- **Examples**: Prior examples consisting of user messages and assistant responses (for one-shot and few-shot learning)(optional).
+- **text** to Classify: The new text(s) to be annotated.
+- **prompt**: Classification question with the categories to be annotated.
+- **template**: Defines the structure for user messages. Defines the structure for user messages. The template can include placeholders like {text}, {prefix}, and {suffix} to dynamically format input.
+- **system**: System Prompt: Provides context or instructions for the classification task (optional).
+- **prefix**: A string to prepend to user queries (optional).
+- **suffix**: A string to append to user queries (optional).
+- **examples**: Prior examples consisting of user messages and assistant responses (for one-shot and few-shot learning)(optional).
 
 
 
@@ -229,10 +223,10 @@ In this example, the function is used without any examples.
 ``` r
 # Call the make_query function
 q_zs <- make_query(
-  user_template = "{text}\n{prompt}",
+  template = "{text}\n{prompt}",
   text = "the pizza tastes terrible",
   prompt = "Categories: positive, neutral, negative",
-  systemprompt = "You assign texts into categories. Answer with just the correct category.",
+  system = "You assign texts into categories. Answer with just the correct category.",
 )
 
 # Print the query
@@ -244,13 +238,10 @@ print(q_zs)
 #> 1 system You assign texts into categories. Answer with just the correct category.
 #> 2 user   the pizza tastes terrible
 #> Categories: positive, neutral, negative
-```
-
-``` r
 # Run the query
 query(q_zs)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
 #> negative
 ```
 
@@ -268,9 +259,9 @@ examples_os <- tibble::tribble(
 
 q_os <- make_query(
   text = "the service is great",
-  user_template = "{text}\n{prompt}",
+  template = "{text}\n{prompt}",
   prompt = "Categories: positive, neutral, negative",
-  systemprompt = "You assign texts into categories. Answer with just the correct category.",
+  system = "You assign texts into categories. Answer with just the correct category.",
 )
 print(q_os)
 #> [[1]]
@@ -280,13 +271,10 @@ print(q_os)
 #> 1 system You assign texts into categories. Answer with just the correct category.
 #> 2 user   the service is great
 #> Categories: positive, neutral, negative
-```
-
-``` r
 
 query(q_os)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
 #> positive
 ```
 
@@ -307,14 +295,14 @@ examples_fs <- tibble::tribble(
 q_fs <- make_query(
   text = "I once ate pizza",
   prompt = "Categories: positive, neutral, negative",
-  user_template = "{text}\n{prompt}",
-  systemprompt = "You assign texts into categories. Answer with just the correct category.",
+  template = "{text}\n{prompt}",
+  system = "You assign texts into categories. Answer with just the correct category.",
   examples = examples_fs
 )
 
 query(q_fs)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
 #> neutral
 ```
 # Batch annotation
@@ -362,9 +350,9 @@ What we want to do is to perform a sentiment analysis, guided by a system messag
 queries <- make_query(
   text = movie_reviews$review,
   prompt = "Categories: positive, neutral, negative",
-  user_template = "{prompt_pre}{text}\n{prompt}",
-  systemprompt = "Classify the sentiment of the movie review. Answer with just the correct category.",
-  prompt_pre = "Text to classify: "
+  template = "{prefix}{text}\n{prompt}",
+  system = "Classify the sentiment of the movie review. Answer with just the correct category.",
+  prefix = "Text to classify: "
 )
 ```
 
@@ -383,8 +371,8 @@ movie_reviews
 #> 1         1 A stunning visual spectacle with a gripping storyline.           positive  
 #> 2         2 The plot was predictable, but the acting was superb.             Neutral   
 #> 3         3 An overrated film with underwhelming performances.               negative  
-#> 4         4 A beautiful tale of love and adventure, beautifully shot.        Positive  
-#> 5         5 The movie lacked depth, but the special effects were incredible. neutral
+#> 4         4 A beautiful tale of love and adventure, beautifully shot.        positive  
+#> 5         5 The movie lacked depth, but the special effects were incredible. Neutral
 ```
 
 

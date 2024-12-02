@@ -171,13 +171,13 @@ The `make_query` function is designed to facilitate the creation of a structured
 
 Components:
 
-- **Text** to Classify: The new text(s) to be annotated.
-- **Prompt**: Lists the possible categories for classification.
-- **User Template**: Defines the structure for user messages. Defines the structure for user messages. The template can include placeholders like {text}, {prompt_pre}, and {prompt_suff} to dynamically format input.
-- **System Prompt**: Provides context or instructions for the classification task (optional).
-- **prompt_pre**: A string to prepend to user queries (optional).
-- **prompt_suff**: A string to append to user queries (optional).
-- **Examples**: Prior examples consisting of user messages and assistant responses (for one-shot and few-shot learning)(optional).
+- **text** to Classify: The new text(s) to be annotated.
+- **prompt**: Classification question with the categories to be annotated.
+- **template**: Defines the structure for user messages. Defines the structure for user messages. The template can include placeholders like {text}, {prefix}, and {suffix} to dynamically format input.
+- **system**: System Prompt: Provides context or instructions for the classification task (optional).
+- **prefix**: A string to prepend to user queries (optional).
+- **suffix**: A string to append to user queries (optional).
+- **examples**: Prior examples consisting of user messages and assistant responses (for one-shot and few-shot learning)(optional).
 
 
 
@@ -190,10 +190,10 @@ In this example, the function is used without any examples.
 ```{r}
 # Call the make_query function
 q_zs <- make_query(
-  user_template = "{text}\n{prompt}",
+  template = "{text}\n{prompt}",
   text = "the pizza tastes terrible",
   prompt = "Categories: positive, neutral, negative",
-  systemprompt = "You assign texts into categories. Answer with just the correct category.",
+  system = "You assign texts into categories. Answer with just the correct category.",
 )
 
 # Print the query
@@ -215,9 +215,9 @@ examples_os <- tibble::tribble(
 
 q_os <- make_query(
   text = "the service is great",
-  user_template = "{text}\n{prompt}",
+  template = "{text}\n{prompt}",
   prompt = "Categories: positive, neutral, negative",
-  systemprompt = "You assign texts into categories. Answer with just the correct category.",
+  system = "You assign texts into categories. Answer with just the correct category.",
 )
 print(q_os)
 
@@ -241,8 +241,8 @@ examples_fs <- tibble::tribble(
 q_fs <- make_query(
   text = "I once ate pizza",
   prompt = "Categories: positive, neutral, negative",
-  user_template = "{text}\n{prompt}",
-  systemprompt = "You assign texts into categories. Answer with just the correct category.",
+  template = "{text}\n{prompt}",
+  system = "You assign texts into categories. Answer with just the correct category.",
   examples = examples_fs
 )
 
@@ -283,9 +283,9 @@ What we want to do is to perform a sentiment analysis, guided by a system messag
 queries <- make_query(
   text = movie_reviews$review,
   prompt = "Categories: positive, neutral, negative",
-  user_template = "{prompt_pre}{text}\n{prompt}",
-  systemprompt = "Classify the sentiment of the movie review. Answer with just the correct category.",
-  prompt_pre = "Text to classify: "
+  template = "{prefix}{text}\n{prompt}",
+  system = "Classify the sentiment of the movie review. Answer with just the correct category.",
+  prefix = "Text to classify: "
 )
 ```
 

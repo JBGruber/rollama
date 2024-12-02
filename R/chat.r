@@ -286,17 +286,17 @@ new_chat <- function() {
 #'
 #' @param text A character vector of primary texts (queries) for which the input will be formatted.
 #' @param prompt A string defining the main task or question to be passed to the language model.
-#' @param user_template A string template for formatting user queries, containing placeholders like `{text}`, `{prompt_pre}`, and `{prompt_suff}`.
-#' @param systemprompt An optional string to specify a system-level instruction or context.
-#' @param prompt_pre A prefix string to prepend to each user query.
-#' @param prompt_suff A suffix string to append to each user query.
+#' @param template A string template for formatting user queries, containing placeholders like `{text}`, `{prefix}`, and `{suffix}`.
+#' @param system An optional string to specify a system-level instruction or context.
+#' @param prefix A prefix string to prepend to each user query.
+#' @param suffix A suffix string to append to each user query.
 #' @param examples A `tibble` with columns `text` and `answer`, representing example user messages and corresponding assistant responses.
 #' 
 #' @return A list of tibbles, one for each input `text`, containing structured rows for system messages, user messages, and assistant responses.
 #' @export
 #'
 #' @examples
-#' user_template <- "{prompt_pre}{text}\n\n{prompt}{prompt_suff}"
+#' template <- "{prefix}{text}\n\n{prompt}{suffix}"
 #' examples <- tibble::tribble(
 #'   ~text, ~answer,
 #'   "This movie was amazing, with great acting and story.", "positive",
@@ -306,32 +306,28 @@ new_chat <- function() {
 #' make_query(
 #'   text = c("A stunning visual spectacle.", "Predictable but well-acted."),
 #'   prompt = "Classify sentiment as positive, neutral, or negative.",
-#'   user_template = user_template,
-#'   systemprompt = "Provide a sentiment classification.",
-#'   prompt_pre = "Review: ",
-#'   prompt_suff = " Please classify.",
+#'   template = template,
+#'   system = "Provide a sentiment classification.",
+#'   prefix = "Review: ",
+#'   suffix = " Please classify.",
 #'   examples = examples
 #' )
 make_query <- function(text,
                        prompt,
-                       user_template,
-                       systemprompt = NULL,
-                       prompt_pre = NULL,
-                       prompt_suff = NULL,
+                       template = "{prefix}\n{text}\n{prompt}\n{suffix}",
+                       system = NULL,
+                       prefix = NULL,
+                       suffix = NULL,
                        examples = NULL) {
-  # Ensure optional parameters have default values
-  prompt_pre <- if (is.null(prompt_pre)) "" else prompt_pre
-  prompt_suff <- if (is.null(prompt_suff)) "" else prompt_suff
-  
   # Process each input text
   queries <- lapply(text, function(txt) {
     # Initialize structured query
     full_query <- tibble::tibble(role = character(), content = character())
     
     # Add system message if provided
-    if (!is.null(systemprompt)) {
+    if (!is.null(system)) {
       full_query <- full_query |> 
-        dplyr::add_row(role = "system", content = systemprompt)
+        dplyr::add_row(role = "system", content = system)
     }
     
     # Add examples if provided
@@ -340,11 +336,11 @@ make_query <- function(text,
         dplyr::rowwise() |>
         dplyr::mutate(
           user_content = glue::glue(
-            user_template,
+            template,
             text = text,
             prompt = prompt,
-            prompt_pre = prompt_pre,
-            prompt_suff = prompt_suff
+            prefix = prefix,
+            suffix = suffix
           )
         ) |> 
         dplyr::ungroup()
@@ -358,11 +354,11 @@ make_query <- function(text,
     
     # Add main user query
     main_query <- glue::glue(
-      user_template,
+      template,
       text = txt,
       prompt = prompt,
-      prompt_pre = prompt_pre,
-      prompt_suff = prompt_suff
+      prefix = prefix,
+      suffix = suffix
     )
     full_query <- full_query |> dplyr::add_row(role = "user", content = main_query)
     
