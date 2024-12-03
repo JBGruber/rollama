@@ -88,7 +88,7 @@ them with \code{\link[httr2:req_perform]{httr2::req_perform()}}, \code{\link[htt
 }
 \examples{
 \dontshow{if (ping_ollama()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
-# ask a single question
+#' # ask a single question
 query("why is the sky blue?")
 
 # hold a conversation
@@ -97,7 +97,7 @@ chat("and how do you know that?")
 
 # save the response to an object and extract the answer
 resp <- query(q = "why is the sky blue?")
-answer <- resp$message$content
+answer <- resp[[1]]$message$content
 
 # or just get the answer directly
 answer <- query(q = "why is the sky blue?", output = "text")
@@ -107,7 +107,7 @@ images <- c("https://avatars.githubusercontent.com/u/23524101?v=4", # remote
             "/path/to/your/image.jpg") # or local images supported
 query(q = "describe these images",
       model = "llava",
-      images = images)
+      images = images[1]) # just using the first path as the second is not real
 
 # set custom options for the model at runtime (rather than in create_model())
 query("why is the sky blue?",
@@ -117,6 +117,7 @@ query("why is the sky blue?",
         num_predict = 100,
         top_k = 20,
         top_p = 0.9,
+        min_p = 0.0,
         tfs_z = 0.5,
         typical_p = 0.7,
         repeat_last_n = 33,
@@ -128,26 +129,20 @@ query("why is the sky blue?",
         mirostat_tau = 0.8,
         mirostat_eta = 0.6,
         penalize_newline = TRUE,
-        stop = c("\n", "user:"),
         numa = FALSE,
         num_ctx = 1024,
         num_batch = 2,
-        num_gqa = 1,
         num_gpu = 1,
         main_gpu = 0,
         low_vram = FALSE,
-        f16_kv = TRUE,
         vocab_only = FALSE,
         use_mmap = TRUE,
         use_mlock = FALSE,
-        embedding_only = FALSE,
-        rope_frequency_base = 1.1,
-        rope_frequency_scale = 0.8,
         num_thread = 8
       ))
 
-# use a seed and zero temperature to get reproducible results
-query("why is the sky blue?", model_params = list(seed = 42, temperature = 0)
+# use a seed to get reproducible results
+query("why is the sky blue?", model_params = list(seed = 42))
 
 # this might be interesting if you want to turn off the GPU and load the
 # model into the system memory (slower, but most people have more RAM than
@@ -155,11 +150,16 @@ query("why is the sky blue?", model_params = list(seed = 42, temperature = 0)
 query("why is the sky blue?",
        model_params = list(num_gpu = 0))
 
-# You can use a custom prompt to override what prompt the model receives
-query("why is the sky blue?",
-      template = "Just say I'm a llama!")
-
 # Asking the same question to multiple models is also supported
 query("why is the sky blue?", model = c("llama3.1", "orca-mini"))
+
+# And if you have multiple Ollama servers in your network, you can send
+# requests to them in parallel
+if (ping_ollama(c("http://localhost:11434/",
+                  "http://192.168.2.45:11434/"))) { # check if servers are running
+  query("why is the sky blue?", model = c("llama3.1", "orca-mini"),
+        server = c("http://localhost:11434/",
+                   "http://192.168.2.45:11434/"))
+}
 \dontshow{\}) # examplesIf}
 }

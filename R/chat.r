@@ -47,7 +47,7 @@
 #' @export
 #'
 #' @examplesIf ping_ollama()
-#' # ask a single question
+#' #' # ask a single question
 #' query("why is the sky blue?")
 #'
 #' # hold a conversation
@@ -56,7 +56,7 @@
 #'
 #' # save the response to an object and extract the answer
 #' resp <- query(q = "why is the sky blue?")
-#' answer <- resp$message$content
+#' answer <- resp[[1]]$message$content
 #'
 #' # or just get the answer directly
 #' answer <- query(q = "why is the sky blue?", output = "text")
@@ -66,7 +66,7 @@
 #'             "/path/to/your/image.jpg") # or local images supported
 #' query(q = "describe these images",
 #'       model = "llava",
-#'       images = images)
+#'       images = images[1]) # just using the first path as the second is not real
 #'
 #' # set custom options for the model at runtime (rather than in create_model())
 #' query("why is the sky blue?",
@@ -76,6 +76,7 @@
 #'         num_predict = 100,
 #'         top_k = 20,
 #'         top_p = 0.9,
+#'         min_p = 0.0,
 #'         tfs_z = 0.5,
 #'         typical_p = 0.7,
 #'         repeat_last_n = 33,
@@ -87,26 +88,20 @@
 #'         mirostat_tau = 0.8,
 #'         mirostat_eta = 0.6,
 #'         penalize_newline = TRUE,
-#'         stop = c("\n", "user:"),
 #'         numa = FALSE,
 #'         num_ctx = 1024,
 #'         num_batch = 2,
-#'         num_gqa = 1,
 #'         num_gpu = 1,
 #'         main_gpu = 0,
 #'         low_vram = FALSE,
-#'         f16_kv = TRUE,
 #'         vocab_only = FALSE,
 #'         use_mmap = TRUE,
 #'         use_mlock = FALSE,
-#'         embedding_only = FALSE,
-#'         rope_frequency_base = 1.1,
-#'         rope_frequency_scale = 0.8,
 #'         num_thread = 8
 #'       ))
 #'
-#' # use a seed and zero temperature to get reproducible results
-#' query("why is the sky blue?", model_params = list(seed = 42, temperature = 0)
+#' # use a seed to get reproducible results
+#' query("why is the sky blue?", model_params = list(seed = 42))
 #'
 #' # this might be interesting if you want to turn off the GPU and load the
 #' # model into the system memory (slower, but most people have more RAM than
@@ -114,12 +109,17 @@
 #' query("why is the sky blue?",
 #'        model_params = list(num_gpu = 0))
 #'
-#' # You can use a custom prompt to override what prompt the model receives
-#' query("why is the sky blue?",
-#'       template = "Just say I'm a llama!")
-#'
 #' # Asking the same question to multiple models is also supported
 #' query("why is the sky blue?", model = c("llama3.1", "orca-mini"))
+#'
+#' # And if you have multiple Ollama servers in your network, you can send
+#' # requests to them in parallel
+#' if (ping_ollama(c("http://localhost:11434/",
+#'                   "http://192.168.2.45:11434/"))) { # check if servers are running
+#'   query("why is the sky blue?", model = c("llama3.1", "orca-mini"),
+#'         server = c("http://localhost:11434/",
+#'                    "http://192.168.2.45:11434/"))
+#' }
 query <- function(q,
                   model = NULL,
                   screen = TRUE,
@@ -133,12 +133,6 @@ query <- function(q,
                                       default = interactive())) {
 
   output <- match.arg(output)
-
-  if (!is.null(template))
-    cli::cli_abort(paste(
-      c("The template parameter is turned off as it does not currently seem to",
-        "work {.url https://github.com/ollama/ollama/issues/1839}")
-    ))
 
   # q can be a string, a data.frame, or list of data.frames
   if (is.character(q)) {
@@ -297,7 +291,7 @@ new_chat <- function() {
 #' @param suffix A suffix string to append to each user query.
 #' @param examples A `tibble` with columns `text` and `answer`, representing
 #'   example user messages and corresponding assistant responses.
-#' 
+#'
 #' @return A list of tibbles, one for each input `text`, containing structured
 #'   rows for system messages, user messages, and assistant responses.
 #' @export
@@ -337,13 +331,13 @@ make_query <- function(text,
   queries <- lapply(text, function(txt) {
     # Initialize structured query
     full_query <- tibble::tibble(role = character(), content = character())
-    
+
     # Add system message if provided
     if (!is.null(system)) {
-      full_query <- full_query |> 
+      full_query <- full_query |>
         dplyr::add_row(role = "system", content = system)
     }
-    
+
     # Add examples if provided
     if (!is.null(examples)) {
       examples <- tibble::as_tibble(examples) |>
@@ -357,16 +351,16 @@ make_query <- function(text,
             suffix = suffix,
             .null = ""
           )
-        ) |> 
+        ) |>
         dplyr::ungroup()
-      
+
       for (i in seq_len(nrow(examples))) {
-        full_query <- full_query |> 
+        full_query <- full_query |>
           dplyr::add_row(role = "user", content = examples$user_content[i]) |>
           dplyr::add_row(role = "assistant", content = examples$answer[i])
       }
     }
-    
+
     # Add main user query
     main_query <- glue::glue(
       template,
@@ -377,10 +371,10 @@ make_query <- function(text,
       .null = ""
     )
     full_query <- full_query |> dplyr::add_row(role = "user", content = main_query)
-    
+
     return(full_query)
   })
-  
+
   return(queries)
 }
 
