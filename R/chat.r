@@ -280,19 +280,26 @@ new_chat <- function() {
 
 #' Generate and format queries for a language model
 #'
-#' `make_query` generates structured input for a language model, including system prompt, user messages, and optional examples (assistant answers).
+#' `make_query` generates structured input for a language model, including
+#' system prompt, user messages, and optional examples (assistant answers).
 #'
-#' @details The function supports the inclusion of examples, which are dynamically added to the structured input. Each example follows the same format as the primary user query.
+#' @details The function supports the inclusion of examples, which are
+#'   dynamically added to the structured input. Each example follows the same
+#'   format as the primary user query.
 #'
 #' @param text A character vector of texts to be annotated.
-#' @param prompt A string defining the main task or question to be passed to the language model.
-#' @param template A string template for formatting user queries, containing placeholders like `{text}`, `{prefix}`, and `{suffix}`.
+#' @param prompt A string defining the main task or question to be passed to the
+#'   language model.
+#' @param template A string template for formatting user queries, containing
+#'   placeholders like `{text}`, `{prefix}`, and `{suffix}`.
 #' @param system An optional string to specify a system prompt.
 #' @param prefix A prefix string to prepend to each user query.
 #' @param suffix A suffix string to append to each user query.
-#' @param examples A `tibble` with columns `text` and `answer`, representing example user messages and corresponding assistant responses.
+#' @param examples A `tibble` with columns `text` and `answer`, representing
+#'   example user messages and corresponding assistant responses.
 #' 
-#' @return A list of tibbles, one for each input `text`, containing structured rows for system messages, user messages, and assistant responses.
+#' @return A list of tibbles, one for each input `text`, containing structured
+#'   rows for system messages, user messages, and assistant responses.
 #' @export
 #'
 #' @examples
@@ -313,14 +320,19 @@ new_chat <- function() {
 #'   examples = examples
 #' )
 #' print(queries)
-#' query(queries, screen = TRUE, output = "text")
+#' if (ping_ollama()) { # only run this example when Ollama is running
+#'   query(queries, screen = TRUE, output = "text")
+#' }
 make_query <- function(text,
                        prompt,
-                       template = "{prefix}\n{text}\n{prompt}\n{suffix}",
+                       template = "{prefix}{text}\n{prompt}\n{suffix}",
                        system = NULL,
                        prefix = NULL,
                        suffix = NULL,
                        examples = NULL) {
+
+  rlang::check_installed("glue")
+
   # Process each input text
   queries <- lapply(text, function(txt) {
     # Initialize structured query
@@ -342,7 +354,8 @@ make_query <- function(text,
             text = text,
             prompt = prompt,
             prefix = prefix,
-            suffix = suffix
+            suffix = suffix,
+            .null = ""
           )
         ) |> 
         dplyr::ungroup()
@@ -360,7 +373,8 @@ make_query <- function(text,
       text = txt,
       prompt = prompt,
       prefix = prefix,
-      suffix = suffix
+      suffix = suffix,
+      .null = ""
     )
     full_query <- full_query |> dplyr::add_row(role = "user", content = main_query)
     
@@ -369,7 +383,4 @@ make_query <- function(text,
   
   return(queries)
 }
-
-
-
 

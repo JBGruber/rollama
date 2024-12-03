@@ -7,52 +7,63 @@
 make_query(
   text,
   prompt,
-  user_template,
-  systemprompt = NULL,
-  prompt_pre = NULL,
-  prompt_suff = NULL,
+  template = "{prefix}{text}\\n{prompt}\\n{suffix}",
+  system = NULL,
+  prefix = NULL,
+  suffix = NULL,
   examples = NULL
 )
 }
 \arguments{
-\item{text}{A character vector of primary texts (queries) for which the input will be formatted.}
+\item{text}{A character vector of texts to be annotated.}
 
-\item{prompt}{A string defining the main task or question to be passed to the language model.}
+\item{prompt}{A string defining the main task or question to be passed to the
+language model.}
 
-\item{user_template}{A string template for formatting user queries, containing placeholders like \code{{text}}, \code{{prompt_pre}}, and \code{{prompt_suff}}.}
+\item{template}{A string template for formatting user queries, containing
+placeholders like \code{{text}}, \code{{prefix}}, and \code{{suffix}}.}
 
-\item{systemprompt}{An optional string to specify a system-level instruction or context.}
+\item{system}{An optional string to specify a system prompt.}
 
-\item{prompt_pre}{A prefix string to prepend to each user query.}
+\item{prefix}{A prefix string to prepend to each user query.}
 
-\item{prompt_suff}{A suffix string to append to each user query.}
+\item{suffix}{A suffix string to append to each user query.}
 
-\item{examples}{A \code{tibble} with columns \code{text} and \code{answer}, representing example user messages and corresponding assistant responses.}
+\item{examples}{A \code{tibble} with columns \code{text} and \code{answer}, representing
+example user messages and corresponding assistant responses.}
 }
 \value{
-A list of tibbles, one for each input \code{text}, containing structured rows for system messages, user messages, and assistant responses.
+A list of tibbles, one for each input \code{text}, containing structured
+rows for system messages, user messages, and assistant responses.
 }
 \description{
-\code{make_query} generates structured input for a language model, including system messages, user messages, and optional examples.
+\code{make_query} generates structured input for a language model, including
+system prompt, user messages, and optional examples (assistant answers).
 }
 \details{
-The function supports the inclusion of examples, which are dynamically added to the structured input. Each example follows the same format as the primary user query.
+The function supports the inclusion of examples, which are
+dynamically added to the structured input. Each example follows the same
+format as the primary user query.
 }
 \examples{
-user_template <- "{prompt_pre}{text}\n\n{prompt}{prompt_suff}"
+template <- "{prefix}{text}\n\n{prompt}{suffix}"
 examples <- tibble::tribble(
   ~text, ~answer,
   "This movie was amazing, with great acting and story.", "positive",
   "The film was okay, but not particularly memorable.", "neutral",
   "I found this movie boring and poorly made.", "negative"
 )
-make_query(
+queries <- make_query(
   text = c("A stunning visual spectacle.", "Predictable but well-acted."),
   prompt = "Classify sentiment as positive, neutral, or negative.",
-  user_template = user_template,
-  systemprompt = "Provide a sentiment classification.",
-  prompt_pre = "Review: ",
-  prompt_suff = " Please classify.",
+  template = template,
+  system = "Provide a sentiment classification.",
+  prefix = "Review: ",
+  suffix = " Please classify.",
   examples = examples
 )
+print(queries)
+if (ping_ollama()) { # only run this example when Ollama is running
+  query(queries, screen = TRUE, output = "text")
+}
 }
