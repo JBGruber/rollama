@@ -50,6 +50,7 @@ jobs:
         run: |
           docker pull ollama/ollama:latest
           docker run -d --name ollama -p 11434:11434 ollama/ollama:latest
+          sleep 30s # wait a bit for ollama startup
           # pull default model
           Rscript -e 'rollama::pull_model()'
 
