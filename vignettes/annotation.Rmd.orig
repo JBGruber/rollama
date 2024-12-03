@@ -165,9 +165,9 @@ resps <- query(q)
 
 
 
-## Function to create a query
+## The `make_query` helper function
 
-The `make_query` function is designed to facilitate the creation of a structured query for text classification.
+The `make_query` function is designed to facilitate the creation of a structured query for text classification, so that you do not need to build the tibble yourself and remember the specific structure.
 
 Components:
 
@@ -178,7 +178,6 @@ Components:
 - **prefix**: A string to prepend to user queries (optional).
 - **suffix**: A string to append to user queries (optional).
 - **examples**: Prior examples consisting of user messages and assistant responses (for one-shot and few-shot learning)(optional).
-
 
 
 ## Example usage
@@ -248,10 +247,12 @@ q_fs <- make_query(
 
 query(q_fs)
 ```
+
 # Batch annotation
 
-In practice, you probably never want to annotate just one text.
-In this section, we show you how we you can use `rollama::make_query()` function to ask the model to annotate a batch of texts.
+In practice, you probably never want to annotate just one text, except maybe for testing.
+Instead you normally have a collections of texts, which is why `make_query` takes a  vector for the `text` argument.
+In this section, we highlight how this is useful with an example batch of texts.
 
 
 # Example using a dataframe
@@ -289,6 +290,8 @@ queries <- make_query(
 )
 ```
 
+This produces a list of data.frames that have the same query format we are now familiar with.
+All of them have the same prompt, system message and prefix, but each has a different text that came from the movide reviews data.frame we created above.
 The `query` function accepts lists of queries, so we can get the annotations simply using:
 
 ```{r}
@@ -299,7 +302,23 @@ movie_reviews$annotation <- query(queries, screen = FALSE, output = "text")
 movie_reviews
 ```
 
+We can also use this approach in a 'tidy' coding style:
+
+```{r}
+library(dplyr)
+movie_reviews_annotated <- movie_reviews |>
+  mutate(
+    queries = make_query(
+      text = review,
+      prompt = "Categories: positive, neutral, negative",
+      template = "{prefix}{text}\n{prompt}",
+      system = "Classify the sentiment of the movie review. Answer with just the correct category.",
+      prefix = "Text to classify: "
+    ),
+    sentiment = query(queries, screen = FALSE, output = "text")
+  )
+```
 
 This takes a little longer than classic supervised machine learning or even classification with transformer models.
-However, the advantage is that instructions can be provided using plain English, the models need very few examples to perform surprisingly well, and the best models, like `mixtral`, can often deal more complex categories than other approaches.
+However, the advantage is that instructions can be provided using plain English, the models need very few examples to perform surprisingly well, and the best models, like `llama3.2`, can often deal with more complex categories than other approaches.
 

@@ -62,7 +62,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
 #> negative
 ```
 
@@ -83,7 +83,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
 #> Category: Positive
 ```
 
@@ -101,7 +101,7 @@ q <- tribble(
 )
 answer <- query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
 #> {'Category':'Positive'}
 ```
 
@@ -119,7 +119,7 @@ q <- tribble(
 )
 answer <- query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
 #> {'Category':'Positive','Confidence':'100%','Important':'great'}
 ```
 
@@ -147,7 +147,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
 #> Category: Neutral
 ```
 
@@ -166,16 +166,20 @@ q_thought <- tribble(
 )
 output_thought <- query(q_thought, output = "text")
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
-#> I would assign the sentiment of "negative" to this text.
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
+#> I would assign a sentiment of **negative** to this text.
 #> 
-#> My reasoning is that the phrase "tastes terrible" directly expresses a strong dislike for the food, which is a clear
-#> indicator of a negative experience. The use of the word "terrible" also implies a high level of dissatisfaction,
-#> suggesting that the speaker was not only disappointed but also strongly unimpressed with the pizza.
+#> My reasoning is as follows:
 #> 
-#> Additionally, there are no positive or neutral words or phrases in this text to balance out the negativity, which
-#> further reinforces my classification as a negative sentiment. Overall, the statement is straightforward and clearly
-#> conveys a strong negative emotion, making it easy to categorize as such.
+#> * The speaker explicitly states that the pizza "tastes terrible", which
+#> implies a strong negative opinion.
+#> * There are no positive adjectives or phrases used to describe the pizza,
+#> such as "delicious" or "amazing". Instead, the focus is on the unpleasant
+#> taste.
+#> * This kind of direct statement often indicates a clear dissatisfaction
+#> with the product (in this case, the pizza).
+#> 
+#> Overall, the text conveys a strong negative sentiment towards the pizza.
 ```
 
 In the next step we can use the assistant's reasoning and a user prompt with the classification question.
@@ -191,15 +195,15 @@ q <- tribble(
 )
 resps <- query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
 #> Negative
 ```
 
 
 
-## Function to create a query
+## The `make_query` helper function
 
-The `make_query` function is designed to facilitate the creation of a structured query for text classification.
+The `make_query` function is designed to facilitate the creation of a structured query for text classification, so that you do not need to build the tibble yourself and remember the specific structure.
 
 Components:
 
@@ -210,7 +214,6 @@ Components:
 - **prefix**: A string to prepend to user queries (optional).
 - **suffix**: A string to append to user queries (optional).
 - **examples**: Prior examples consisting of user messages and assistant responses (for one-shot and few-shot learning)(optional).
-
 
 
 ## Example usage
@@ -233,15 +236,15 @@ q_zs <- make_query(
 print(q_zs)
 #> [[1]]
 #> # A tibble: 2 × 2
-#>   role   content                                                                 
-#>   <chr>  <glue>                                                                  
-#> 1 system You assign texts into categories. Answer with just the correct category.
+#>   role   content                                                          
+#>   <chr>  <glue>                                                           
+#> 1 system You assign texts into categories. Answer with just the correct c…
 #> 2 user   the pizza tastes terrible
 #> Categories: positive, neutral, negative
 # Run the query
 query(q_zs)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
 #> negative
 ```
 
@@ -266,15 +269,15 @@ q_os <- make_query(
 print(q_os)
 #> [[1]]
 #> # A tibble: 2 × 2
-#>   role   content                                                                 
-#>   <chr>  <glue>                                                                  
-#> 1 system You assign texts into categories. Answer with just the correct category.
+#>   role   content                                                          
+#>   <chr>  <glue>                                                           
+#> 1 system You assign texts into categories. Answer with just the correct c…
 #> 2 user   the service is great
 #> Categories: positive, neutral, negative
 
 query(q_os)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
 #> positive
 ```
 
@@ -302,13 +305,15 @@ q_fs <- make_query(
 
 query(q_fs)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ───────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
 #> neutral
 ```
+
 # Batch annotation
 
-In practice, you probably never want to annotate just one text.
-In this section, we show you how we you can use `rollama::make_query()` function to ask the model to annotate a batch of texts.
+In practice, you probably never want to annotate just one text, except maybe for testing.
+Instead you normally have a collections of texts, which is why `make_query` takes a  vector for the `text` argument.
+In this section, we highlight how this is useful with an example batch of texts.
 
 
 # Example using a dataframe
@@ -332,13 +337,13 @@ movie_reviews <- tibble::tibble(
 # Print the initial dataframe
 movie_reviews
 #> # A tibble: 5 × 2
-#>   review_id review                                                          
-#>       <int> <chr>                                                           
-#> 1         1 A stunning visual spectacle with a gripping storyline.          
-#> 2         2 The plot was predictable, but the acting was superb.            
-#> 3         3 An overrated film with underwhelming performances.              
-#> 4         4 A beautiful tale of love and adventure, beautifully shot.       
-#> 5         5 The movie lacked depth, but the special effects were incredible.
+#>   review_id review                                                        
+#>       <int> <chr>                                                         
+#> 1         1 A stunning visual spectacle with a gripping storyline.        
+#> 2         2 The plot was predictable, but the acting was superb.          
+#> 3         3 An overrated film with underwhelming performances.            
+#> 4         4 A beautiful tale of love and adventure, beautifully shot.     
+#> 5         5 The movie lacked depth, but the special effects were incredib…
 ```
 
 We can use `make_query` again to define a query for each of these reviews.
@@ -356,6 +361,8 @@ queries <- make_query(
 )
 ```
 
+This produces a list of data.frames that have the same query format we are now familiar with.
+All of them have the same prompt, system message and prefix, but each has a different text that came from the movide reviews data.frame we created above.
 The `query` function accepts lists of queries, so we can get the annotations simply using:
 
 
@@ -366,16 +373,41 @@ movie_reviews$annotation <- query(queries, screen = FALSE, output = "text")
 # Print the annotated dataframe
 movie_reviews
 #> # A tibble: 5 × 3
-#>   review_id review                                                           annotation
-#>       <int> <chr>                                                            <chr>     
-#> 1         1 A stunning visual spectacle with a gripping storyline.           positive  
-#> 2         2 The plot was predictable, but the acting was superb.             Neutral   
-#> 3         3 An overrated film with underwhelming performances.               negative  
-#> 4         4 A beautiful tale of love and adventure, beautifully shot.        positive  
-#> 5         5 The movie lacked depth, but the special effects were incredible. Neutral
+#>   review_id review                                              annotation
+#>       <int> <chr>                                               <chr>     
+#> 1         1 A stunning visual spectacle with a gripping storyl… positive  
+#> 2         2 The plot was predictable, but the acting was super… Neutral   
+#> 3         3 An overrated film with underwhelming performances.  negative  
+#> 4         4 A beautiful tale of love and adventure, beautifull… Positive  
+#> 5         5 The movie lacked depth, but the special effects we… Neutral
 ```
 
+We can also use this approach in a 'tidy' coding style:
+
+
+``` r
+library(dplyr)
+#> 
+#> Attaching package: 'dplyr'
+#> The following objects are masked from 'package:stats':
+#> 
+#>     filter, lag
+#> The following objects are masked from 'package:base':
+#> 
+#>     intersect, setdiff, setequal, union
+movie_reviews_annotated <- movie_reviews |>
+  mutate(
+    queries = make_query(
+      text = review,
+      prompt = "Categories: positive, neutral, negative",
+      template = "{prefix}{text}\n{prompt}",
+      system = "Classify the sentiment of the movie review. Answer with just the correct category.",
+      prefix = "Text to classify: "
+    ),
+    sentiment = query(queries, screen = FALSE, output = "text")
+  )
+```
 
 This takes a little longer than classic supervised machine learning or even classification with transformer models.
-However, the advantage is that instructions can be provided using plain English, the models need very few examples to perform surprisingly well, and the best models, like `mixtral`, can often deal more complex categories than other approaches.
+However, the advantage is that instructions can be provided using plain English, the models need very few examples to perform surprisingly well, and the best models, like `llama3.2`, can often deal with more complex categories than other approaches.
 
