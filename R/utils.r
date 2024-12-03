@@ -9,12 +9,14 @@ screen_answer <- function(x, model = NULL) {
 #' Check if one or several models are installed on the server
 #'
 #' @param model names of one or several models as character vector.
+#' @param check_only only return TRUE/FALSE and don't download models.
 #' @param auto_pull if FALSE, the default, asks before downloading models.
 #' @inheritParams query
 #'
 #' @return invisible TRUE/FALSE
 #' @export
 check_model_installed <- function(model,
+                                  check_only = FALSE,
                                   auto_pull = FALSE,
                                   server = getOption("rollama_server",
                                                      default = "http://localhost:11434")) {
@@ -23,8 +25,12 @@ check_model_installed <- function(model,
     mdl <- setdiff(model, models_df[["name"]])
     model_wo_vers <- gsub(":.*", "", models_df[["name"]])
     mdl <- setdiff(mdl, model_wo_vers)
-    if (length(mdl) > 0L && !auto_pull) {
-      if (interactive()) {
+
+    if (length(mdl) > 0L) {
+      if (check_only) {
+        return(invisible(FALSE))
+      }
+      if (interactive() && !auto_pull) {
         msg <- c(
           "{cli::col_cyan(cli::symbol$info)} {sv}:",
           " Model{?s} {.emph {mdl}} not installed on.",

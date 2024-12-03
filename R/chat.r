@@ -64,9 +64,11 @@
 #' # ask question about images (to a multimodal model)
 #' images <- c("https://avatars.githubusercontent.com/u/23524101?v=4", # remote
 #'             "/path/to/your/image.jpg") # or local images supported
-#' query(q = "describe these images",
-#'       model = "llava",
-#'       images = images[1]) # just using the first path as the second is not real
+#' if (check_model_installed("llava", check_only = TRUE)) {
+#'   query(q = "describe these images",
+#'         model = "llava",
+#'         images = images[1]) # just using the first path as the second is not real
+#' }
 #'
 #' # set custom options for the model at runtime (rather than in create_model())
 #' query("why is the sky blue?",
