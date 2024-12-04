@@ -46,6 +46,7 @@
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">check_model_installed</span><span class="op">(</span></span>
 <span>  <span class="va">model</span>,</span>
+<span>  check_only <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  auto_pull <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  server <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"rollama_server"</span>, default <span class="op">=</span> <span class="st">"http://localhost:11434"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -57,6 +58,10 @@
 
 <dl><dt id="arg-model">model<a class="anchor" aria-label="anchor" href="#arg-model"></a></dt>
 <dd><p>names of one or several models as character vector.</p></dd>
+
+
+<dt id="arg-check-only">check_only<a class="anchor" aria-label="anchor" href="#arg-check-only"></a></dt>
+<dd><p>only return TRUE/FALSE and don't download models.</p></dd>
 
 
 <dt id="arg-auto-pull">auto_pull<a class="anchor" aria-label="anchor" href="#arg-auto-pull"></a></dt>
