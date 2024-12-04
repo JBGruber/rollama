@@ -4,6 +4,11 @@
 #'   previous questions (only the config message is relevant). `chat` treats new
 #'   messages as part of the same conversation until [new_chat] is called.
 #'
+#'   To make the output reproducible, you can set a seed with
+#'   `options(rollama_seed = 42)`. As long as the seed stays the same, the
+#'   models will give the same answer, changing the seed leads to a different
+#'   answer.
+#'
 #'   For the output of `query`, there are a couple of options:
 #'
 #'   - `response`: the response of the Ollama server
@@ -102,6 +107,9 @@
 #'
 #' # use a seed to get reproducible results
 #' query("why is the sky blue?", model_params = list(seed = 42))
+#'
+#' # to set a seed for the whole session you can use
+#' options(rollama_seed = 42)
 #'
 #' # this might be interesting if you want to turn off the GPU and load the
 #' # model into the system memory (slower, but most people have more RAM than

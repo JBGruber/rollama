@@ -73,6 +73,11 @@ Chat with a LLM through Ollama
 previous questions (only the config message is relevant). \code{chat} treats new
 messages as part of the same conversation until \link{new_chat} is called.
 
+To make the output reproducible, you can set a seed with
+\code{options(rollama_seed = 42)}. As long as the seed stays the same, the
+models will give the same answer, changing the seed leads to a different
+answer.
+
 For the output of \code{query}, there are a couple of options:
 \itemize{
 \item \code{response}: the response of the Ollama server
@@ -143,6 +148,9 @@ query("why is the sky blue?",
 
 # use a seed to get reproducible results
 query("why is the sky blue?", model_params = list(seed = 42))
+
+# to set a seed for the whole session you can use
+options(rollama_seed = 42)
 
 # this might be interesting if you want to turn off the GPU and load the
 # model into the system memory (slower, but most people have more RAM than

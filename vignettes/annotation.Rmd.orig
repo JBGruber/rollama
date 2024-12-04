@@ -16,6 +16,7 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 options("rollama_verbose" = FALSE)
+options(rollama_seed = 42)
 ```
 
 After you installed Ollama on your machine and downloaded the package rollama you can load the package and pull a model.

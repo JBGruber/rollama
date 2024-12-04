@@ -62,7 +62,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────
 #> negative
 ```
 
@@ -83,7 +83,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────
 #> Category: Positive
 ```
 
@@ -101,7 +101,7 @@ q <- tribble(
 )
 answer <- query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────
 #> {'Category':'Positive'}
 ```
 
@@ -119,7 +119,7 @@ q <- tribble(
 )
 answer <- query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────
 #> {'Category':'Positive','Confidence':'100%','Important':'great'}
 ```
 
@@ -147,7 +147,7 @@ q <- tribble(
 )
 query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────
 #> Category: Neutral
 ```
 
@@ -166,20 +166,20 @@ q_thought <- tribble(
 )
 output_thought <- query(q_thought, output = "text")
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
-#> I would assign a sentiment of **negative** to this text.
+#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────
+#> I would assign a **negative** sentiment to this text.
 #> 
-#> My reasoning is as follows:
+#> Here's why:
 #> 
-#> * The speaker explicitly states that the pizza "tastes terrible", which
-#> implies a strong negative opinion.
-#> * There are no positive adjectives or phrases used to describe the pizza,
-#> such as "delicious" or "amazing". Instead, the focus is on the unpleasant
-#> taste.
-#> * This kind of direct statement often indicates a clear dissatisfaction
-#> with the product (in this case, the pizza).
+#> * The word "terrible" is a strong adjective that implies a strongly unfavorable
+#> opinion. It suggests that the speaker has had a very poor experience with the pizza.
+#> * The tone of the sentence is direct and critical, implying that the speaker was not
+#> just mildly dissatisfied but actively disliked the pizza.
+#> * There's no nuance or mixed sentiment in this text; it's a straightforward expression
+#> of dislike.
 #> 
-#> Overall, the text conveys a strong negative sentiment towards the pizza.
+#> Overall, the language and tone used suggest that the speaker had a very negative
+#> experience with the pizza.
 ```
 
 In the next step we can use the assistant's reasoning and a user prompt with the classification question.
@@ -195,7 +195,7 @@ q <- tribble(
 )
 resps <- query(q)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────
 #> Negative
 ```
 
@@ -236,15 +236,15 @@ q_zs <- make_query(
 print(q_zs)
 #> [[1]]
 #> # A tibble: 2 × 2
-#>   role   content                                                          
-#>   <chr>  <glue>                                                           
-#> 1 system You assign texts into categories. Answer with just the correct c…
+#>   role   content                                                                 
+#>   <chr>  <glue>                                                                  
+#> 1 system You assign texts into categories. Answer with just the correct category.
 #> 2 user   the pizza tastes terrible
 #> Categories: positive, neutral, negative
 # Run the query
 query(q_zs)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────
 #> negative
 ```
 
@@ -269,15 +269,15 @@ q_os <- make_query(
 print(q_os)
 #> [[1]]
 #> # A tibble: 2 × 2
-#>   role   content                                                          
-#>   <chr>  <glue>                                                           
-#> 1 system You assign texts into categories. Answer with just the correct c…
+#>   role   content                                                                 
+#>   <chr>  <glue>                                                                  
+#> 1 system You assign texts into categories. Answer with just the correct category.
 #> 2 user   the service is great
 #> Categories: positive, neutral, negative
 
 query(q_os)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────
 #> positive
 ```
 
@@ -305,7 +305,7 @@ q_fs <- make_query(
 
 query(q_fs)
 #> 
-#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────────
+#> ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────
 #> neutral
 ```
 
@@ -337,13 +337,13 @@ movie_reviews <- tibble::tibble(
 # Print the initial dataframe
 movie_reviews
 #> # A tibble: 5 × 2
-#>   review_id review                                                        
-#>       <int> <chr>                                                         
-#> 1         1 A stunning visual spectacle with a gripping storyline.        
-#> 2         2 The plot was predictable, but the acting was superb.          
-#> 3         3 An overrated film with underwhelming performances.            
-#> 4         4 A beautiful tale of love and adventure, beautifully shot.     
-#> 5         5 The movie lacked depth, but the special effects were incredib…
+#>   review_id review                                                          
+#>       <int> <chr>                                                           
+#> 1         1 A stunning visual spectacle with a gripping storyline.          
+#> 2         2 The plot was predictable, but the acting was superb.            
+#> 3         3 An overrated film with underwhelming performances.              
+#> 4         4 A beautiful tale of love and adventure, beautifully shot.       
+#> 5         5 The movie lacked depth, but the special effects were incredible.
 ```
 
 We can use `make_query` again to define a query for each of these reviews.
@@ -362,7 +362,7 @@ queries <- make_query(
 ```
 
 This produces a list of data.frames that have the same query format we are now familiar with.
-All of them have the same prompt, system message and prefix, but each has a different text that came from the movie reviews data.frame we created above.
+All of them have the same prompt, system message and prefix, but each has a different text that came from the movide reviews data.frame we created above.
 The `query` function accepts lists of queries, so we can get the annotations simply using:
 
 
@@ -373,13 +373,13 @@ movie_reviews$annotation <- query(queries, screen = FALSE, output = "text")
 # Print the annotated dataframe
 movie_reviews
 #> # A tibble: 5 × 3
-#>   review_id review                                              annotation
-#>       <int> <chr>                                               <chr>     
-#> 1         1 A stunning visual spectacle with a gripping storyl… positive  
-#> 2         2 The plot was predictable, but the acting was super… Neutral   
-#> 3         3 An overrated film with underwhelming performances.  negative  
-#> 4         4 A beautiful tale of love and adventure, beautifull… Positive  
-#> 5         5 The movie lacked depth, but the special effects we… Neutral
+#>   review_id review                                                           annotation
+#>       <int> <chr>                                                            <chr>     
+#> 1         1 A stunning visual spectacle with a gripping storyline.           Positive  
+#> 2         2 The plot was predictable, but the acting was superb.             positive  
+#> 3         3 An overrated film with underwhelming performances.               Negative  
+#> 4         4 A beautiful tale of love and adventure, beautifully shot.        Positive  
+#> 5         5 The movie lacked depth, but the special effects were incredible. Neutral
 ```
 
 We can also use this approach in a 'tidy' coding style:
