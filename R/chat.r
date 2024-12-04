@@ -46,7 +46,7 @@
 #' @return list of objects set in output parameter.
 #' @export
 #'
-#' \dontrun{
+#' @examplesIf interactive()
 #' #' # ask a single question
 #' query("why is the sky blue?")
 #'
