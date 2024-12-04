@@ -39,22 +39,24 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-        # run Ollama Docker image
-      - name: Start Docker Container
-        if: matrix.config.os == 'ubuntu-latest' && matrix.config.r == 'release'
-        run: |
-          docker pull ollama/ollama:latest
-          docker run -d --name ollama -p 11434:11434 ollama/ollama:latest
-
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: any::rcmdcheck
           needs: check
 
+      # run Ollama Docker image
+      - name: Start Docker Container
+        if: matrix.config.os == 'ubuntu-latest' && matrix.config.r == 'release'
+        run: |
+          docker pull ollama/ollama:latest
+          docker run -d --name ollama -p 11434:11434 ollama/ollama:latest
+          sleep 30s # wait a bit for ollama startup
+          # pull default model
+          Rscript -e 'rollama::pull_model()'
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-
 
       - name: Test coverage
         if: matrix.config.os == 'ubuntu-latest' && matrix.config.r == 'release'

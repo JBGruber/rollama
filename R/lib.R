@@ -45,6 +45,10 @@ build_req <- function(model,
   if (is.null(model)) model <- getOption("rollama_model", default = "llama3.1")
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
+  seed <- getOption("rollama_seed")
+  if (!is.null(seed) && !purrr::pluck_exists(model_params, "seed")) {
+    model_params <- append(model_params, list(seed = seed))
+  }
   check_model_installed(model, server = server)
   req_data <- purrr::map(msg, function(ms) {
     purrr::map(model, function(m) {

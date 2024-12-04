@@ -6,12 +6,15 @@
 \usage{
 check_model_installed(
   model,
+  check_only = FALSE,
   auto_pull = FALSE,
   server = getOption("rollama_server", default = "http://localhost:11434")
 )
 }
 \arguments{
 \item{model}{names of one or several models as character vector.}
+
+\item{check_only}{only return TRUE/FALSE and don't download models.}
 
 \item{auto_pull}{if FALSE, the default, asks before downloading models.}
 
