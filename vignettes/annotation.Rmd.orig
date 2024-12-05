@@ -293,7 +293,7 @@ queries <- make_query(
 ```
 
 This produces a list of data.frames that have the same query format we are now familiar with.
-All of them have the same prompt, system message and prefix, but each has a different text that came from the movide reviews data.frame we created above.
+All of them have the same prompt, system message and prefix, but each has a different text that came from the movie reviews data.frame we created above.
 The `query` function accepts lists of queries, so we can get the annotations simply using:
 
 ```{r}

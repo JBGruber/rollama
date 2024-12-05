@@ -2,6 +2,7 @@ CMD
 ChatGPT
 Codecov
 Embeddings
+GGUF
 Hvitfeldt
 JSON
 LLM
@@ -20,10 +21,14 @@ config
 embeddings
 http
 httr
+leaderboards
 llava
 modelfile
 modelname
+ollama
 orca
+pre
 smldemo
 tibble
+tibbles
 unnesting
