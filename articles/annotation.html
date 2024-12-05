@@ -157,7 +157,7 @@ provide the categories).</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────</span></span>
 <span><span class="co">#&gt; negative</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -178,7 +178,7 @@ classify.</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────</span></span>
 <span><span class="co">#&gt; Category: Positive</span></span></code></pre></div>
 <p>A nice side effect of the one-shot strategy (and all
 n&gt;0-strategies) is that you can tune the format the model uses in its
@@ -195,7 +195,7 @@ you could change the assistant message to
 <span><span class="op">)</span></span>
 <span><span class="va">answer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────</span></span>
 <span><span class="co">#&gt; {'Category':'Positive'}</span></span></code></pre></div>
 <p>This is a valid JSON return and can be parsed into a list with, e.g.,
 <code><a href="https://rdrr.io/pkg/jsonlite/man/fromJSON.html" class="external-link">jsonlite::fromJSON()</a></code>. Using this logic, we could request a
@@ -210,7 +210,7 @@ more informative output:</p>
 <span><span class="op">)</span></span>
 <span><span class="va">answer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────</span></span>
 <span><span class="co">#&gt; {'Category':'Positive','Confidence':'100%','Important':'great'}</span></span></code></pre></div>
 <p>By using <code>pluck(answer, "message", "content")</code>, you can
 directly extract the result and don’t need to copy it from screen.</p>
@@ -236,7 +236,7 @@ classify.</p>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────</span></span>
 <span><span class="co">#&gt; Category: Neutral</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -253,20 +253,21 @@ classify and a reasoning question.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">output_thought</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_thought</span>, output <span class="op">=</span> <span class="st">"text"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────</span></span>
 <span><span class="co">#&gt; I would assign a **negative** sentiment to this text.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Here's why:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; * The word "terrible" is a strong adjective that implies a strongly unfavorable</span></span>
-<span><span class="co">#&gt; opinion. It suggests that the speaker has had a very poor experience with the pizza.</span></span>
-<span><span class="co">#&gt; * The tone of the sentence is direct and critical, implying that the speaker was not</span></span>
-<span><span class="co">#&gt; just mildly dissatisfied but actively disliked the pizza.</span></span>
-<span><span class="co">#&gt; * There's no nuance or mixed sentiment in this text; it's a straightforward expression</span></span>
-<span><span class="co">#&gt; of dislike.</span></span>
+<span><span class="co">#&gt; * The word "terrible" is a strong adjective that implies a strongly</span></span>
+<span><span class="co">#&gt; unfavorable opinion. It suggests that the speaker has had a very poor</span></span>
+<span><span class="co">#&gt; experience with the pizza.</span></span>
+<span><span class="co">#&gt; * The tone of the sentence is direct and critical, implying that the</span></span>
+<span><span class="co">#&gt; speaker was not just mildly dissatisfied but actively disliked the pizza.</span></span>
+<span><span class="co">#&gt; * There's no nuance or mixed sentiment in this text; it's a</span></span>
+<span><span class="co">#&gt; straightforward expression of dislike.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Overall, the language and tone used suggest that the speaker had a very negative</span></span>
-<span><span class="co">#&gt; experience with the pizza.</span></span></code></pre></div>
+<span><span class="co">#&gt; Overall, the language and tone used suggest that the speaker had a very</span></span>
+<span><span class="co">#&gt; negative experience with the pizza.</span></span></code></pre></div>
 <p>In the next step we can use the assistant’s reasoning and a user
 prompt with the classification question.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -279,7 +280,7 @@ prompt with the classification question.</p>
 <span><span class="op">)</span></span>
 <span><span class="va">resps</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────</span></span>
 <span><span class="co">#&gt; Negative</span></span></code></pre></div>
 </div>
 <div class="section level3">
@@ -337,15 +338,15 @@ learning)(optional).</li>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">q_zs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [[1]]</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 2</span></span>
-<span><span class="co">#&gt;   role   content                                                                 </span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;  &lt;glue&gt;                                                                  </span></span>
-<span><span class="co">#&gt; 1 system You assign texts into categories. Answer with just the correct category.</span></span>
+<span><span class="co">#&gt;   role   content                                                           </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;  &lt;glue&gt;                                                            </span></span>
+<span><span class="co">#&gt; 1 system You assign texts into categories. Answer with just the correct ca…</span></span>
 <span><span class="co">#&gt; 2 user   the pizza tastes terrible</span></span>
 <span><span class="co">#&gt; Categories: positive, neutral, negative</span></span>
 <span><span class="co"># Run the query</span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_zs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────</span></span>
 <span><span class="co">#&gt; negative</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -367,15 +368,15 @@ learning)(optional).</li>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">q_os</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [[1]]</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 2</span></span>
-<span><span class="co">#&gt;   role   content                                                                 </span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;  &lt;glue&gt;                                                                  </span></span>
-<span><span class="co">#&gt; 1 system You assign texts into categories. Answer with just the correct category.</span></span>
+<span><span class="co">#&gt;   role   content                                                           </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;  &lt;glue&gt;                                                            </span></span>
+<span><span class="co">#&gt; 1 system You assign texts into categories. Answer with just the correct ca…</span></span>
 <span><span class="co">#&gt; 2 user   the service is great</span></span>
 <span><span class="co">#&gt; Categories: positive, neutral, negative</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_os</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────</span></span>
 <span><span class="co">#&gt; positive</span></span></code></pre></div>
 </div>
 <div class="section level4">
@@ -401,7 +402,7 @@ new classification:</p>
 <span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_fs</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ──────────────────────────────────</span></span>
 <span><span class="co">#&gt; neutral</span></span></code></pre></div>
 </div>
 </div>
@@ -437,13 +438,13 @@ columns:</p>
 <span><span class="co"># Print the initial dataframe</span></span>
 <span><span class="va">movie_reviews</span></span>
 <span><span class="co">#&gt; # A tibble: 5 × 2</span></span>
-<span><span class="co">#&gt;   review_id review                                                          </span></span>
-<span><span class="co">#&gt;       &lt;int&gt; &lt;chr&gt;                                                           </span></span>
-<span><span class="co">#&gt; 1         1 A stunning visual spectacle with a gripping storyline.          </span></span>
-<span><span class="co">#&gt; 2         2 The plot was predictable, but the acting was superb.            </span></span>
-<span><span class="co">#&gt; 3         3 An overrated film with underwhelming performances.              </span></span>
-<span><span class="co">#&gt; 4         4 A beautiful tale of love and adventure, beautifully shot.       </span></span>
-<span><span class="co">#&gt; 5         5 The movie lacked depth, but the special effects were incredible.</span></span></code></pre></div>
+<span><span class="co">#&gt;   review_id review                                                         </span></span>
+<span><span class="co">#&gt;       &lt;int&gt; &lt;chr&gt;                                                          </span></span>
+<span><span class="co">#&gt; 1         1 A stunning visual spectacle with a gripping storyline.         </span></span>
+<span><span class="co">#&gt; 2         2 The plot was predictable, but the acting was superb.           </span></span>
+<span><span class="co">#&gt; 3         3 An overrated film with underwhelming performances.             </span></span>
+<span><span class="co">#&gt; 4         4 A beautiful tale of love and adventure, beautifully shot.      </span></span>
+<span><span class="co">#&gt; 5         5 The movie lacked depth, but the special effects were incredibl…</span></span></code></pre></div>
 <p>We can use <code>make_query</code> again to define a query for each
 of these reviews. What we want to do is to perform a sentiment analysis,
 guided by a system message and a classification question.</p>
@@ -459,7 +460,7 @@ guided by a system message and a classification question.</p>
 <p>This produces a list of data.frames that have the same query format
 we are now familiar with. All of them have the same prompt, system
 message and prefix, but each has a different text that came from the
-movide reviews data.frame we created above. The <code>query</code>
+movie reviews data.frame we created above. The <code>query</code>
 function accepts lists of queries, so we can get the annotations simply
 using:</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
@@ -469,24 +470,16 @@ using:</p>
 <span><span class="co"># Print the annotated dataframe</span></span>
 <span><span class="va">movie_reviews</span></span>
 <span><span class="co">#&gt; # A tibble: 5 × 3</span></span>
-<span><span class="co">#&gt;   review_id review                                                           annotation</span></span>
-<span><span class="co">#&gt;       &lt;int&gt; &lt;chr&gt;                                                            &lt;chr&gt;     </span></span>
-<span><span class="co">#&gt; 1         1 A stunning visual spectacle with a gripping storyline.           Positive  </span></span>
-<span><span class="co">#&gt; 2         2 The plot was predictable, but the acting was superb.             positive  </span></span>
-<span><span class="co">#&gt; 3         3 An overrated film with underwhelming performances.               Negative  </span></span>
-<span><span class="co">#&gt; 4         4 A beautiful tale of love and adventure, beautifully shot.        Positive  </span></span>
-<span><span class="co">#&gt; 5         5 The movie lacked depth, but the special effects were incredible. Neutral</span></span></code></pre></div>
+<span><span class="co">#&gt;   review_id review                                               annotation</span></span>
+<span><span class="co">#&gt;       &lt;int&gt; &lt;chr&gt;                                                &lt;chr&gt;     </span></span>
+<span><span class="co">#&gt; 1         1 A stunning visual spectacle with a gripping storyli… Positive  </span></span>
+<span><span class="co">#&gt; 2         2 The plot was predictable, but the acting was superb. positive  </span></span>
+<span><span class="co">#&gt; 3         3 An overrated film with underwhelming performances.   Negative  </span></span>
+<span><span class="co">#&gt; 4         4 A beautiful tale of love and adventure, beautifully… Positive  </span></span>
+<span><span class="co">#&gt; 5         5 The movie lacked depth, but the special effects wer… Neutral</span></span></code></pre></div>
 <p>We can also use this approach in a ‘tidy’ coding style:</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'dplyr'</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     filter, lag</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:base':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     intersect, setdiff, setequal, union</span></span>
 <span><span class="va">movie_reviews_annotated</span> <span class="op">&lt;-</span> <span class="va">movie_reviews</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
 <span>    queries <span class="op">=</span> <span class="fu"><a href="../reference/make_query.html">make_query</a></span><span class="op">(</span></span>
