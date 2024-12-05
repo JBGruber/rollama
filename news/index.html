@@ -19,6 +19,7 @@
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/annotation.html">annotation</a></li>
+    <li><a class="dropdown-item" href="../articles/hf-gguf.html">Hugging Face Models</a></li>
     <li><a class="dropdown-item" href="../articles/image-annotation.html">image-annotation</a></li>
     <li><a class="dropdown-item" href="../articles/text-embedding.html">text-embedding</a></li>
   </ul></li>
@@ -39,11 +40,14 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="rollama-development-version">rollama (development version)<a class="anchor" aria-label="anchor" href="#rollama-development-version"></a></h2>
-<ul><li>improved performance of embed_text</li>
-<li>changes default model to llama3.1</li>
-<li>improved performance of query</li>
-<li>added more output formats</li>
+<ul><li>added make_query() function to facilitate easier annotation</li>
+<li>added more output formats to query()/chat()</li>
+<li>improved performance of embed_text()</li>
+<li>improved performance of query() for multiple queries</li>
+<li>changed default model to llama3.1</li>
 <li>added option to employ multiple servers</li>
+<li>pull_model() gained verbose option</li>
+<li>improved annotation vignette</li>
 <li>some bug fixes</li>
 </ul></div>
     <div class="section level2">
