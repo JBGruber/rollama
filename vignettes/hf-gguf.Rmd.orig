@@ -1,0 +1,61 @@
+---
+title: "Hugging Face Models"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{hf-gguf}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+options("rollama_verbose" = FALSE)
+options(rollama_seed = 42)
+```
+
+If you are looking for a model to use, you should probably search for it on the [Ollama website](https://ollama.com/search).
+However, the models listed there are not all models that can be used in (r)ollama.
+Models in the GGUF format from *Hugging Face Hub*, a very popular platform for sharing machine learning models.
+To look for a specific model, all you need to do is visit <https://huggingface.co/models?library=gguf> (this is already filtered to GGUF models, other model formats are not compatible with Ollama).
+
+Once you have identified a model, you can simply pass the URL to the `pull_model` function:
+
+```{r}
+library(rollama)
+pull_model("https://huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
+```
+
+Note that the `:Q2_K` at the end is the [quantization scheme](https://huggingface.co/docs/optimum/en/concept_guides/quantization).
+Q2_K is the smallest available version of the model, which gives up some performance, but is faster to run.
+You can find the different qunatization versions when clicking the `Use this model` on a model site.
+When downloading, Ollama converts the URL automatically into a name, we need to query our model list first to see how the model is named now:
+
+```{r}
+grep("oxy-1-small", list_models()$name, value = TRUE)
+```
+
+But except for the awkward name, we can now use this model as any other one:
+
+```{r}
+chat("Why is the sky blue?", model = "huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
+```
+
+Note that this also works with [text embedding models](https://jbgruber.github.io/rollama/articles/text-embedding.html).
+Hugging Face Hub has some nice filters with which you can pre-select appropriate models and then use fulltext search to find more.
+This search looks for embedding models with the correct model type, for example:
+
+<https://huggingface.co/models?pipeline_tag=sentence-similarity&library=gguf>
+
+The trending models are often quite good for general tasks, but more information is available in leaderboards and blog posts.
+For no particular reason, let's use Snowflake's Arctic-embed-m-v1.5 embed for demonstration purposes here:
+
+```{r}
+pull_model("https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16")
+embed_text(c("Why is the sky blue?", "I am pretty happy we can work with GGUF models in R"), 
+           model = "huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16")
+```
+
+
