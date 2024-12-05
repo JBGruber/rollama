@@ -15,7 +15,8 @@ knitr::opts_chunk$set(
   comment = "#>"
 )
 options(tidyverse.quiet = TRUE)
-options(rollama_verbose = TRUE)
+options(rollama_verbose = FALSE)
+options(width = 75)
 ```
 
 Ollama, and hence `rollama`, can be used for text embedding.
@@ -34,12 +35,12 @@ reviews_df <- read_csv("https://raw.githubusercontent.com/AFAgarap/ecommerce-rev
 glimpse(reviews_df)
 ```
 
-Now this is a rather big dataset, and I don't want to stress my GPU too much, so I only select the first 500 reviews for embedding.
+Now this is a rather big dataset, and I don't want to stress my GPU too much, so I only select the first 5,000 reviews for embedding.
 I also process the data slightly by combining the title and review text into a single column and turning the rating into a binary variable:
 
 ```{r processing}
 reviews <- reviews_df |>
-  slice_head(n = 500) |>
+  slice_head(n = 5000) |>
   rename(id = ...1) |>
   mutate(rating = factor(Rating == 5, c(TRUE, FALSE), c("5", "<5"))) |>
   mutate(full_text = paste0(ifelse(is.na(Title), "", Title), `Review Text`))
@@ -116,6 +117,9 @@ final_res <- last_fit(wf_fh_final, reviews_split)
 # we extract these predictions
 final_pred <- final_res |>
   collect_predictions()
+
+# look at the results
+conf_mat(final_pred, truth = rating, estimate = .pred_class)
 
 # and evaluate them with a few standard metrics
 my_metrics <- metric_set(accuracy, precision, recall, f_meas)

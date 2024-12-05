@@ -40,25 +40,22 @@ But except for the awkward name, we can now use this model as any other one:
 ``` r
 chat("Why is the sky blue?", model = "huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
 #> 
-#> ── Answer from huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K ────────────────────────────
-#> The sky appears blue to us because of a process called Rayleigh scattering. Sunlight,
-#> which is white light made up of all colors mixed together, travels through Earth’s
-#> atmosphere and hits air molecules in the atmosphere.
+#> ── Answer from huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K ────────────────
+#> The sky appears blue to our eyes due to a process called Rayleigh
+#> scattering. Sunlight entering the Earth’s atmosphere collides with the air
+#> molecules, causing them to scatter in all directions. Nitrogen and oxygen
+#> make up about 95% of the earth's atmosphere.
 #> 
-#> These air molecules are much smaller than the wavelengths of visible light; they
-#> scatter sunlight mostly towards violet and blue wavelengths, as these have shorter
-#> wavelengths and are more intensely scattered by air particles. Since our eyes are more
-#> sensitive to blue colors, we perceive this scattering effect as a bright shade of
-#> light blue – essentially creating what we see as sky.
+#> When sunlight encounters these gases, it gets scattered widely throughout
+#> the sky. Shorter wavelengths of visible light fall within blue’s
+#> wavelength range; thus, when sunlight scatters into our eyes as blue
+#> light, we perceive a blue sky.
 #> 
-#> The sun itself is actually white in color but appears orange or red during sunrise and
-#> sunset because its light has to travel through a lot more atmosphere before it reaches
-#> the ground. This extra atmospheric distance filters out the blue wavelengths, leaving
-#> only the longer wavelength colors behind which results in an apparent reddish hue.
-#> 
-#> So why don’t we see violet sky then? It’s due to human color perception: our eyes are
-#> much more sensitive to blue than violet so we see shades of blue dominating the
-#> visible spectrum within Earth's atmosphere when looking up at night skies.
+#> However, at sunrise and sunset hours, the sun is lower on the horizon
+#> compared to noon time. As such the path of sunlight passes through more
+#> atmosphere than usual, which causes the longer wavelengths (red) to
+#> dominate over shorter ones, giving us the shades of red hues like pink or
+#> crimson skies.
 ```
 
 Note that this also works with [text embedding models](https://jbgruber.github.io/rollama/articles/text-embedding.html).
@@ -77,17 +74,17 @@ pull_model("https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16"
 embed_text(c("Why is the sky blue?", "I am pretty happy we can work with GGUF models in R"), 
            model = "huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16")
 #> # A tibble: 2 × 768
-#>   dim_1  dim_2 dim_3   dim_4 dim_5  dim_6   dim_7 dim_8  dim_9 dim_10  dim_11 dim_12
-#>   <dbl>  <dbl> <dbl>   <dbl> <dbl>  <dbl>   <dbl> <dbl>  <dbl>  <dbl>   <dbl>  <dbl>
-#> 1 0.221  0.128 0.698  0.0980 0.891 -0.145  0.168  0.722 -0.308 -0.674 -0.0808  0.211
-#> 2 0.240 -0.331 0.699 -0.125  0.856  0.345 -0.0621 0.361 -0.309 -0.656 -0.0519  0.618
-#> # ℹ 756 more variables: dim_13 <dbl>, dim_14 <dbl>, dim_15 <dbl>, dim_16 <dbl>,
-#> #   dim_17 <dbl>, dim_18 <dbl>, dim_19 <dbl>, dim_20 <dbl>, dim_21 <dbl>,
-#> #   dim_22 <dbl>, dim_23 <dbl>, dim_24 <dbl>, dim_25 <dbl>, dim_26 <dbl>,
-#> #   dim_27 <dbl>, dim_28 <dbl>, dim_29 <dbl>, dim_30 <dbl>, dim_31 <dbl>,
-#> #   dim_32 <dbl>, dim_33 <dbl>, dim_34 <dbl>, dim_35 <dbl>, dim_36 <dbl>,
-#> #   dim_37 <dbl>, dim_38 <dbl>, dim_39 <dbl>, dim_40 <dbl>, dim_41 <dbl>,
-#> #   dim_42 <dbl>, dim_43 <dbl>, dim_44 <dbl>, dim_45 <dbl>, dim_46 <dbl>, …
+#>   dim_1  dim_2 dim_3   dim_4 dim_5  dim_6   dim_7 dim_8  dim_9 dim_10
+#>   <dbl>  <dbl> <dbl>   <dbl> <dbl>  <dbl>   <dbl> <dbl>  <dbl>  <dbl>
+#> 1 0.221  0.128 0.698  0.0980 0.891 -0.145  0.168  0.722 -0.308 -0.674
+#> 2 0.240 -0.331 0.699 -0.125  0.856  0.345 -0.0621 0.361 -0.309 -0.656
+#> # ℹ 758 more variables: dim_11 <dbl>, dim_12 <dbl>, dim_13 <dbl>,
+#> #   dim_14 <dbl>, dim_15 <dbl>, dim_16 <dbl>, dim_17 <dbl>, dim_18 <dbl>,
+#> #   dim_19 <dbl>, dim_20 <dbl>, dim_21 <dbl>, dim_22 <dbl>, dim_23 <dbl>,
+#> #   dim_24 <dbl>, dim_25 <dbl>, dim_26 <dbl>, dim_27 <dbl>, dim_28 <dbl>,
+#> #   dim_29 <dbl>, dim_30 <dbl>, dim_31 <dbl>, dim_32 <dbl>, dim_33 <dbl>,
+#> #   dim_34 <dbl>, dim_35 <dbl>, dim_36 <dbl>, dim_37 <dbl>, dim_38 <dbl>,
+#> #   dim_39 <dbl>, dim_40 <dbl>, dim_41 <dbl>, dim_42 <dbl>, …
 ```
 
 

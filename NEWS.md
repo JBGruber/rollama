@@ -8,6 +8,7 @@
 * added option to employ multiple servers
 * pull_model() gained verbose option
 * improved annotation vignette 
+* added vignette on how to use Hugging Face Hub models
 * some bug fixes
 
 # rollama 0.1.0

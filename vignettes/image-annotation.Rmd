@@ -40,16 +40,24 @@ In the first example, we ask the model to describe the logo of this package:
 query("Excitedly desscribe this logo", model = "llava",
       images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
 #> 
-#> ── Answer from llava ──────────────────────────────────────────────────────────────────
-#> This is an image of a stylized logo featuring a cute cartoon character, which appears
-#> to be a character from the game "RollerCoaster Tycoon". The character is depicted
-#> lying down, wearing a blue helmet and with a contented expression. Behind the
-#> character, there's a hexagon that resembles a shield or emblem, with text on it that
-#> reads "ROLLERCOASTER". To the right of the hexagon, there's a badge-like design with
-#> the word "ROLLOMAN" prominently displayed in white letters against a dark background.
-#> The overall style of the image is reminiscent of retro video game graphics, and it
-#> likely represents a gaming community or organization related to the RollerCoaster
-#> Tycoon franchise.
+#> ── Answer from llava ──────────────────────────────────────────────────────
+#> This is an image of a logo for "Rollama." The logo features a playful and
+#> creative design, with a cartoon-style character resting on a bed of green
+#> grass. The character is anthropomorphic, having arms and legs like a
+#> human, but it has animal-like ears and is wearing a blue helmet. The
+#> helmet seems to have a visor, and there's a badge attached to it that
+#> reads "Rollama."
+#> 
+#> The background of the logo is light blue with a faint cloud pattern, which
+#> adds to the whimsical feel of the design. The use of bold colors and
+#> simple shapes gives the logo a friendly and approachable vibe, suggesting
+#> that whatever "Rollama" represents could be fun and enjoyable.
+#> 
+#> Without additional context, it's not possible to determine the exact
+#> nature or purpose of Rollama from this image alone. However, the playful
+#> design and the badge suggest that it might be related to a game, an
+#> application, or possibly a branding for something entertaining and
+#> engaging.
 ```
 
 The second example asks a classification question:
@@ -60,9 +68,10 @@ query("Which animal is in this image: a llama, dog, or walrus?",
       model = "llava",
       images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
 #> 
-#> ── Answer from llava ──────────────────────────────────────────────────────────────────
-#> The image shows an animated character that resembles a llama. It has distinctive
-#> features of a llama, such as the large head with two rounded horns and a fluffy,
-#> fur-covered body.
+#> ── Answer from llava ──────────────────────────────────────────────────────
+#> The image shows an animated character that resembles a llama. It has
+#> distinctive features of a llama, such as the large head with two
+#> forward-facing horns and a long, curved neck with short, rounded ears at
+#> the top.
 ```
 
