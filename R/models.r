@@ -24,28 +24,38 @@
 #'
 #' @examples
 #' \dontrun{
+#' # download a model and save information in an object
 #' model_info <- pull_model("mixtral")
 #' # after you pull, you can get the same information with:
 #' model_info <- show_model("mixtral")
+#' # pulling models from Hugging Face Hub is also possible
+#' pull_model("https://huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
 #' }
-pull_model <- function(model = NULL, server = NULL, insecure = FALSE) {
+pull_model <- function(model = NULL,
+                       server = NULL,
+                       insecure = FALSE,
+                       verbose = getOption("rollama_verbose",
+                                           default = interactive())) {
 
   if (is.null(model)) model <- getOption("rollama_model", default = "llama3.1")
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
 
   if (length(model) > 1L) {
-    for (m in model) pull_model(m, server, insecure)
+    for (m in model) pull_model(m, server, insecure, verbose)
   }
 
   # flush progress
   the$str_prgs <- NULL
-  httr2::request(server) |>
+  req <- httr2::request(server) |>
     httr2::req_url_path_append("/api/pull") |>
-    httr2::req_body_json(list(name = model, insecure = insecure)) |>
-    httr2::req_perform_stream(callback = pgrs, buffer_kb = 0.1)
-
-  cli::cli_process_done(.envir = the)
+    httr2::req_body_json(list(name = model, insecure = insecure))
+  if (verbose) {
+    httr2::req_perform_stream(req, callback = pgrs, buffer_kb = 0.1)
+    cli::cli_process_done(.envir = the)
+  } else {
+    httr2::req_perform(req)
+  }
   cli::cli_alert_success("model {model} pulled succesfully")
   the$str_prgs <- NULL
 

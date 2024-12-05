@@ -1,10 +1,13 @@
 # rollama (development version)
 
-* improved performance of embed_text
-* changes default model to llama3.1
-* improved performance of query
-* added more output formats
+* added make_query() function to facilitate easier annotation
+* added more output formats to query()/chat()
+* improved performance of embed_text()
+* improved performance of query() for multiple queries
+* changed default model to llama3.1
 * added option to employ multiple servers
+* pull_model() gained verbose option
+* improved annotation vignette 
 * some bug fixes
 
 # rollama 0.1.0

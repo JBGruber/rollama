@@ -7,7 +7,12 @@
 \alias{copy_model}
 \title{Pull, show and delete models}
 \usage{
-pull_model(model = NULL, server = NULL, insecure = FALSE)
+pull_model(
+  model = NULL,
+  server = NULL,
+  insecure = FALSE,
+  verbose = getOption("rollama_verbose", default = interactive())
+)
 
 show_model(model = NULL, server = NULL)
 
@@ -24,6 +29,10 @@ in \code{delete_model}).}
 
 \item{insecure}{allow insecure connections to the library. Only use this if
 you are pulling from your own library during development.}
+
+\item{verbose}{Whether to print status messages to the Console
+(\code{TRUE}/\code{FALSE}). The default is to have status messages in
+interactive sessions. Can be changed with \code{options(rollama_verbose = FALSE)}.}
 
 \item{destination}{name of the copied model.}
 }
@@ -49,8 +58,11 @@ will default to latest. The tag is used to identify a specific version.
 }
 \examples{
 \dontrun{
+# download a model and save information in an object
 model_info <- pull_model("mixtral")
 # after you pull, you can get the same information with:
 model_info <- show_model("mixtral")
+# pulling models from Hugging Face Hub is also possible
+pull_model("https://huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
 }
 }
