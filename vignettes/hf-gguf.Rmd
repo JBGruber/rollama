@@ -40,22 +40,25 @@ But except for the awkward name, we can now use this model as any other one:
 ``` r
 chat("Why is the sky blue?", model = "huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
 #> 
-#> ── Answer from huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K ────────────────
-#> The sky appears blue to our eyes due to a process called Rayleigh
-#> scattering. Sunlight entering the Earth’s atmosphere collides with the air
-#> molecules, causing them to scatter in all directions. Nitrogen and oxygen
-#> make up about 95% of the earth's atmosphere.
+#> ── Answer from huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K ──────
+#> The sky appears blue due to a process called Rayleigh
+#> scattering. Sunlight enters Earth’s atmosphere and hits air
+#> molecules, which are much smaller than visible light
+#> wavelengths. As sunlight strikes these molecules, they scatter
+#> in all directions - think of it like how light bends when
+#> passing through a prism.
 #> 
-#> When sunlight encounters these gases, it gets scattered widely throughout
-#> the sky. Shorter wavelengths of visible light fall within blue’s
-#> wavelength range; thus, when sunlight scatters into our eyes as blue
-#> light, we perceive a blue sky.
+#> This scattered light has a bluer hue because shorter blue
+#> wavelengths bend more easily due to their size. The reason why
+#> the sky looks darker near the horizon is because there's less
+#> atmosphere for this scattering effect to occur within;
+#> therefore, you get less overall scattering and fewer blue tones
+#> hitting your eyes.
 #> 
-#> However, at sunrise and sunset hours, the sun is lower on the horizon
-#> compared to noon time. As such the path of sunlight passes through more
-#> atmosphere than usual, which causes the longer wavelengths (red) to
-#> dominate over shorter ones, giving us the shades of red hues like pink or
-#> crimson skies.
+#> So when you look up at night sky during twilight hours or on a
+#> particularly clear day without any clouds around, it might
+#> appear exceptionally vibrant due to how much light gets
+#> scattered back into space by our air molecules!
 ```
 
 Note that this also works with [text embedding models](https://jbgruber.github.io/rollama/articles/text-embedding.html).
@@ -71,20 +74,20 @@ For no particular reason, let's use Snowflake's Arctic-embed-m-v1.5 embed for de
 ``` r
 pull_model("https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16")
 #> ✔ model https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16 pulled succesfully
-embed_text(c("Why is the sky blue?", "I am pretty happy we can work with GGUF models in R"), 
+embed_text(c("Why is the sky blue?", "I am pretty happy we can work with GGUF models in R"),
            model = "huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16")
 #> # A tibble: 2 × 768
-#>   dim_1  dim_2 dim_3   dim_4 dim_5  dim_6   dim_7 dim_8  dim_9 dim_10
-#>   <dbl>  <dbl> <dbl>   <dbl> <dbl>  <dbl>   <dbl> <dbl>  <dbl>  <dbl>
-#> 1 0.221  0.128 0.698  0.0980 0.891 -0.145  0.168  0.722 -0.308 -0.674
-#> 2 0.240 -0.331 0.699 -0.125  0.856  0.345 -0.0621 0.361 -0.309 -0.656
-#> # ℹ 758 more variables: dim_11 <dbl>, dim_12 <dbl>, dim_13 <dbl>,
-#> #   dim_14 <dbl>, dim_15 <dbl>, dim_16 <dbl>, dim_17 <dbl>, dim_18 <dbl>,
-#> #   dim_19 <dbl>, dim_20 <dbl>, dim_21 <dbl>, dim_22 <dbl>, dim_23 <dbl>,
-#> #   dim_24 <dbl>, dim_25 <dbl>, dim_26 <dbl>, dim_27 <dbl>, dim_28 <dbl>,
-#> #   dim_29 <dbl>, dim_30 <dbl>, dim_31 <dbl>, dim_32 <dbl>, dim_33 <dbl>,
-#> #   dim_34 <dbl>, dim_35 <dbl>, dim_36 <dbl>, dim_37 <dbl>, dim_38 <dbl>,
-#> #   dim_39 <dbl>, dim_40 <dbl>, dim_41 <dbl>, dim_42 <dbl>, …
+#>   dim_1  dim_2 dim_3   dim_4 dim_5  dim_6   dim_7 dim_8  dim_9
+#>   <dbl>  <dbl> <dbl>   <dbl> <dbl>  <dbl>   <dbl> <dbl>  <dbl>
+#> 1 0.221  0.128 0.698  0.0980 0.891 -0.145  0.168  0.722 -0.308
+#> 2 0.240 -0.331 0.699 -0.125  0.856  0.345 -0.0621 0.361 -0.309
+#> # ℹ 759 more variables: dim_10 <dbl>, dim_11 <dbl>,
+#> #   dim_12 <dbl>, dim_13 <dbl>, dim_14 <dbl>, dim_15 <dbl>,
+#> #   dim_16 <dbl>, dim_17 <dbl>, dim_18 <dbl>, dim_19 <dbl>,
+#> #   dim_20 <dbl>, dim_21 <dbl>, dim_22 <dbl>, dim_23 <dbl>,
+#> #   dim_24 <dbl>, dim_25 <dbl>, dim_26 <dbl>, dim_27 <dbl>,
+#> #   dim_28 <dbl>, dim_29 <dbl>, dim_30 <dbl>, dim_31 <dbl>,
+#> #   dim_32 <dbl>, dim_33 <dbl>, dim_34 <dbl>, dim_35 <dbl>, …
 ```
 
 

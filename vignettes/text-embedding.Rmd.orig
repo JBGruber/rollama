@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 )
 options(tidyverse.quiet = TRUE)
 options(rollama_verbose = FALSE)
-options(width = 75)
+options(width = 65)
 ```
 
 Ollama, and hence `rollama`, can be used for text embedding.
