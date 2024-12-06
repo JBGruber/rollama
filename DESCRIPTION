@@ -1,5 +1,5 @@
 Package: rollama
-Title: Communicate with 'Ollama' to run large language models locally
+Title: Communicate with 'Ollama' to Run Large Language Models Locally
 Version: 0.2.0
 Authors@R: 
     c(person(given = "Johannes B.",
