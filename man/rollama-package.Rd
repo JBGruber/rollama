@@ -15,6 +15,7 @@ Useful links:
 \itemize{
   \item \url{https://jbgruber.github.io/rollama/}
   \item \url{https://github.com/JBGruber/rollama}
+  \item Report bugs at \url{https://github.com/JBGruber/rollama/issues}
 }
 
 }
