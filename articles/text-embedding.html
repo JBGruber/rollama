@@ -87,44 +87,44 @@ multiple tasks.</p>
 <span><span class="fu"><a href="https://pillar.r-lib.org/reference/glimpse.html" class="external-link">glimpse</a></span><span class="op">(</span><span class="va">reviews_df</span><span class="op">)</span></span>
 <span><span class="co">#&gt; Rows: 23,486</span></span>
 <span><span class="co">#&gt; Columns: 11</span></span>
-<span><span class="co">#&gt; $ ...1                      &lt;dbl&gt; 0, 1, 2, 3, 4, 5, 6, 7, 8, 9,…</span></span>
-<span><span class="co">#&gt; $ `Clothing ID`             &lt;dbl&gt; 767, 1080, 1077, 1049, 847, 1…</span></span>
-<span><span class="co">#&gt; $ Age                       &lt;dbl&gt; 33, 34, 60, 50, 47, 49, 39, 3…</span></span>
-<span><span class="co">#&gt; $ Title                     &lt;chr&gt; NA, NA, "Some major design fl…</span></span>
-<span><span class="co">#&gt; $ `Review Text`             &lt;chr&gt; "Absolutely wonderful - silky…</span></span>
-<span><span class="co">#&gt; $ Rating                    &lt;dbl&gt; 4, 5, 3, 5, 5, 2, 5, 4, 5, 5,…</span></span>
-<span><span class="co">#&gt; $ `Recommended IND`         &lt;dbl&gt; 1, 1, 0, 1, 1, 0, 1, 1, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ `Positive Feedback Count` &lt;dbl&gt; 0, 4, 0, 0, 6, 4, 1, 4, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ `Division Name`           &lt;chr&gt; "Initmates", "General", "Gene…</span></span>
-<span><span class="co">#&gt; $ `Department Name`         &lt;chr&gt; "Intimate", "Dresses", "Dress…</span></span>
-<span><span class="co">#&gt; $ `Class Name`              &lt;chr&gt; "Intimates", "Dresses", "Dres…</span></span></code></pre></div>
+<span><span class="co">#&gt; $ ...1                      &lt;dbl&gt; 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, …</span></span>
+<span><span class="co">#&gt; $ `Clothing ID`             &lt;dbl&gt; 767, 1080, 1077, 1049, 847, 1080, …</span></span>
+<span><span class="co">#&gt; $ Age                       &lt;dbl&gt; 33, 34, 60, 50, 47, 49, 39, 39, 24…</span></span>
+<span><span class="co">#&gt; $ Title                     &lt;chr&gt; NA, NA, "Some major design flaws",…</span></span>
+<span><span class="co">#&gt; $ `Review Text`             &lt;chr&gt; "Absolutely wonderful - silky and …</span></span>
+<span><span class="co">#&gt; $ Rating                    &lt;dbl&gt; 4, 5, 3, 5, 5, 2, 5, 4, 5, 5, 3, 5…</span></span>
+<span><span class="co">#&gt; $ `Recommended IND`         &lt;dbl&gt; 1, 1, 0, 1, 1, 0, 1, 1, 1, 1, 0, 1…</span></span>
+<span><span class="co">#&gt; $ `Positive Feedback Count` &lt;dbl&gt; 0, 4, 0, 0, 6, 4, 1, 4, 0, 0, 14, …</span></span>
+<span><span class="co">#&gt; $ `Division Name`           &lt;chr&gt; "Initmates", "General", "General",…</span></span>
+<span><span class="co">#&gt; $ `Department Name`         &lt;chr&gt; "Intimate", "Dresses", "Dresses", …</span></span>
+<span><span class="co">#&gt; $ `Class Name`              &lt;chr&gt; "Intimates", "Dresses", "Dresses",…</span></span></code></pre></div>
 <p>Now this is a rather big dataset, and I don’t want to stress my GPU
 too much, so I only select the first 5,000 reviews for embedding. I also
 process the data slightly by combining the title and review text into a
 single column and turning the rating into a binary variable:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reviews</span> <span class="op">&lt;-</span> <span class="va">reviews_df</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html" class="external-link">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">5000</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html" class="external-link">rename</a></span><span class="op">(</span>id <span class="op">=</span> <span class="va">...1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>rating <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Rating</span> <span class="op">==</span> <span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"5"</span>, <span class="st">"&lt;5"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>full_text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Title</span><span class="op">)</span>, <span class="st">""</span>, <span class="va">Title</span><span class="op">)</span>, <span class="va">`Review Text`</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu">slice_head</span><span class="op">(</span>n <span class="op">=</span> <span class="fl">5000</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">rename</span><span class="op">(</span>id <span class="op">=</span> <span class="va">...1</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>rating <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">Rating</span> <span class="op">==</span> <span class="fl">5</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="cn">FALSE</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"5"</span>, <span class="st">"&lt;5"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>full_text <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html" class="external-link">is.na</a></span><span class="op">(</span><span class="va">Title</span><span class="op">)</span>, <span class="st">""</span>, <span class="va">Title</span><span class="op">)</span>, <span class="va">`Review Text`</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>To turn one or multiple texts into embeddings, you can simply use
 <code>embed_text</code>:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/embed_text.html">embed_text</a></span><span class="op">(</span>text <span class="op">=</span> <span class="va">reviews</span><span class="op">$</span><span class="va">full_text</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 3 × 3,072</span></span>
-<span><span class="co">#&gt;   dim_1 dim_2  dim_3    dim_4  dim_5  dim_6  dim_7  dim_8 dim_9</span></span>
-<span><span class="co">#&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 -1.30 0.277  2.73   0.608   -1.95  -1.19   0.425 -0.349 0.935</span></span>
-<span><span class="co">#&gt; 2  1.42 1.08  -0.155 -0.00261  0.304 -2.53  -0.592  1.95  2.08 </span></span>
-<span><span class="co">#&gt; 3 -2.37 0.287 -0.891 -1.68     0.462 -0.742 -1.57   0.191 2.55 </span></span>
-<span><span class="co">#&gt; # ℹ 3,063 more variables: dim_10 &lt;dbl&gt;, dim_11 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_12 &lt;dbl&gt;, dim_13 &lt;dbl&gt;, dim_14 &lt;dbl&gt;, dim_15 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_16 &lt;dbl&gt;, dim_17 &lt;dbl&gt;, dim_18 &lt;dbl&gt;, dim_19 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_20 &lt;dbl&gt;, dim_21 &lt;dbl&gt;, dim_22 &lt;dbl&gt;, dim_23 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_24 &lt;dbl&gt;, dim_25 &lt;dbl&gt;, dim_26 &lt;dbl&gt;, dim_27 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_28 &lt;dbl&gt;, dim_29 &lt;dbl&gt;, dim_30 &lt;dbl&gt;, dim_31 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_32 &lt;dbl&gt;, dim_33 &lt;dbl&gt;, dim_34 &lt;dbl&gt;, dim_35 &lt;dbl&gt;, …</span></span></code></pre></div>
+<span><span class="co">#&gt;   dim_1 dim_2  dim_3    dim_4  dim_5  dim_6  dim_7  dim_8 dim_9 dim_10</span></span>
+<span><span class="co">#&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 -1.30 0.277  2.73   0.608   -1.95  -1.19   0.425 -0.349 0.935 -0.664</span></span>
+<span><span class="co">#&gt; 2  1.44 1.13  -0.152 -0.00552  0.285 -2.49  -0.557  1.93  2.08  -1.12 </span></span>
+<span><span class="co">#&gt; 3 -2.37 0.284 -0.904 -1.69     0.490 -0.743 -1.60   0.149 2.57   0.893</span></span>
+<span><span class="co">#&gt; # ℹ 3,062 more variables: dim_11 &lt;dbl&gt;, dim_12 &lt;dbl&gt;, dim_13 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_14 &lt;dbl&gt;, dim_15 &lt;dbl&gt;, dim_16 &lt;dbl&gt;, dim_17 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_18 &lt;dbl&gt;, dim_19 &lt;dbl&gt;, dim_20 &lt;dbl&gt;, dim_21 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_22 &lt;dbl&gt;, dim_23 &lt;dbl&gt;, dim_24 &lt;dbl&gt;, dim_25 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_26 &lt;dbl&gt;, dim_27 &lt;dbl&gt;, dim_28 &lt;dbl&gt;, dim_29 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_30 &lt;dbl&gt;, dim_31 &lt;dbl&gt;, dim_32 &lt;dbl&gt;, dim_33 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_34 &lt;dbl&gt;, dim_35 &lt;dbl&gt;, dim_36 &lt;dbl&gt;, dim_37 &lt;dbl&gt;, …</span></span></code></pre></div>
 <p>To use this on the sample of reviews, I put the embeddings into a new
 column, before unnesting the resulting data.frame. The reason behind
 this is that I want to make sure the embeddings belong to the correct
@@ -138,33 +138,33 @@ model with <code>pull_model("nomic-embed-text")</code> then we can
 run:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reviews_embeddings</span> <span class="op">&lt;-</span> <span class="va">reviews</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span>embeddings <span class="op">=</span> <span class="fu"><a href="../reference/embed_text.html">embed_text</a></span><span class="op">(</span>text <span class="op">=</span> <span class="va">full_text</span>, model <span class="op">=</span> <span class="st">"nomic-embed-text"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">id</span>, <span class="va">rating</span>, <span class="va">embeddings</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">mutate</span><span class="op">(</span>embeddings <span class="op">=</span> <span class="fu"><a href="../reference/embed_text.html">embed_text</a></span><span class="op">(</span>text <span class="op">=</span> <span class="va">full_text</span>, model <span class="op">=</span> <span class="st">"nomic-embed-text"</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">select</span><span class="op">(</span><span class="va">id</span>, <span class="va">rating</span>, <span class="va">embeddings</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">unnest_wider</span><span class="op">(</span><span class="va">embeddings</span><span class="op">)</span></span></code></pre></div>
 <p>The resulting data.frame contains the ID and rating along the 768
 embedding dimensions:</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">reviews_embeddings</span></span>
 <span><span class="co">#&gt; # A tibble: 5,000 × 770</span></span>
-<span><span class="co">#&gt;       id rating   dim_1 dim_2 dim_3   dim_4  dim_5   dim_6</span></span>
-<span><span class="co">#&gt;    &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt;  1     0 &lt;5      1.12   1.56  -4.48 -0.129  -0.373  0.390 </span></span>
-<span><span class="co">#&gt;  2     1 5       0.792  0.721 -3.14 -0.808  -1.81   1.35  </span></span>
-<span><span class="co">#&gt;  3     2 &lt;5      0.539  1.12  -2.58 -0.417  -0.992  1.77  </span></span>
-<span><span class="co">#&gt;  4     3 5      -0.150  1.25  -4.12 -0.0750 -0.835  1.06  </span></span>
-<span><span class="co">#&gt;  5     4 5       0.352  0.972 -3.40 -1.18   -0.686  0.489 </span></span>
-<span><span class="co">#&gt;  6     5 &lt;5      0.907  0.975 -2.78 -0.638  -1.48   2.21  </span></span>
-<span><span class="co">#&gt;  7     6 5       0.523  0.321 -2.46 -0.678  -0.640  0.501 </span></span>
-<span><span class="co">#&gt;  8     7 &lt;5      0.224  0.694 -3.12 -0.562  -1.50  -0.0708</span></span>
-<span><span class="co">#&gt;  9     8 5      -0.0477 1.21  -3.70 -0.300  -0.936  0.583 </span></span>
-<span><span class="co">#&gt; 10     9 5      -0.105  1.13  -3.22 -0.310  -1.69   0.857 </span></span>
+<span><span class="co">#&gt;       id rating   dim_1 dim_2 dim_3   dim_4  dim_5   dim_6   dim_7</span></span>
+<span><span class="co">#&gt;    &lt;dbl&gt; &lt;fct&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt;  1     0 &lt;5      1.12   1.56  -4.48 -0.129  -0.373  0.390  -1.24  </span></span>
+<span><span class="co">#&gt;  2     1 5       0.792  0.721 -3.14 -0.808  -1.81   1.35    0.403 </span></span>
+<span><span class="co">#&gt;  3     2 &lt;5      0.539  1.12  -2.58 -0.417  -0.992  1.77    0.895 </span></span>
+<span><span class="co">#&gt;  4     3 5      -0.150  1.25  -4.12 -0.0750 -0.835  1.06   -0.0965</span></span>
+<span><span class="co">#&gt;  5     4 5       0.352  0.972 -3.40 -1.18   -0.686  0.489   0.127 </span></span>
+<span><span class="co">#&gt;  6     5 &lt;5      0.907  0.975 -2.78 -0.638  -1.48   2.21    0.373 </span></span>
+<span><span class="co">#&gt;  7     6 5       0.523  0.321 -2.46 -0.678  -0.640  0.501   0.703 </span></span>
+<span><span class="co">#&gt;  8     7 &lt;5      0.224  0.694 -3.12 -0.562  -1.50  -0.0708  0.178 </span></span>
+<span><span class="co">#&gt;  9     8 5      -0.0477 1.21  -3.70 -0.300  -0.936  0.583   0.135 </span></span>
+<span><span class="co">#&gt; 10     9 5      -0.105  1.13  -3.22 -0.310  -1.69   0.857  -0.157 </span></span>
 <span><span class="co">#&gt; # ℹ 4,990 more rows</span></span>
-<span><span class="co">#&gt; # ℹ 762 more variables: dim_7 &lt;dbl&gt;, dim_8 &lt;dbl&gt;, dim_9 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_10 &lt;dbl&gt;, dim_11 &lt;dbl&gt;, dim_12 &lt;dbl&gt;, dim_13 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_14 &lt;dbl&gt;, dim_15 &lt;dbl&gt;, dim_16 &lt;dbl&gt;, dim_17 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_18 &lt;dbl&gt;, dim_19 &lt;dbl&gt;, dim_20 &lt;dbl&gt;, dim_21 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_22 &lt;dbl&gt;, dim_23 &lt;dbl&gt;, dim_24 &lt;dbl&gt;, dim_25 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_26 &lt;dbl&gt;, dim_27 &lt;dbl&gt;, dim_28 &lt;dbl&gt;, dim_29 &lt;dbl&gt;, …</span></span></code></pre></div>
+<span><span class="co">#&gt; # ℹ 761 more variables: dim_8 &lt;dbl&gt;, dim_9 &lt;dbl&gt;, dim_10 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_11 &lt;dbl&gt;, dim_12 &lt;dbl&gt;, dim_13 &lt;dbl&gt;, dim_14 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_15 &lt;dbl&gt;, dim_16 &lt;dbl&gt;, dim_17 &lt;dbl&gt;, dim_18 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_19 &lt;dbl&gt;, dim_20 &lt;dbl&gt;, dim_21 &lt;dbl&gt;, dim_22 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_23 &lt;dbl&gt;, dim_24 &lt;dbl&gt;, dim_25 &lt;dbl&gt;, dim_26 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_27 &lt;dbl&gt;, dim_28 &lt;dbl&gt;, dim_29 &lt;dbl&gt;, dim_30 &lt;dbl&gt;, …</span></span></code></pre></div>
 <p>As said above, these embeddings are often used in supervised machine
 learning. I use part of <a href="https://emilhvitfeldt.com/post/textrecipes-series-pretrained-word-embeddings/" class="external-link">a
 blog post by Emil Hvitfeldt</a> show how this can be done using the data
@@ -187,7 +187,7 @@ packages:</p>
 <span><span class="va">reviews_boot</span> <span class="op">&lt;-</span> <span class="fu">bootstraps</span><span class="op">(</span><span class="va">reviews_train</span>, times <span class="op">=</span> <span class="fl">10</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># and we define the model. Here we use the embeddings to predict the rating</span></span>
-<span><span class="va">rec_spec</span> <span class="op">&lt;-</span> <span class="fu">recipe</span><span class="op">(</span><span class="va">rating</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html" class="external-link">select</a></span><span class="op">(</span><span class="va">reviews_train</span>, <span class="op">-</span><span class="va">id</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">rec_spec</span> <span class="op">&lt;-</span> <span class="fu">recipe</span><span class="op">(</span><span class="va">rating</span> <span class="op">~</span> <span class="va">.</span>, data <span class="op">=</span> <span class="fu">select</span><span class="op">(</span><span class="va">reviews_train</span>, <span class="op">-</span><span class="va">id</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># bringing this together in a workflow</span></span>
 <span><span class="va">wf_fh</span> <span class="op">&lt;-</span> <span class="fu">workflow</span><span class="op">(</span><span class="op">)</span> <span class="op">|&gt;</span></span>
