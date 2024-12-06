@@ -219,11 +219,11 @@ q_os <- make_query(
   template = "{text}\n{prompt}",
   prompt = "Categories: positive, neutral, negative",
   system = "You assign texts into categories. Answer with just the correct category.",
+  example = examples_os,
 )
 print(q_os)
 
 query(q_os)
-
 ```
 
 
