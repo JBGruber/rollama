@@ -254,21 +254,18 @@ classify and a reasoning question.</p>
 <span><span class="va">output_thought</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_thought</span>, output <span class="op">=</span> <span class="st">"text"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────</span></span>
-<span><span class="co">#&gt; I would assign a **negative** sentiment to this text.</span></span>
+<span><span class="co">#&gt; I would assign a negative sentiment to this text.</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; Here's why:</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; * The word "terrible" is a strong adjective that implies a strongly</span></span>
-<span><span class="co">#&gt; unfavorable opinion. It suggests that the speaker has had a very poor</span></span>
-<span><span class="co">#&gt; experience with the pizza.</span></span>
-<span><span class="co">#&gt; * The tone of the sentence is direct and critical, implying that the</span></span>
-<span><span class="co">#&gt; speaker was not just mildly dissatisfied but actively disliked the</span></span>
-<span><span class="co">#&gt; pizza.</span></span>
-<span><span class="co">#&gt; * There's no nuance or mixed sentiment in this text; it's a</span></span>
-<span><span class="co">#&gt; straightforward expression of dislike.</span></span>
+<span><span class="co">#&gt; * The word "terrible" is a strong adjective that conveys a strong</span></span>
+<span><span class="co">#&gt; negative opinion.</span></span>
+<span><span class="co">#&gt; * The tone of the sentence is also quite critical and dismissive.</span></span>
+<span><span class="co">#&gt; * There are no positive or neutral phrases in the text, which</span></span>
+<span><span class="co">#&gt; suggests that the author has a clear dislike for the pizza.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Overall, the language and tone used suggest that the speaker had a</span></span>
-<span><span class="co">#&gt; very negative experience with the pizza.</span></span></code></pre></div>
+<span><span class="co">#&gt; Overall, the language and tone used in this text indicate a strong</span></span>
+<span><span class="co">#&gt; negative sentiment towards the pizza.</span></span></code></pre></div>
 <p>In the next step we can use the assistant’s reasoning and a user
 prompt with the classification question.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
@@ -365,15 +362,19 @@ learning)(optional).</li>
 <span>  template <span class="op">=</span> <span class="st">"{text}\n{prompt}"</span>,</span>
 <span>  prompt <span class="op">=</span> <span class="st">"Categories: positive, neutral, negative"</span>,</span>
 <span>  system <span class="op">=</span> <span class="st">"You assign texts into categories. Answer with just the correct category."</span>,</span>
+<span>  example <span class="op">=</span> <span class="va">examples_os</span>,</span>
 <span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">q_os</span><span class="op">)</span></span>
 <span><span class="co">#&gt; [[1]]</span></span>
-<span><span class="co">#&gt; # A tibble: 2 × 2</span></span>
-<span><span class="co">#&gt;   role   content                                                      </span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;  &lt;glue&gt;                                                       </span></span>
-<span><span class="co">#&gt; 1 system You assign texts into categories. Answer with just the corre…</span></span>
-<span><span class="co">#&gt; 2 user   the service is great</span></span>
-<span><span class="co">#&gt; Categories: positive, neutral, negative</span></span>
+<span><span class="co">#&gt; # A tibble: 4 × 2</span></span>
+<span><span class="co">#&gt;   role      content                                                   </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;     &lt;glue&gt;                                                    </span></span>
+<span><span class="co">#&gt; 1 system    You assign texts into categories. Answer with just the co…</span></span>
+<span><span class="co">#&gt; 2 user      the pizza tastes terrible</span></span>
+<span><span class="co">#&gt; Categories: positive, neutral, n…</span></span>
+<span><span class="co">#&gt; 3 assistant negative                                                  </span></span>
+<span><span class="co">#&gt; 4 user      the service is great</span></span>
+<span><span class="co">#&gt; Categories: positive, neutral, negati…</span></span>
 <span></span>
 <span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="va">q_os</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
@@ -479,23 +480,28 @@ using:</p>
 <span><span class="co">#&gt; 4         4 A beautiful tale of love and adventure, beauti… Positive  </span></span>
 <span><span class="co">#&gt; 5         5 The movie lacked depth, but the special effect… Neutral</span></span></code></pre></div>
 <p>We can also use this approach in a ‘tidy’ coding style:</p>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>movie_reviews_annotated <span class="ot">&lt;-</span> movie_reviews <span class="sc">|&gt;</span></span>
-<span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a>    <span class="at">sentiment =</span> <span class="at">queries =</span> <span class="fu">make_query</span>(</span>
-<span id="cb15-5"><a href="#cb15-5" tabindex="-1"></a>      <span class="at">text =</span> review,</span>
-<span id="cb15-6"><a href="#cb15-6" tabindex="-1"></a>      <span class="at">prompt =</span> <span class="st">"Categories: positive, neutral, negative"</span>,</span>
-<span id="cb15-7"><a href="#cb15-7" tabindex="-1"></a>      <span class="at">template =</span> <span class="st">"{prefix}{text}</span><span class="sc">\n</span><span class="st">{prompt}"</span>,</span>
-<span id="cb15-8"><a href="#cb15-8" tabindex="-1"></a>      <span class="at">system =</span> <span class="st">"Classify the sentiment of the movie review. Answer with just the correct category."</span>,</span>
-<span id="cb15-9"><a href="#cb15-9" tabindex="-1"></a>      <span class="at">prefix =</span> <span class="st">"Text to classify: "</span></span>
-<span id="cb15-10"><a href="#cb15-10" tabindex="-1"></a>    )  <span class="sc">|&gt;</span></span>
-<span id="cb15-11"><a href="#cb15-11" tabindex="-1"></a>      <span class="fu">query</span>(<span class="at">screen =</span> <span class="cn">FALSE</span>, <span class="at">output =</span> <span class="st">"text"</span>)</span>
-<span id="cb15-12"><a href="#cb15-12" tabindex="-1"></a>  )</span>
-<span id="cb15-13"><a href="#cb15-13" tabindex="-1"></a>movie_reviews_annotated</span>
-<span id="cb15-14"><a href="#cb15-14" tabindex="-1"></a><span class="co">#&gt; Error in parse(text = input): &lt;text&gt;:4:25: unexpected '='</span></span>
-<span id="cb15-15"><a href="#cb15-15" tabindex="-1"></a><span class="co">#&gt; 3:   mutate(</span></span>
-<span id="cb15-16"><a href="#cb15-16" tabindex="-1"></a><span class="co">#&gt; 4:     sentiment = queries =</span></span>
-<span id="cb15-17"><a href="#cb15-17" tabindex="-1"></a><span class="co">#&gt;                            ^</span></span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org" class="external-link">dplyr</a></span>, warn.conflicts <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">movie_reviews_annotated</span> <span class="op">&lt;-</span> <span class="va">movie_reviews</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html" class="external-link">mutate</a></span><span class="op">(</span></span>
+<span>    sentiment <span class="op">=</span> <span class="fu"><a href="../reference/make_query.html">make_query</a></span><span class="op">(</span></span>
+<span>      text <span class="op">=</span> <span class="va">review</span>,</span>
+<span>      prompt <span class="op">=</span> <span class="st">"Categories: positive, neutral, negative"</span>,</span>
+<span>      template <span class="op">=</span> <span class="st">"{prefix}{text}\n{prompt}"</span>,</span>
+<span>      system <span class="op">=</span> <span class="st">"Classify the sentiment of the movie review. Answer with just the correct category."</span>,</span>
+<span>      prefix <span class="op">=</span> <span class="st">"Text to classify: "</span></span>
+<span>    <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>      <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span>screen <span class="op">=</span> <span class="cn">FALSE</span>, output <span class="op">=</span> <span class="st">"text"</span><span class="op">)</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="va">movie_reviews_annotated</span></span>
+<span><span class="co">#&gt; # A tibble: 5 × 4</span></span>
+<span><span class="co">#&gt;   review_id review                                annotation sentiment</span></span>
+<span><span class="co">#&gt;       &lt;int&gt; &lt;chr&gt;                                 &lt;chr&gt;      &lt;chr&gt;    </span></span>
+<span><span class="co">#&gt; 1         1 A stunning visual spectacle with a g… Positive   Positive </span></span>
+<span><span class="co">#&gt; 2         2 The plot was predictable, but the ac… positive   positive </span></span>
+<span><span class="co">#&gt; 3         3 An overrated film with underwhelming… Negative   Negative </span></span>
+<span><span class="co">#&gt; 4         4 A beautiful tale of love and adventu… Positive   Positive </span></span>
+<span><span class="co">#&gt; 5         5 The movie lacked depth, but the spec… Neutral    Neutral</span></span></code></pre></div>
 <p>This takes a little longer than classic supervised machine learning
 or even classification with transformer models. However, the advantage
 is that instructions can be provided using plain English, the models
