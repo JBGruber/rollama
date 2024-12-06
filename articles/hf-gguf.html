@@ -96,22 +96,25 @@ other one:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/query.html">chat</a></span><span class="op">(</span><span class="st">"Why is the sky blue?"</span>, model <span class="op">=</span> <span class="st">"huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K ────────────────</span></span>
-<span><span class="co">#&gt; The sky appears blue to our eyes due to a process called Rayleigh</span></span>
-<span><span class="co">#&gt; scattering. Sunlight entering the Earth’s atmosphere collides with the air</span></span>
-<span><span class="co">#&gt; molecules, causing them to scatter in all directions. Nitrogen and oxygen</span></span>
-<span><span class="co">#&gt; make up about 95% of the earth's atmosphere.</span></span>
+<span><span class="co">#&gt; ── Answer from huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K ──────</span></span>
+<span><span class="co">#&gt; The sky appears blue due to a process called Rayleigh</span></span>
+<span><span class="co">#&gt; scattering. Sunlight enters Earth’s atmosphere and hits air</span></span>
+<span><span class="co">#&gt; molecules, which are much smaller than visible light</span></span>
+<span><span class="co">#&gt; wavelengths. As sunlight strikes these molecules, they scatter</span></span>
+<span><span class="co">#&gt; in all directions - think of it like how light bends when</span></span>
+<span><span class="co">#&gt; passing through a prism.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; When sunlight encounters these gases, it gets scattered widely throughout</span></span>
-<span><span class="co">#&gt; the sky. Shorter wavelengths of visible light fall within blue’s</span></span>
-<span><span class="co">#&gt; wavelength range; thus, when sunlight scatters into our eyes as blue</span></span>
-<span><span class="co">#&gt; light, we perceive a blue sky.</span></span>
+<span><span class="co">#&gt; This scattered light has a bluer hue because shorter blue</span></span>
+<span><span class="co">#&gt; wavelengths bend more easily due to their size. The reason why</span></span>
+<span><span class="co">#&gt; the sky looks darker near the horizon is because there's less</span></span>
+<span><span class="co">#&gt; atmosphere for this scattering effect to occur within;</span></span>
+<span><span class="co">#&gt; therefore, you get less overall scattering and fewer blue tones</span></span>
+<span><span class="co">#&gt; hitting your eyes.</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; However, at sunrise and sunset hours, the sun is lower on the horizon</span></span>
-<span><span class="co">#&gt; compared to noon time. As such the path of sunlight passes through more</span></span>
-<span><span class="co">#&gt; atmosphere than usual, which causes the longer wavelengths (red) to</span></span>
-<span><span class="co">#&gt; dominate over shorter ones, giving us the shades of red hues like pink or</span></span>
-<span><span class="co">#&gt; crimson skies.</span></span></code></pre></div>
+<span><span class="co">#&gt; So when you look up at night sky during twilight hours or on a</span></span>
+<span><span class="co">#&gt; particularly clear day without any clouds around, it might</span></span>
+<span><span class="co">#&gt; appear exceptionally vibrant due to how much light gets</span></span>
+<span><span class="co">#&gt; scattered back into space by our air molecules!</span></span></code></pre></div>
 <p>Note that this also works with <a href="https://jbgruber.github.io/rollama/articles/text-embedding.html">text
 embedding models</a>. Hugging Face Hub has some nice filters with which
 you can pre-select appropriate models and then use full text search to
@@ -125,20 +128,20 @@ demonstration purposes here:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pull_model.html">pull_model</a></span><span class="op">(</span><span class="st">"https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; ✔ model https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16 pulled succesfully</span></span>
-<span><span class="fu"><a href="../reference/embed_text.html">embed_text</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Why is the sky blue?"</span>, <span class="st">"I am pretty happy we can work with GGUF models in R"</span><span class="op">)</span>, </span>
+<span><span class="fu"><a href="../reference/embed_text.html">embed_text</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Why is the sky blue?"</span>, <span class="st">"I am pretty happy we can work with GGUF models in R"</span><span class="op">)</span>,</span>
 <span>           model <span class="op">=</span> <span class="st">"huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 768</span></span>
-<span><span class="co">#&gt;   dim_1  dim_2 dim_3   dim_4 dim_5  dim_6   dim_7 dim_8  dim_9 dim_10</span></span>
-<span><span class="co">#&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;</span></span>
-<span><span class="co">#&gt; 1 0.221  0.128 0.698  0.0980 0.891 -0.145  0.168  0.722 -0.308 -0.674</span></span>
-<span><span class="co">#&gt; 2 0.240 -0.331 0.699 -0.125  0.856  0.345 -0.0621 0.361 -0.309 -0.656</span></span>
-<span><span class="co">#&gt; # ℹ 758 more variables: dim_11 &lt;dbl&gt;, dim_12 &lt;dbl&gt;, dim_13 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_14 &lt;dbl&gt;, dim_15 &lt;dbl&gt;, dim_16 &lt;dbl&gt;, dim_17 &lt;dbl&gt;, dim_18 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_19 &lt;dbl&gt;, dim_20 &lt;dbl&gt;, dim_21 &lt;dbl&gt;, dim_22 &lt;dbl&gt;, dim_23 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_24 &lt;dbl&gt;, dim_25 &lt;dbl&gt;, dim_26 &lt;dbl&gt;, dim_27 &lt;dbl&gt;, dim_28 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_29 &lt;dbl&gt;, dim_30 &lt;dbl&gt;, dim_31 &lt;dbl&gt;, dim_32 &lt;dbl&gt;, dim_33 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_34 &lt;dbl&gt;, dim_35 &lt;dbl&gt;, dim_36 &lt;dbl&gt;, dim_37 &lt;dbl&gt;, dim_38 &lt;dbl&gt;,</span></span>
-<span><span class="co">#&gt; #   dim_39 &lt;dbl&gt;, dim_40 &lt;dbl&gt;, dim_41 &lt;dbl&gt;, dim_42 &lt;dbl&gt;, …</span></span></code></pre></div>
+<span><span class="co">#&gt;   dim_1  dim_2 dim_3   dim_4 dim_5  dim_6   dim_7 dim_8  dim_9</span></span>
+<span><span class="co">#&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;</span></span>
+<span><span class="co">#&gt; 1 0.221  0.128 0.698  0.0980 0.891 -0.145  0.168  0.722 -0.308</span></span>
+<span><span class="co">#&gt; 2 0.240 -0.331 0.699 -0.125  0.856  0.345 -0.0621 0.361 -0.309</span></span>
+<span><span class="co">#&gt; # ℹ 759 more variables: dim_10 &lt;dbl&gt;, dim_11 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_12 &lt;dbl&gt;, dim_13 &lt;dbl&gt;, dim_14 &lt;dbl&gt;, dim_15 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_16 &lt;dbl&gt;, dim_17 &lt;dbl&gt;, dim_18 &lt;dbl&gt;, dim_19 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_20 &lt;dbl&gt;, dim_21 &lt;dbl&gt;, dim_22 &lt;dbl&gt;, dim_23 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_24 &lt;dbl&gt;, dim_25 &lt;dbl&gt;, dim_26 &lt;dbl&gt;, dim_27 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_28 &lt;dbl&gt;, dim_29 &lt;dbl&gt;, dim_30 &lt;dbl&gt;, dim_31 &lt;dbl&gt;,</span></span>
+<span><span class="co">#&gt; #   dim_32 &lt;dbl&gt;, dim_33 &lt;dbl&gt;, dim_34 &lt;dbl&gt;, dim_35 &lt;dbl&gt;, …</span></span></code></pre></div>
   </main>
 </div>
 
