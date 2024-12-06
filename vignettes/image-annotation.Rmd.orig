@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 options(rollama_verbose = FALSE)
 options(rollama_seed = 42)
-options(width = 65)
+options(width = 70)
 ```
 
 Ollama also supports multimodal models, which can interact with (but not create) images.

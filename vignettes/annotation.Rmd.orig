@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 )
 options(rollama_verbose = FALSE)
 options(rollama_seed = 42)
-options(width = 65)
+options(width = 70)
 ```
 
 After you installed Ollama on your machine and downloaded the package rollama you can load the package and pull a model.
@@ -310,15 +310,16 @@ We can also use this approach in a 'tidy' coding style:
 library(dplyr)
 movie_reviews_annotated <- movie_reviews |>
   mutate(
-    queries = make_query(
+    sentiment = queries = make_query(
       text = review,
       prompt = "Categories: positive, neutral, negative",
       template = "{prefix}{text}\n{prompt}",
       system = "Classify the sentiment of the movie review. Answer with just the correct category.",
       prefix = "Text to classify: "
-    ),
-    sentiment = query(queries, screen = FALSE, output = "text")
+    )  |>
+      query(screen = FALSE, output = "text")
   )
+movie_reviews_annotated
 ```
 
 This takes a little longer than classic supervised machine learning or even classification with transformer models.

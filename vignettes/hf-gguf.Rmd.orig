@@ -14,7 +14,7 @@ knitr::opts_chunk$set(
 )
 options(rollama_verbose = FALSE)
 options(rollama_seed = 42)
-options(width = 65)
+options(width = 70)
 ```
 
 If you are looking for a model to use, you should probably search for it on the [Ollama website](https://ollama.com/search).
