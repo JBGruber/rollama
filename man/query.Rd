@@ -25,7 +25,8 @@ chat(
   server = NULL,
   images = NULL,
   model_params = NULL,
-  template = NULL
+  template = NULL,
+  verbose = getOption("rollama_verbose", default = interactive())
 )
 }
 \arguments{

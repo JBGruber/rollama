@@ -213,7 +213,9 @@ chat <- function(q,
                  server = NULL,
                  images = NULL,
                  model_params = NULL,
-                 template = NULL) {
+                 template = NULL,
+                 verbose = getOption("rollama_verbose",
+                                     default = interactive())) {
 
   config <- getOption("rollama_config", default = NULL)
   hist <- chat_history()
@@ -241,7 +243,8 @@ chat <- function(q,
                 screen = screen,
                 server = server,
                 model_params = model_params,
-                template = template)
+                template = template,
+                verbose = verbose)
 
   # save response
   r <- purrr::pluck(resp, 1, "message", "content")
