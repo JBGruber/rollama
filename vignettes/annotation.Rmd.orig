@@ -307,16 +307,16 @@ movie_reviews
 We can also use this approach in a 'tidy' coding style:
 
 ```{r}
-library(dplyr)
+library(dplyr, warn.conflicts = FALSE)
 movie_reviews_annotated <- movie_reviews |>
   mutate(
-    sentiment = queries = make_query(
+    sentiment = make_query(
       text = review,
       prompt = "Categories: positive, neutral, negative",
       template = "{prefix}{text}\n{prompt}",
       system = "Classify the sentiment of the movie review. Answer with just the correct category.",
       prefix = "Text to classify: "
-    )  |>
+    ) |>
       query(screen = FALSE, output = "text")
   )
 movie_reviews_annotated

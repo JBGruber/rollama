@@ -167,21 +167,18 @@ q_thought <- tribble(
 output_thought <- query(q_thought, output = "text")
 #> 
 #> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────
-#> I would assign a **negative** sentiment to this text.
+#> I would assign a negative sentiment to this text.
 #> 
 #> Here's why:
 #> 
-#> * The word "terrible" is a strong adjective that implies a strongly
-#> unfavorable opinion. It suggests that the speaker has had a very poor
-#> experience with the pizza.
-#> * The tone of the sentence is direct and critical, implying that the
-#> speaker was not just mildly dissatisfied but actively disliked the
-#> pizza.
-#> * There's no nuance or mixed sentiment in this text; it's a
-#> straightforward expression of dislike.
+#> * The word "terrible" is a strong adjective that conveys a strong
+#> negative opinion.
+#> * The tone of the sentence is also quite critical and dismissive.
+#> * There are no positive or neutral phrases in the text, which
+#> suggests that the author has a clear dislike for the pizza.
 #> 
-#> Overall, the language and tone used suggest that the speaker had a
-#> very negative experience with the pizza.
+#> Overall, the language and tone used in this text indicate a strong
+#> negative sentiment towards the pizza.
 ```
 
 In the next step we can use the assistant's reasoning and a user prompt with the classification question.
@@ -267,15 +264,19 @@ q_os <- make_query(
   template = "{text}\n{prompt}",
   prompt = "Categories: positive, neutral, negative",
   system = "You assign texts into categories. Answer with just the correct category.",
+  example = examples_os,
 )
 print(q_os)
 #> [[1]]
-#> # A tibble: 2 × 2
-#>   role   content                                                      
-#>   <chr>  <glue>                                                       
-#> 1 system You assign texts into categories. Answer with just the corre…
-#> 2 user   the service is great
-#> Categories: positive, neutral, negative
+#> # A tibble: 4 × 2
+#>   role      content                                                   
+#>   <chr>     <glue>                                                    
+#> 1 system    You assign texts into categories. Answer with just the co…
+#> 2 user      the pizza tastes terrible
+#> Categories: positive, neutral, n…
+#> 3 assistant negative                                                  
+#> 4 user      the service is great
+#> Categories: positive, neutral, negati…
 
 query(q_os)
 #> 
@@ -388,23 +389,27 @@ We can also use this approach in a 'tidy' coding style:
 
 
 ``` r
-library(dplyr)
+library(dplyr, warn.conflicts = FALSE)
 movie_reviews_annotated <- movie_reviews |>
   mutate(
-    sentiment = queries = make_query(
+    sentiment = make_query(
       text = review,
       prompt = "Categories: positive, neutral, negative",
       template = "{prefix}{text}\n{prompt}",
       system = "Classify the sentiment of the movie review. Answer with just the correct category.",
       prefix = "Text to classify: "
-    )  |>
+    ) |>
       query(screen = FALSE, output = "text")
   )
 movie_reviews_annotated
-#> Error in parse(text = input): <text>:4:25: unexpected '='
-#> 3:   mutate(
-#> 4:     sentiment = queries =
-#>                            ^
+#> # A tibble: 5 × 4
+#>   review_id review                                annotation sentiment
+#>       <int> <chr>                                 <chr>      <chr>    
+#> 1         1 A stunning visual spectacle with a g… Positive   Positive 
+#> 2         2 The plot was predictable, but the ac… positive   positive 
+#> 3         3 An overrated film with underwhelming… Negative   Negative 
+#> 4         4 A beautiful tale of love and adventu… Positive   Positive 
+#> 5         5 The movie lacked depth, but the spec… Neutral    Neutral
 ```
 
 This takes a little longer than classic supervised machine learning or even classification with transformer models.
