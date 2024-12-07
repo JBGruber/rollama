@@ -185,8 +185,8 @@ prep_req_data <- function(tbl) {
   if (purrr::pluck_exists(tbl, "options")) {
     tbl$options <- purrr::map(tbl$option, jsonlite::unbox)
   }
-  purrr::map(tbl, function(x) {
-    if (!is.list(x)) {
+  purrr::modify_tree(tbl, leaf = function(x) {
+    if (length(x) == 1L) {
       jsonlite::unbox(x)
     } else {
       x
