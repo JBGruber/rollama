@@ -20,12 +20,12 @@ check_model_installed <- function(model,
                                   auto_pull = FALSE,
                                   server = getOption("rollama_server",
                                                      default = "http://localhost:11434")) {
+                                                      
+  model <- sub("^([^:]+)$", "\\1:latest", model)
   for (sv in server) {
     models_df <- list_models(server = sv)
     mdl <- setdiff(model, models_df[["name"]])
-    model_wo_vers <- gsub(":.*", "", models_df[["name"]])
-    mdl <- setdiff(mdl, model_wo_vers)
-
+    
     if (length(mdl) > 0L) {
       if (check_only) {
         return(invisible(FALSE))
