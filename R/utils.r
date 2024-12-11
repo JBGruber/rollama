@@ -113,3 +113,14 @@ check_conversation <- function(msg) {
                          "least one user message. See {.help query}."))
   return(msg)
 }
+
+throw_error <- function(fails) {
+  error_counts <- table(fails)
+  for (f in names(error_counts)) {
+    if (error_counts[f] > 2) {
+      cli::cli_alert_danger("error ({error_counts[f]} times): {f}")
+    } else {
+      cli::cli_alert_danger("error: {f}")
+    }
+  }
+}

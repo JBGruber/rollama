@@ -60,8 +60,7 @@ build_req <- function(model,
            template = template) |>
         purrr::compact() |> # remove NULL values
         make_req(server = sample(server, 1, prob = as_prob(names(server))),
-                 endpoint = "/api/chat",
-                 perform = FALSE)
+                 endpoint = "/api/chat")
     })
   }) |>
     unlist(recursive = FALSE)
@@ -70,21 +69,14 @@ build_req <- function(model,
 }
 
 
-make_req <- function(req_data, server, endpoint, perform = TRUE) {
+make_req <- function(req_data, server, endpoint) {
   r <- httr2::request(server) |>
     httr2::req_url_path_append(endpoint) |>
     httr2::req_body_json(prep_req_data(req_data), auto_unbox = FALSE) |>
-    # turn off errors since error messages can't be seen in sub-process
-    httr2::req_error(is_error = function(resp) FALSE) |>
     # see https://github.com/JBGruber/rollama/issues/23
     httr2::req_options(timeout_ms = 1000 * 60 * 60 * 24,
                        connecttimeout_ms = 1000 * 60 * 60 * 24) |>
     httr2::req_headers(!!!get_headers())
-  if (perform) {
-    r <- r |>
-      httr2::req_perform() |>
-      httr2::resp_body_json()
-  }
   return(r)
 }
 
@@ -117,17 +109,7 @@ perform_reqs <- function(reqs, verbose) {
   if (length(fails) == length(reqs)) {
     cli::cli_abort(fails)
   } else if (length(fails) < length(reqs) && length(fails) > 0) {
-    error_counts <- table(fails)
-    for (f in names(error_counts)) {
-      if (error_counts[f] > 2) {
-        cli::cli_alert_danger("error ({error_counts[f]} times): {f}")
-      } else {
-        cli::cli_alert_danger("error: {f}")
-      }
-    }
-    for (f in fails) {
-      cli::cli_alert_danger(f)
-    }
+    throw_error(fails)
   }
 
   httr2::resps_successes(resps)
@@ -143,15 +125,23 @@ perform_req <- function(reqs, verbose) {
     id <- cli::cli_progress_bar(format = "{cli::pb_spin} {model} {?is/are} thinking",
                                 clear = TRUE)
 
+    # turn off errors since error messages can't be seen in sub-process
+    req <- httr2::req_error(reqs[[1]], is_error = function(resp) FALSE)
+
     rp <- callr::r_bg(httr2::req_perform,
-                      args = list(req = reqs[[1]]),
+                      args = list(req = req),
                       package = TRUE)
 
     while (rp$is_alive()) {
       cli::cli_progress_update(id = id)
       Sys.sleep(2 / 100)
     }
-    return(list(rp$get_result()))
+    resp <- rp$get_result()
+    res <- httr2::resp_body_json(resp)
+    if (purrr::pluck_exists(res, "error")) {
+      cli::cli_abort(purrr::pluck(res, "error"))
+    }
+    return(list(res))
   }
 
   list(httr2::req_perform(reqs[[1]]))
@@ -207,7 +197,6 @@ pgrs <- function(resp) {
     jsonlite::stream_in(verbose = FALSE, simplifyVector = FALSE)
 
   status <- setdiff(status, the$str_prgs$pb_done)
-
   for (s in status) {
     status_message <- purrr::pluck(s, "status")
     if (!purrr::pluck_exists(s, "total")) {

@@ -49,8 +49,7 @@ embed_text <- function(text,
          model_params = model_params) |>
       purrr::compact() |>
       make_req(server = server,
-               endpoint = "/api/embeddings",
-               perform = FALSE)
+               endpoint = "/api/embeddings")
   })
 
   resps <- httr2::req_perform_parallel(reqs, progress = pb)

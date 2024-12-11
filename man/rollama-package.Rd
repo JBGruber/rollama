@@ -4,7 +4,7 @@
 \name{rollama-package}
 \alias{rollama}
 \alias{rollama-package}
-\title{rollama: Communicate with 'Ollama' to run large language models locally}
+\title{rollama: Communicate with 'Ollama' to Run Large Language Models Locally}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
 

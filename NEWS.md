@@ -1,5 +1,7 @@
 # rollama (development version)
 
+* added support for structured output
+
 # rollama 0.2.0
 
 * added make_query() function to facilitate easier annotation
