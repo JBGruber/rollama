@@ -214,11 +214,12 @@ pgrs <- function(resp) {
       the$str_prgs$done_pct <-
         paste(round(the$str_prgs$done / the$str_prgs$total * 100, 0), "%")
       if (the$str_prgs$done != the$str_prgs$total) {
-        the$str_prgs$speed <-
+        the$str_prgs$speed <- try(as.integer(
           the$str_prgs$done /
-          (as.integer(Sys.time()) - as.integer(the$str_prgs$pb_start))
-        if (is.numeric(the$str_prgs$speed))
-          the$str_prgs$speed <- prettyunits::pretty_bytes(the$str_prgs$speed)
+            (as.integer(Sys.time()) - as.integer(the$str_prgs$pb_start))
+        ), silent = TRUE)
+        if (methods::is(the$str_prgs$speed, "try-error"))
+          the$str_prgs$speed <- 0L
       } else {
         the$str_prgs$speed <- 1L
       }
@@ -230,7 +231,7 @@ pgrs <- function(resp) {
           format = paste0(
             "{cli::pb_spin} downloading {str_prgs$f} ",
             "({str_prgs$done_pct} of {prettyunits::pretty_bytes(str_prgs$total)}) ",
-            "at {str_prgs$speed}/s"
+            "at {prettyunits::pretty_bytes(str_prgs$speed)}/s"
           ),
           format_done = paste0(
             "{cli::col_green(cli::symbol$tick)} downloaded {str_prgs$f}"
