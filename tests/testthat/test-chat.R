@@ -69,3 +69,19 @@ test_that("Test output parameter", {
     c("model", "role", "response")
   )
 })
+
+test_that("Test seed", {
+  skip_if_not(ping_ollama(silent = TRUE))
+  snapshot <- query("test", model_params = list(seed = 42), output = "text")
+  expect_equal(query("test", model_params = list(seed = 42), output = "text"),
+               snapshot)
+  expect_equal({
+    withr::with_options(list(rollama_seed = 42),
+                        query("test", output = "text"))
+  }, snapshot)
+  # different seed, different result
+  expect_false(isTRUE(all.equal(
+    query("test", model_params = list(seed = 1), output = "text"),
+    snapshot
+  )))
+})
