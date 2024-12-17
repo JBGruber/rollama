@@ -1,6 +1,7 @@
 test_that("Test query", {
   skip_if_not(ping_ollama(silent = TRUE))
   expect_message(query("test"), ".")
+  expect_message(query("test", verbose = TRUE), ".")
 })
 
 test_that("Test chat", {

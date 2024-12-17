@@ -42,5 +42,5 @@ test_that("delete model", {
 test_that("model missing", {
   skip_if_not(ping_ollama(silent = TRUE))
   expect_error(check_model_installed("NOMODEL"),
-               "Model NOMODEL not installed.")
+               "Model.NOMODEL:latest.not.installed.")
 })

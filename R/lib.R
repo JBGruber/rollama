@@ -141,7 +141,7 @@ perform_req <- function(reqs, verbose) {
     if (purrr::pluck_exists(res, "error")) {
       cli::cli_abort(purrr::pluck(res, "error"))
     }
-    return(list(res))
+    return(list(resp))
   }
 
   list(httr2::req_perform(reqs[[1]]))
