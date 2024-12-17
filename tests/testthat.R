@@ -8,5 +8,4 @@
 
 library(testthat)
 library(rollama)
-options(rollama_server = "http://192.168.2.29:11434")
 test_check("rollama")
