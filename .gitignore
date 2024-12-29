@@ -14,3 +14,4 @@ docker-compose.yml
 paper/paper.jats
 paper/paper.pdf
 paper/paper_files
+load-experiments.R
