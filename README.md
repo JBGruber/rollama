@@ -31,7 +31,7 @@ install.packages("rollama")
 
 Or you can install the development version of `rollama` from
 [GitHub](https://github.com/JBGruber/rollama). This version is updated
-more frequently and may contain bug fixes:
+more frequently and may contain bug fixes (or new bugs):
 
 ``` r
 # install.packages("remotes")
