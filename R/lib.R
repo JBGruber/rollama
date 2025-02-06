@@ -40,7 +40,8 @@ build_req <- function(model,
                       images,
                       model_params,
                       format,
-                      template) {
+                      template,
+                      endpoint) {
 
   if (is.null(model)) model <- getOption("rollama_model", default = "llama3.1")
   if (is.null(server)) server <- getOption("rollama_server",
@@ -49,7 +50,9 @@ build_req <- function(model,
   if (!is.null(seed) && !purrr::pluck_exists(model_params, "seed")) {
     model_params <- append(model_params, list(seed = seed))
   }
-  check_model_installed(model, server = server)
+  if (endpoint == "/api/chat") {
+    check_model_installed(model, server = server)
+  }
   req_data <- purrr::map(msg, function(ms) {
     purrr::map(model, function(m) {
       list(model = m,
@@ -60,7 +63,7 @@ build_req <- function(model,
            template = template) |>
         purrr::compact() |> # remove NULL values
         make_req(server = sample(server, 1, prob = as_prob(names(server))),
-                 endpoint = "/api/chat")
+                 endpoint = endpoint)
     })
   }) |>
     unlist(recursive = FALSE)

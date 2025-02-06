@@ -43,6 +43,8 @@
 #'   value is `"json"`.
 #' @param template the prompt template to use (overrides what is defined in the
 #'   Modelfile).
+#' @param endpoint should be left as default for Ollama, only matters for
+#'   different servers (like Open WebUI).
 #' @param verbose Whether to print status messages to the Console
 #'   (`TRUE`/`FALSE`). The default is to have status messages in
 #'   interactive sessions. Can be changed with `options(rollama_verbose =
@@ -137,6 +139,7 @@ query <- function(q,
                   output = c("response", "text", "list", "data.frame", "httr2_response", "httr2_request"),
                   format = NULL,
                   template = NULL,
+                  endpoint = "/api/chat",
                   verbose = getOption("rollama_verbose",
                                       default = interactive())) {
 
@@ -170,7 +173,8 @@ query <- function(q,
                     images = images,
                     model_params = model_params,
                     format = format,
-                    template = template)
+                    template = template,
+                    endpoint = endpoint)
 
   if (output == "httr2_request") return(invisible(reqs))
 
@@ -182,7 +186,7 @@ query <- function(q,
 
   res <- NULL
   if (screen) {
-    res <- purrr::map(resps, httr2::resp_body_json)
+    res <- purrr::map(resps, resp_body)
     purrr::walk(res, function(r) {
       screen_answer(purrr::pluck(r, "message", "content"),
                     purrr::pluck(r, "model"))
@@ -192,7 +196,7 @@ query <- function(q,
   if (output == "httr2_response") return(invisible(resps))
 
   if (is.null(res)) {
-    res <- purrr::map(resps, httr2::resp_body_json)
+    res <- purrr::map(res, resp_body)
   }
 
   out <- switch(output,

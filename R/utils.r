@@ -124,3 +124,13 @@ throw_error <- function(fails) {
     }
   }
 }
+
+
+resp_body <- function(r) {
+  r <- httr2::resp_body_json(r)
+  # for Open WebUI
+  if (purrr::pluck_exists(r, "choices")) {
+    r$message <- r[["choices"]][[1]][["message"]]
+  }
+  return(r)
+}
