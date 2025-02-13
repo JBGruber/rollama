@@ -49,7 +49,8 @@ pull_model <- function(model = NULL,
   the$str_prgs <- NULL
   req <- httr2::request(server) |>
     httr2::req_url_path_append("/api/pull") |>
-    httr2::req_body_json(list(name = model, insecure = insecure))
+    httr2::req_body_json(list(name = model, insecure = insecure)) |>
+    httr2::req_headers(!!!get_headers())
   if (verbose) {
     httr2::req_perform_stream(req, callback = pgrs, buffer_kb = 0.1)
     cli::cli_process_done(.envir = the)
@@ -76,6 +77,7 @@ show_model <- function(model = NULL, server = NULL) {
     httr2::req_url_path_append("/api/show") |>
     httr2::req_body_json(list(name = model)) |>
     httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
+    httr2::req_headers(!!!get_headers()) |>
     httr2::req_perform() |>
     httr2::resp_body_json() |>
     purrr::list_flatten(name_spec = "{inner}") |>
@@ -123,6 +125,7 @@ create_model <- function(model, modelfile, server = NULL) {
     httr2::req_url_path_append("/api/create") |>
     httr2::req_method("POST") |>
     httr2::req_body_json(list(name = model, modelfile = modelfile)) |>
+    httr2::req_headers(!!!get_headers()) |>
     httr2::req_perform_stream(callback = pgrs, buffer_kb = 0.1)
 
   cli::cli_process_done(.envir = the)
@@ -146,6 +149,7 @@ delete_model <- function(model, server = NULL) {
     httr2::req_method("DELETE") |>
     httr2::req_body_json(list(name = model)) |>
     httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
+    httr2::req_headers(!!!get_headers()) |>
     httr2::req_perform()
 
   cli::cli_alert_success("model {model} removed")
@@ -166,6 +170,7 @@ copy_model <- function(model,
     httr2::req_body_json(list(source = model,
                               destination = destination)) |>
     httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
+    httr2::req_headers(!!!get_headers()) |>
     httr2::req_perform()
 
   cli::cli_alert_success("model {model} copied to {destination}")
@@ -185,6 +190,7 @@ list_models <- function(server = NULL) {
 
   httr2::request(server) |>
     httr2::req_url_path_append("/api/tags") |>
+    httr2::req_headers(!!!get_headers()) |>
     httr2::req_perform() |>
     httr2::resp_body_json() |>
     purrr::pluck("models") |>
