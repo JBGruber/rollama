@@ -144,7 +144,11 @@ perform_req <- function(reqs, verbose) {
     return(list(resp))
   }
 
-  list(httr2::req_perform(reqs[[1]]))
+  reqs[[1]] |>
+    httr2::req_error(body = function(resp) httr2::resp_body_json(resp) |>
+                       purrr::pluck("error", .default = "unknown error")) |>
+    httr2::req_perform() |>
+    list()
 }
 
 
