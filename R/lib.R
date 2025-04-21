@@ -1,16 +1,17 @@
 #' Ping server to see if Ollama is reachable
 #'
 #' @param silent suppress warnings and status (only return `TRUE`/`FALSE`).
+#' @param version return version instead of `TRUE`.
 #' @inheritParams query
 #'
 #' @return TRUE if server is running
 #' @export
-ping_ollama <- function(server = NULL, silent = FALSE) {
+ping_ollama <- function(server = NULL, silent = FALSE, version = FALSE) {
 
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
 
-  out <- purrr::map_lgl(server, function(sv) {
+  out <- purrr::map(server, function(sv) {
     res <- try({
       httr2::request(sv) |>
         httr2::req_url_path("api/version") |>
@@ -22,6 +23,7 @@ ping_ollama <- function(server = NULL, silent = FALSE) {
       if (!silent) cli::cli_inform(
         "{cli::col_green(cli::symbol$play)} Ollama (v{res$version}) is running at {.url {sv}}!"
       )
+      if (version) return(res$version)
       return(TRUE)
     } else {
       if (!silent) {
@@ -30,7 +32,7 @@ ping_ollama <- function(server = NULL, silent = FALSE) {
       return(FALSE)
     }
   })
-  invisible(all(out))
+  invisible(unlist(out))
 }
 
 
