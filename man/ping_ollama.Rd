@@ -4,13 +4,15 @@
 \alias{ping_ollama}
 \title{Ping server to see if Ollama is reachable}
 \usage{
-ping_ollama(server = NULL, silent = FALSE)
+ping_ollama(server = NULL, silent = FALSE, version = FALSE)
 }
 \arguments{
 \item{server}{URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".}
 
 \item{silent}{suppress warnings and status (only return \code{TRUE}/\code{FALSE}).}
+
+\item{version}{return version instead of \code{TRUE}.}
 }
 \value{
 TRUE if server is running
