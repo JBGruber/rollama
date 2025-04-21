@@ -20,6 +20,8 @@
 #'   - `httr2_request`: httr2_request objects in a list, in case you want to run
 #'      them with [httr2::req_perform()], [httr2::req_perform_sequential()], or
 #'      [httr2::req_perform_parallel()] yourself.
+#'   - a custom function that takes the `httr2_response`(s) from the Ollama
+#'      server as an input.
 #'
 #'
 #' @param q the question as a character string or a conversation object.
@@ -38,7 +40,7 @@
 #'   reproducible results (see examples).
 #' @param output what the function should return. Possible values are
 #'   "response", "text", "list", "data.frame", "httr2_response" or
-#'   "httr2_request" see details.
+#'   "httr2_request" or a function see details.
 #' @param format the format to return a response in. Currently the only accepted
 #'   value is `"json"`.
 #' @param template the prompt template to use (overrides what is defined in the
@@ -52,7 +54,7 @@
 #' @export
 #'
 #' @examplesIf interactive()
-#' #' # ask a single question
+#' # ask a single question
 #' query("why is the sky blue?")
 #'
 #' # hold a conversation
@@ -65,6 +67,16 @@
 #'
 #' # or just get the answer directly
 #' answer <- query(q = "why is the sky blue?", output = "text")
+#'
+#' # besides the other output options, you can also supply a custom function
+#' query_duration <- function(resp) {
+#' nanosec <- purrr::map(resp, httr2::resp_body_json) |>
+#'   purrr::map_dbl("total_duration")
+#'   round(nanosec * 1e-9, digits = 2)
+#' }
+#' # this function only returns the number of seconds a request took
+#' res <- query("why is the sky blue?", output = query_duration)
+#' res
 #'
 #' # ask question about images (to a multimodal model)
 #' images <- c("https://avatars.githubusercontent.com/u/23524101?v=4", # remote
@@ -139,8 +151,9 @@ query <- function(q,
                   template = NULL,
                   verbose = getOption("rollama_verbose",
                                       default = interactive())) {
-
-  output <- match.arg(output)
+  if (!is.function(output)) {
+    output <- match.arg(output)
+  }
 
   # q can be a string, a data.frame, or list of data.frames
   if (is.character(q)) {
@@ -172,7 +185,7 @@ query <- function(q,
                     format = format,
                     template = template)
 
-  if (output == "httr2_request") return(invisible(reqs))
+  if (identical(output, "httr2_request")) return(invisible(reqs))
 
   if (length(reqs) > 1L) {
     resps <- perform_reqs(reqs, verbose)
@@ -189,7 +202,11 @@ query <- function(q,
     })
   }
 
-  if (output == "httr2_response") return(invisible(resps))
+  if (is.function(output)) {
+    return(invisible(output(resps)))
+  }
+
+  if (identical(output, "httr2_response")) return(invisible(resps))
 
   if (is.null(res)) {
     res <- purrr::map(resps, httr2::resp_body_json)
