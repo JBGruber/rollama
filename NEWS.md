@@ -1,6 +1,9 @@
 # rollama (development version)
 
 * added support for structured output
+* added support for custom headers (e.g., for authentication)
+* added option for custom outputs
+* some bug fixes and improved documentation
 
 # rollama 0.2.0
 
