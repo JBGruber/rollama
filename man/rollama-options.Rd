@@ -33,6 +33,13 @@ The default configuration or system message. If NULL, the system message
 defined in the used model is employed.
 \item{default:}{None}
 }}
+\item{rollama_seed}{\describe{
+As long as the seed stays the same, the
+models will give the same answer, changing the seed leads to a different
+answer. Per default, no seed is set and each call to \code{query()} or
+\code{chat()} will give you a different answer.
+\item{default:}{None}
+}}
 }
 }
 \examples{
