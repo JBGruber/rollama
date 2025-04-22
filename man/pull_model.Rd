@@ -30,9 +30,10 @@ in \code{delete_model}).}
 \item{insecure}{allow insecure connections to the library. Only use this if
 you are pulling from your own library during development.}
 
-\item{verbose}{Whether to print status messages to the Console
-(\code{TRUE}/\code{FALSE}). The default is to have status messages in
-interactive sessions. Can be changed with \code{options(rollama_verbose = FALSE)}.}
+\item{verbose}{Whether to print status messages to the Console. Either
+\code{TRUE}/\code{FALSE} or see \link[httr2:progress_bars]{httr2::progress_bars}. The default is to have status
+messages in interactive sessions. Can be changed with
+\code{options(rollama_verbose = FALSE)}.}
 
 \item{destination}{name of the copied model.}
 }

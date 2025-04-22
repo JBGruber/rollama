@@ -45,10 +45,10 @@
 #'   value is `"json"`.
 #' @param template the prompt template to use (overrides what is defined in the
 #'   Modelfile).
-#' @param verbose Whether to print status messages to the Console
-#'   (`TRUE`/`FALSE`). The default is to have status messages in
-#'   interactive sessions. Can be changed with `options(rollama_verbose =
-#'   FALSE)`.
+#' @param verbose Whether to print status messages to the Console. Either
+#'   `TRUE`/`FALSE` or see [httr2::progress_bars]. The default is to have status
+#'   messages in interactive sessions. Can be changed with
+#'   `options(rollama_verbose = FALSE)`.
 #'
 #' @return list of objects set in output parameter.
 #' @export

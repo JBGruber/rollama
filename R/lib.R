@@ -115,11 +115,14 @@ perform_reqs <- function(reqs, verbose) {
   model <- purrr::map_chr(reqs, c("body", "data", "model")) |>
     unique()
   pb <- FALSE
-  if (verbose) {
+  if (!is.logical(verbose)) {
+    pb <- verbose
+  } else if (verbose) {
     pb <- list(
       clear = TRUE,
       format = c("{cli::pb_spin} {getOption('model')} {?is/are} thinking about ",
-                 "{cli::pb_total - cli::pb_current}/{cli::pb_total} question{?s}")
+                 "{cli::pb_total - cli::pb_current}/{cli::pb_total} question{?s}",
+                 "[ETA: {cli::pb_eta}]")
     )
   }
 
