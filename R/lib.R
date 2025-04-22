@@ -52,20 +52,47 @@ build_req <- function(model,
     model_params <- append(model_params, list(seed = seed))
   }
   check_model_installed(model, server = server)
-  req_data <- purrr::map(msg, function(ms) {
-    purrr::map(model, function(m) {
-      list(model = m,
-           messages = ms,
-           stream = FALSE,
-           options = model_params,
-           format = format,
-           template = template) |>
+  if (length(msg) != length(model)) {
+    if (length(model) > 1L)
+      cli::cli_alert_info(c(
+        "The number of queries is unequal to the number of models you supplied.",
+        "We assume you want to run each query with each model"
+      ))
+    req_data <- purrr::map(msg, function(ms) {
+      purrr::map(model, function(m) {
+        list(
+          model = m,
+          messages = ms,
+          stream = FALSE,
+          options = model_params,
+          format = format,
+          template = template
+        ) |>
+          purrr::compact() |> # remove NULL values
+          make_req(
+            server = sample(server, 1, prob = as_prob(names(server))),
+            endpoint = "/api/chat"
+          )
+      })
+    }) |>
+      unlist(recursive = FALSE)
+  } else {
+    req_data <- purrr::map2(msg, model, function(ms, m) {
+      list(
+        model = m,
+        messages = ms,
+        stream = FALSE,
+        options = model_params,
+        format = format,
+        template = template
+      ) |>
         purrr::compact() |> # remove NULL values
-        make_req(server = sample(server, 1, prob = as_prob(names(server))),
-                 endpoint = "/api/chat")
+        make_req(
+          server = sample(server, 1, prob = as_prob(names(server))),
+          endpoint = "/api/chat"
+        )
     })
-  }) |>
-    unlist(recursive = FALSE)
+  }
 
   return(req_data)
 }
