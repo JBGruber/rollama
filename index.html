@@ -78,7 +78,7 @@
 <p>However, <code>rollama</code> is just the client package. The models are run in <code>Ollama</code>, which you need to install on your system, on a remote system or through <a href="https://docs.docker.com/desktop/" class="external-link">Docker</a>. The easiest way is to simply download and install the Ollama application from <a href="https://ollama.com/" class="external-link">their website</a>. Once <code>Ollama</code> is running, you can see if you can access it with:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">rollama</span><span class="fu">::</span><span class="fu"><a href="reference/ping_ollama.html">ping_ollama</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ▶ Ollama (v0.5.1) is running at &lt;http://localhost:11434&gt;!</span></span></code></pre></div>
+<span><span class="co">#&gt; ▶ Ollama (v0.6.1) is running at &lt;http://localhost:11434&gt;!</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="installation-of-ollama-through-docker">Installation of Ollama through Docker<a class="anchor" aria-label="anchor" href="#installation-of-ollama-through-docker"></a>
 </h3>
@@ -101,9 +101,8 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.1 ────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, in</span></span>
-<span><span class="co">#&gt; which shorter wavelengths of light (like blue and violet) are scattered by tiny</span></span>
-<span><span class="co">#&gt; molecules of gases in the atmosphere more than longer wavelengths (like red and</span></span>
-<span><span class="co">#&gt; orange), giving the sky its blue color.</span></span></code></pre></div>
+<span><span class="co">#&gt; which shorter (blue) wavelengths of light are scattered more than longer (red)</span></span>
+<span><span class="co">#&gt; wavelengths by the tiny molecules of gases in the Earth's atmosphere.</span></span></code></pre></div>
 <p>With the output argument, we can specify the format of the response. Available options include “text”, “list”, “data.frame”, “response”, “httr2_response”, and “httr2_request”:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># ask a single question and specify the output format</span></span>
@@ -111,9 +110,8 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.1 ────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, in</span></span>
-<span><span class="co">#&gt; which sunlight interacts with tiny molecules of gases like nitrogen and oxygen</span></span>
-<span><span class="co">#&gt; in the Earth's atmosphere, scattering shorter (blue) wavelengths more than</span></span>
-<span><span class="co">#&gt; longer (red) ones.</span></span></code></pre></div>
+<span><span class="co">#&gt; which shorter (blue) wavelengths of light are scattered more than longer (red)</span></span>
+<span><span class="co">#&gt; wavelengths by the tiny molecules of gases in the Earth's atmosphere.</span></span></code></pre></div>
 <p>Or you can use the <code>chat</code> function, treats all messages sent during an R session as part of the same conversation:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># hold a conversation</span></span>
@@ -121,17 +119,18 @@
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.1 ────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, where</span></span>
-<span><span class="co">#&gt; sunlight scatters shorter (blue) wavelengths more than longer (red) wavelengths</span></span>
-<span><span class="co">#&gt; as it passes through the Earth's atmosphere. This scattering effect makes the</span></span>
-<span><span class="co">#&gt; blue light visible to our eyes, giving the sky its characteristic blue color.</span></span>
+<span><span class="co">#&gt; shorter (blue) wavelengths of light are scattered more than longer (red)</span></span>
+<span><span class="co">#&gt; wavelengths by the tiny molecules of gases in the atmosphere. This scattering</span></span>
+<span><span class="co">#&gt; effect gives our sky its distinctive blue color during the daytime.</span></span>
 <span><span class="fu"><a href="reference/query.html">chat</a></span><span class="op">(</span><span class="st">"And how do you know that? Give a short answer."</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.1 ────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; I was trained on vast amounts of text data from various sources, including</span></span>
-<span><span class="co">#&gt; scientific literature, educational resources, and online articles, which</span></span>
-<span><span class="co">#&gt; provided explanations for phenomena like Rayleigh scattering and the color of</span></span>
-<span><span class="co">#&gt; the sky. This information is widely accepted and supported by experts in the</span></span>
-<span><span class="co">#&gt; fields of physics and astronomy.</span></span></code></pre></div>
+<span><span class="co">#&gt; I was trained on a vast amount of scientific knowledge and data, including</span></span>
+<span><span class="co">#&gt; information from various fields like physics, atmospheric science, and</span></span>
+<span><span class="co">#&gt; astronomy. Additionally, I've been fine-tuned to recognize and recall reliable</span></span>
+<span><span class="co">#&gt; sources, such as NASA, the Royal Society, and other reputable institutions that</span></span>
+<span><span class="co">#&gt; explain the phenomenon of Rayleigh scattering and its effect on the sky's</span></span>
+<span><span class="co">#&gt; color.</span></span></code></pre></div>
 <p>If you are done with a conversation and want to start a new one, you can do that like so:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/chat_history.html">new_chat</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -150,7 +149,7 @@
 <span><span class="co">#&gt; ── Answer from llama3.1 ────────────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, in</span></span>
 <span><span class="co">#&gt; which shorter (blue) wavelengths of light are scattered more than longer (red)</span></span>
-<span><span class="co">#&gt; wavelengths by the tiny molecules of gases in the atmosphere.</span></span></code></pre></div>
+<span><span class="co">#&gt; wavelengths by the tiny molecules of gases in the Earth's atmosphere.</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a>
@@ -164,9 +163,10 @@
 <span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="st">"Why is the sky blue?"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.1 ────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; The sky looks blue because of tiny particles in the air that bend light towards</span></span>
-<span><span class="co">#&gt; blue. It's like when you see a big blue swimming pool and it looks super cool,</span></span>
-<span><span class="co">#&gt; but with the whole sky being blue! Isn't that awesome?</span></span></code></pre></div>
+<span><span class="co">#&gt; The sky looks blue because of tiny particles in the air that bounce sunlight</span></span>
+<span><span class="co">#&gt; around. Imagine throwing a ball off a cliff and watching it bounce on the</span></span>
+<span><span class="co">#&gt; ground - the light from the sun does the same thing with these tiny particles,</span></span>
+<span><span class="co">#&gt; making it look blue!</span></span></code></pre></div>
 <p>By default, the package uses the “llama3.1 8B” model. Supported models can be found at <a href="https://ollama.com/library" class="external-link uri">https://ollama.com/library</a>. To download a specific model make use of the additional information available in “Tags” <a href="https://ollama.com/library/llama3.2/tags" class="external-link uri">https://ollama.com/library/llama3.2/tags</a>. Change this via <code>rollama_model</code>:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>rollama_model <span class="op">=</span> <span class="st">"llama3.2:3b-instruct-q4_1"</span><span class="op">)</span></span>
@@ -174,8 +174,8 @@
 <span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="st">"Why is the sky blue? Answer with one sentence."</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q4_1 ───────────────────────────────────────</span></span>
-<span><span class="co">#&gt; The sky looks blue because when sunlight comes into our world, it bounces off</span></span>
-<span><span class="co">#&gt; tiny things in the air and makes our eyes see that color!</span></span></code></pre></div>
+<span><span class="co">#&gt; The Earth's sky looks blue because of something called light, which bounces off</span></span>
+<span><span class="co">#&gt; tiny things in the air and comes back to us as blue!</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="easy-query-generation">Easy query generation<a class="anchor" aria-label="anchor" href="#easy-query-generation"></a>
@@ -214,7 +214,7 @@ In this example, the function is used without examples:</p>
 <span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="va">q_zs</span>, output <span class="op">=</span> <span class="st">"text"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q4_1 ───────────────────────────────────────</span></span>
-<span><span class="co">#&gt; negative</span></span></code></pre></div>
+<span><span class="co">#&gt; Negative</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="learn-more">Learn more<a class="anchor" aria-label="anchor" href="#learn-more"></a>
