@@ -262,7 +262,7 @@ pgrs <- function(resp) {
 
       if (!isTRUE(the$str_prgs$pb == the$str_prgs$f)) {
         # format outside glue statement to get rid of NOTE in R CMD check
-        total_pretty <- prettyunits::pretty_bytes(str_prgs$total)
+        total_pretty <- prettyunits::pretty_bytes(the$str_prgs$total)
         cli::cli_progress_bar(
           name = the$str_prgs$f,
           type = "download",
