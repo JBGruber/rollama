@@ -1,4 +1,4 @@
-# rollama (development version)
+# rollama 0.2.2
 
 # rollama 0.2.1
 
