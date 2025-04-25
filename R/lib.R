@@ -261,15 +261,13 @@ pgrs <- function(resp) {
       }
 
       if (!isTRUE(the$str_prgs$pb == the$str_prgs$f)) {
-        # format outside glue statement to get rid of NOTE in R CMD check
-        total_pretty <- prettyunits::pretty_bytes(the$str_prgs$total)
         cli::cli_progress_bar(
           name = the$str_prgs$f,
           type = "download",
           format = paste0(
             "{cli::pb_spin} downloading {str_prgs$f} ",
-            "({str_prgs$done_pct} of {total_pretty)}) ",
-            "at {prettyunits::pretty_bytes(str_prgs$speed}/s"
+            "({str_prgs$done_pct} of {prettyunits::pretty_bytes(str_prgs$total)}) ",
+            "at {prettyunits::pretty_bytes(str_prgs$speed)}/s"
           ),
           format_done = paste0(
             "{cli::col_green(cli::symbol$tick)} downloaded {str_prgs$f}"

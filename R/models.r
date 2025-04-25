@@ -57,7 +57,13 @@ pull_model <- function(model = NULL,
   } else {
     httr2::req_perform(req)
   }
-  cli::cli_alert_success("model {model} pulled succesfully")
+  total <- try(as.integer(the$str_prgs$total), silent = TRUE)
+  if (methods::is(total, "try-error")) {
+    cli::cli_alert_success("model {model} pulled succesfully")
+  } else {
+    total <- prettyunits::pretty_bytes(total)
+    cli::cli_alert_success("model {model} ({total}) pulled succesfully")
+  }
   the$str_prgs <- NULL
 
   invisible(show_model(model))
