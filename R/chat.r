@@ -45,6 +45,8 @@
 #'   value is `"json"`.
 #' @param template the prompt template to use (overrides what is defined in the
 #'   Modelfile).
+#' @param engine which service serves the model. See details for possible
+#'   options.
 #' @param verbose Whether to print status messages to the Console. Either
 #'   `TRUE`/`FALSE` or see [httr2::progress_bars]. The default is to have status
 #'   messages in interactive sessions. Can be changed with
@@ -149,11 +151,18 @@ query <- function(q,
                   output = c("response", "text", "list", "data.frame", "httr2_response", "httr2_request"),
                   format = NULL,
                   template = NULL,
+                  engine = "Ollama",
                   verbose = getOption("rollama_verbose",
                                       default = interactive())) {
   if (!is.function(output)) {
     output <- match.arg(output)
   }
+
+  switch (
+    tolower(engine),
+    ollama = ping_ollama(),
+    openai = check_auth_openai()
+  )
 
   # q can be a string, a data.frame, or list of data.frames
   if (is.character(q)) {
@@ -177,13 +186,18 @@ query <- function(q,
     msg <- purrr::map(q, check_conversation)
   }
 
-  reqs <- build_req(model = model,
-                    msg = msg,
-                    server = server,
-                    images = images,
-                    model_params = model_params,
-                    format = format,
-                    template = template)
+  req_fun <- switch (
+    tolower(engine),
+    ollama = build_req_ollama
+  )
+
+  reqs <- req_fun(model = model,
+                  msg = msg,
+                  server = server,
+                  images = images,
+                  model_params = model_params,
+                  format = format,
+                  template = template)
 
   if (identical(output, "httr2_request")) return(invisible(reqs))
 
@@ -194,10 +208,19 @@ query <- function(q,
   }
 
   res <- NULL
+  message_path <- switch (
+    tolower(engine),
+    ollama = c("message", "content")
+  )
+
   if (screen) {
+    screen_fun <- switch (
+      tolower(engine),
+      ollama = screen_ollama
+    )
     res <- purrr::map(resps, httr2::resp_body_json)
     purrr::walk(res, function(r) {
-      screen_answer(purrr::pluck(r, "message", "content"),
+      screen_answer(purrr::pluck(r, message_path),
                     purrr::pluck(r, "model"))
     })
   }
@@ -214,9 +237,9 @@ query <- function(q,
 
   out <- switch(output,
                 "response" = res,
-                "text" = purrr::map_chr(res, c("message", "content")),
-                "list" = process2list(res, reqs),
-                "data.frame" = process2df(res)
+                "text" = purrr::map_chr(res, message_path),
+                "list" = process2list(res, reqs, engine),
+                "data.frame" = process2df(res, message_path)
   )
   invisible(out)
 }

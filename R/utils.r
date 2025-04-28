@@ -54,30 +54,25 @@ check_model_installed <- function(model,
 
 
 # process responses to list
-process2list <- function(resps, reqs) {
-  purrr::map2(resps, reqs, function(resp, req) {
-    list(
-      request = list(
-        model = purrr::pluck(req, "body", "data", "model"),
-        role = purrr::pluck(req, "body", "data", "messages", "role"),
-        message = purrr::pluck(req, "body", "data", "messages", "content")
-      ),
-      response = list(
-        model = purrr::pluck(resp, "model"),
-        role = purrr::pluck(resp, "message", "role"),
-        message = purrr::pluck(resp, "message", "content")
-      )
-    )
-  })
+process2list <- function(resps, reqs, engine) {
+  process_fun <-   req_fun <- switch (
+    tolower(engine),
+    ollama = processitem2list_ollama
+  )
+  purrr::map2(resps, reqs, process_fun)
 }
 
 
 # process responses to data.frame
-process2df <- function(resps) {
+process2df <- function(resps, message_path, engine) {
+  role_path <- switch (
+    tolower(engine),
+    ollama = c("message", "role")
+  )
   tibble::tibble(
     model = purrr::map_chr(resps, "model"),
-    role = purrr::map_chr(resps, c("message", "role")),
-    response = purrr::map_chr(resps, c("message", "content"))
+    role = purrr::map_chr(resps, role_path),
+    response = purrr::map_chr(resps, message_path)
   )
 }
 

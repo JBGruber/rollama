@@ -48,8 +48,8 @@ embed_text <- function(text,
          stream = FALSE,
          model_params = model_params) |>
       purrr::compact() |>
-      make_req(server = server,
-               endpoint = "/api/embeddings")
+      make_req_ollama(server = server,
+                      endpoint = "/api/embeddings")
   })
 
   resps <- httr2::req_perform_parallel(reqs, progress = pb)

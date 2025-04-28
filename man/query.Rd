@@ -15,6 +15,7 @@ query(
   output = c("response", "text", "list", "data.frame", "httr2_response", "httr2_request"),
   format = NULL,
   template = NULL,
+  engine = "Ollama",
   verbose = getOption("rollama_verbose", default = interactive())
 )
 
@@ -58,6 +59,9 @@ value is \code{"json"}.}
 
 \item{template}{the prompt template to use (overrides what is defined in the
 Modelfile).}
+
+\item{engine}{which service serves the model. See details for possible
+options.}
 
 \item{verbose}{Whether to print status messages to the Console. Either
 \code{TRUE}/\code{FALSE} or see \link[httr2:progress_bars]{httr2::progress_bars}. The default is to have status
