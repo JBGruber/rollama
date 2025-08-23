@@ -1,0 +1,178 @@
+---
+title: "authentication"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{authentication}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  eval = FALSE,
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+You can use rollama with services that offer a Ollama-compatible API (e.g., [Ollama Turbo](https://ollama.com/turbo) or [Open WebUI](https://openwebui.com/)).
+The only difference to using Ollama directly is that you have to authenticate to use these services, which you can do by adding your token to requests as shown below.
+
+## Ollama Turbo Example
+
+To use [Ollama Turbo](https://ollama.com/turbo), you have to set the `rollama_server` option to `https://ollama.com` and provide your api key as a header:
+
+```{r}
+library(rollama)
+Sys.setenv(api_key = "<REDACTED>")
+options(
+  rollama_server = "https://ollama.com",
+  rollama_headers = list(
+    Authorization = paste("Bearer", Sys.getenv("api_key"))
+  )
+)
+chat(q = "Why is the sky blue?", model = "gpt-oss:120b")
+#> 
+#> ── Answer from gpt-oss:120b ────────────────────────────────────────────────────
+#> The sky looks blue because of a phenomenon called **Rayleigh scattering**.
+#> 
+#> ### 1. Sunlight is a mixture of colors
+#> Sunlight contains all visible wavelengths (roughly 380 nm – 750 nm). When it
+#> reaches Earth, it’s essentially white light made up of the colors of the
+#> rainbow.
+#> 
+#> ### 2. The atmosphere is full of tiny particles
+#> The air is filled with gas molecules (nitrogen, oxygen, etc.) and tiny
+#> particles that are **much smaller than the wavelength of visible light**.
+#> 
+#> ### 3. Short wavelengths scatter more strongly
+#> When light encounters particles that are much smaller than its wavelength, it
+#> is scattered in all directions. The scattering efficiency follows an
+#> inverse‑fourth‑power law:
+#> 
+#> \[
+#> \text{Intensity of scattered light} \propto \frac{1}{\lambda^4}
+#> \]
+#> 
+#> So a wavelength that is half as long (e.g., blue at ~450 nm) scatters about
+#> 16 times more than a wavelength that is twice as long (e.g., red at ~650 nm).
+#> 
+#> Because blue and violet light are scattered far more than the other colors, a
+#> lot of that short‑wavelength light is redirected toward our eyes from all parts
+#> of the sky.
+#> 
+#> ### 4. Why we see blue rather than violet
+#> - **Human vision:** Our eyes are more sensitive to blue than to violet.
+#> - **Solar spectrum:** There’s slightly less violet light from the Sun to begin
+#> with.
+#> - **Atmospheric absorption:** A small amount of violet is absorbed by the upper
+#> atmosphere.
+#> 
+#> The combination of these factors makes the scattered light we perceive as
+#> predominantly **blue**.
+#> 
+#> ### 5. Sunrise and sunset colors
+#> When the Sun is low on the horizon, its light must travel through a much
+#> thicker layer of atmosphere. The short‑wavelength blue light gets scattered out
+#> of the direct line of sight long before the light reaches you, leaving the
+#> longer‑wavelength reds and oranges to dominate the sky’s color. That’s why
+#> sunrises and sunsets appear reddish.
+#> 
+#> ### Quick recap
+#> 
+#> | Process | Effect on light |
+#> |---------|-----------------|
+#> | **Rayleigh scattering** | Scatters shorter wavelengths (blue/violet) much
+#> more than longer ones |
+#> | **Human eye sensitivity** | More responsive to blue than violet |
+#> | **Atmospheric path length** | Determines which wavelengths reach you directly
+#> (short → scattered, long → direct) |
+#> 
+#> So the sky is blue because the atmosphere preferentially scatters the
+#> shorter‑wavelength (blue) portion of sunlight toward us, while the longer
+#> wavelengths pass through relatively unchanged.
+```
+
+## Open WebUI Example
+
+For hosting Ollama (and other providers) on a lab or organisation server, [Open WebUI](https://openwebui.com/) is a good option.
+To use the Open WebUI API with rollama, you have to set the `rollama_server` option to the URL of the hosted instance + the path `/ollama/` and provide your api key as a header.
+For example, my employer hosts an instance of at `https://ai-openwebui.gesis.org/` so the server address is:
+
+
+```{r}
+library(rollama)
+Sys.setenv(api_key = "<REDACTED>")
+options(
+  rollama_server = "https://ai-openwebui.gesis.org/ollama/",
+  rollama_headers = list(
+    Authorization = paste("Bearer", Sys.getenv("api_key"))
+  )
+)
+chat(q = "Why is the sky blue?", model = "llama4:latest")
+#> 
+#> ── Answer from llama4:latest ───────────────────────────────────────────────────
+#> The sky appears blue because of a phenomenon called Rayleigh scattering, which
+#> occurs when sunlight interacts with the Earth's atmosphere. Here's a simplified
+#> explanation:
+#> 
+#> 1. **Sunlight**: The sun emits a wide range of electromagnetic radiation,
+#> including visible light, which is made up of different colors (wavelengths).
+#> 2. **Atmosphere**: When sunlight enters Earth's atmosphere, it encounters tiny
+#> molecules of gases like nitrogen (N2) and oxygen (O2).
+#> 3. **Scattering**: These gas molecules scatter the sunlight in all directions.
+#> The amount of scattering that occurs depends on the wavelength of the light.
+#> 4. **Wavelength and scattering**: Shorter wavelengths (like blue and violet)
+#> are scattered more than longer wavelengths (like red and orange). This is known
+#> as Rayleigh scattering.
+#> 5. **Blue dominance**: As a result of this scattering, the blue light is
+#> dispersed throughout the atmosphere, making it visible from all directions.
+#> This is why the sky typically appears blue during the daytime.
+#> 
+#> However, there are some additional factors that can affect the color of the
+#> sky, such as:
+#> 
+#> * **Dust and water vapor**: Tiny particles in the air can scatter light in
+#> different ways, changing the apparent color of the sky.
+#> * **Time of day**: During sunrise and sunset, the light travels through more of
+#> the atmosphere, scattering shorter wavelengths and making the sky appear more
+#> red.
+#> * **Atmospheric conditions**: Pollution, dust, and water vapor can alter the
+#> color of the sky.
+#> 
+#> So, to summarize, the sky appears blue because of the scattering of sunlight by
+#> the tiny molecules in the Earth's atmosphere, with shorter wavelengths (like
+#> blue) being scattered more than longer wavelengths.
+```
+
+# Keeping your keys save
+
+You should not keep your API keys in an R file like above and ideally also never enter it in the Console.
+This way, you never have to double check before sending an R file or your history to someone else.
+
+However, as per [Hadley Wickham](https://cran.r-project.org/web/packages/httr/vignettes/secrets.html)
+
+> Asking each time is a hassle, so you might want to store the secret across sessions. One easy way to do that is with environment variables. Environment variables, or envvars for short, are a cross platform way of passing information to processes.
+
+> For passing envvars to R, you can list name-value pairs in a file called .Renviron in your home directory.
+
+You can open this file to edit it with `usethis::edit_r_environ()`.
+The file should then contain your keys, which should look something like this:
+
+```
+rollama_key=sk-b3d60321e62eb364e9c8dc12ffeec242
+```
+
+When you then start a new session, `Sys.getenv("rollama_key")` returns the `sk-b3...` value.
+So the start of your script could look like this:
+
+```r
+library(rollama)
+options(
+  rollama_server = "https://ai-openwebui.gesis.org/ollama/",
+  rollama_headers = list(
+    Authorization = paste("Bearer", Sys.getenv("rollama_key"))
+  )
+)
+```
+
