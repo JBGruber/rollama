@@ -187,7 +187,7 @@ query <- function(q,
 
   if (identical(output, "httr2_request")) return(invisible(reqs))
 
-  if (!all(ping_ollama(server = server))) {
+  if (!all(ping_ollama(server = server, silent = TRUE))) {
     cli::cli_alert_danger("Could not connect to Ollama at {.url {sv}}")
   }
   check_model_installed(model, server = server)
