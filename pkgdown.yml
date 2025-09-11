@@ -7,7 +7,7 @@ articles:
   hf-gguf: hf-gguf.html
   image-annotation: image-annotation.html
   text-embedding: text-embedding.html
-last_built: 2025-08-24T20:01Z
+last_built: 2025-09-11T12:17Z
 urls:
   reference: https://jbgruber.github.io/rollama/reference
   article: https://jbgruber.github.io/rollama/articles
