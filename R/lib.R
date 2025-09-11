@@ -51,7 +51,7 @@ build_req <- function(model,
   if (!is.null(seed) && !purrr::pluck_exists(model_params, "seed")) {
     model_params <- append(model_params, list(seed = seed))
   }
-  check_model_installed(model, server = server)
+
   if (length(msg) != length(model)) {
     if (length(model) > 1L)
       cli::cli_alert_info(c(

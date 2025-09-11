@@ -40,7 +40,9 @@ pull_model <- function(model = NULL,
   if (is.null(model)) model <- getOption("rollama_model", default = "llama3.1")
   if (is.null(server)) server <- getOption("rollama_server",
                                            default = "http://localhost:11434")
-
+  if (!all(ping_ollama(server = server))) {
+    cli::cli_alert_danger("Could not connect to Ollama at {.url {sv}}")
+  }
   if (length(model) > 1L) {
     for (m in model) pull_model(m, server, insecure, verbose)
   }
