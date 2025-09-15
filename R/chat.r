@@ -159,18 +159,20 @@ query <- function(q,
   if (is.character(q)) {
     config <- getOption("rollama_config", default = NULL)
 
-    msg <- do.call(rbind, list(
-      if (!is.null(config)) data.frame(role = "system",
-                                       content = config),
-      data.frame(role = "user", content = q)
-    ))
+    msg <- purrr::map(q, function(q) {
+      msg <- do.call(rbind, list(
+        if (!is.null(config)) data.frame(role = "system",
+                                         content = config),
+        data.frame(role = "user", content = q)
+      ))
 
-    if (length(images) > 0) {
-      rlang::check_installed("base64enc")
-      images <- purrr::map_chr(images, \(i) base64enc::base64encode(i))
-      msg <- tibble::add_column(msg, images = list(images))
-    }
-    msg <- list(msg)
+      if (length(images) > 0) {
+        rlang::check_installed("base64enc")
+        images <- purrr::map_chr(images, \(i) base64enc::base64encode(i))
+        msg <- tibble::add_column(msg, images = list(images))
+      }
+      msg
+    })
   } else if (is.data.frame(q)) {
     msg <- list(check_conversation(q))
   } else {
