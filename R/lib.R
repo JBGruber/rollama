@@ -161,7 +161,7 @@ perform_req <- function(reqs, verbose) {
     req <- httr2::req_error(reqs[[1]], is_error = function(resp) FALSE)
     # httr2 > 1.2.0 uses weak references to redact tokens, which do not survive
     # into sub-processes
-    req$headers <- req_get_headers(req, redacted = "reveal")
+    req$headers <- httr2::req_get_headers(req, redacted = "reveal")
     rp <- callr::r_bg(httr2::req_perform,
                       args = list(req = req),
                       package = TRUE)
