@@ -57,7 +57,8 @@
 <span>  quantize <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  stream <span class="op">=</span> <span class="cn">TRUE</span>,</span>
 <span>  <span class="va">...</span>,</span>
-<span>  server <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  server <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"rollama_verbose"</span>, default <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -108,6 +109,13 @@
 <dt id="arg-server">server<a class="anchor" aria-label="anchor" href="#arg-server"></a></dt>
 <dd><p>URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".</p></dd>
+
+
+<dt id="arg-verbose">verbose<a class="anchor" aria-label="anchor" href="#arg-verbose"></a></dt>
+<dd><p>Whether to print status messages to the Console. Either
+<code>TRUE</code>/<code>FALSE</code> or see <a href="https://httr2.r-lib.org/reference/progress_bars.html" class="external-link">httr2::progress_bars</a>. The default is to have status
+messages in interactive sessions. Can be changed with
+<code>options(rollama_verbose = FALSE)</code>.</p></dd>
 
 </dl></div>
     <div class="section level2">
