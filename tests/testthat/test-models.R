@@ -14,28 +14,21 @@ test_that("show model", {
 
 test_that("create model", {
   skip_if_not(ping_ollama(silent = TRUE))
-  skip_if(ping_ollama(silent = TRUE, version = TRUE) > "0.5.5")
   expect_equal(nrow(create_model(
-    model = "mario",
-    modelfile = "FROM llama3.1\nSYSTEM You are mario from Super Mario Bros."
-  )), 1L)
-  # also test modelfile
-  expect_equal(nrow(create_model(
-    model = "mario",
-    modelfile = system.file("extdata", "modelfile.txt", package = "rollama")
-  )), 1L)
+    "mario",
+    from = "llama3.1",
+    system = "You are mario from Super Mario Bros.")
+  ), 1L)
 })
 
 test_that("copy model", {
   skip_if_not(ping_ollama(silent = TRUE))
-  skip_if(ping_ollama(silent = TRUE, version = TRUE) > "0.5.5")
   expect_message(copy_model("mario"),
                  "model.mario.copied.to.mario-copy")
 })
 
 test_that("delete model", {
   skip_if_not(ping_ollama(silent = TRUE))
-  skip_if(ping_ollama(silent = TRUE, version = TRUE) > "0.5.5")
   expect_message(delete_model("mario"),
                  "model.mario.removed")
   expect_message(delete_model("mario-copy"),
@@ -44,7 +37,6 @@ test_that("delete model", {
 
 test_that("model missing", {
   skip_if_not(ping_ollama(silent = TRUE))
-  skip_if(ping_ollama(silent = TRUE, version = TRUE) > "0.5.5")
   expect_error(check_model_installed("NOMODEL"),
                "Model.NOMODEL:latest.not.installed.")
 })
