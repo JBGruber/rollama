@@ -23,33 +23,39 @@
 #'   "Here is an article about llamas...",
 #'   "R is a language and environment for statistical computing and graphics."))
 #' }
-embed_text <- function(text,
-                       model = NULL,
-                       server = NULL,
-                       model_params = NULL,
-                       verbose = getOption("rollama_verbose",
-                                           default = interactive())) {
-
-  if (is.null(model)) model <- getOption("rollama_model", default = "llama3.1")
-  if (is.null(server)) server <- getOption("rollama_server",
-                                           default = "http://localhost:11434")
+embed_text <- function(
+  text,
+  model = NULL,
+  server = NULL,
+  model_params = NULL,
+  verbose = getOption("rollama_verbose", default = interactive())
+) {
+  if (is.null(model)) {
+    model <- getOption("rollama_model", default = "llama3.1")
+  }
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
   check_model_installed(model, server = server)
 
   pb <- FALSE
-  if (verbose) pb <- list(
-    format = "{cli::pb_spin} embedding text {cli::pb_current} / {cli::pb_total} ({cli::pb_rate}) {cli::pb_eta}",
-    format_done = "{cli::col_green(cli::symbol$tick)} embedded {cli::pb_total} texts {cli::col_silver('[', cli::pb_elapsed, ']')}",
-    clear = FALSE
-  )
+  if (verbose) {
+    pb <- list(
+      format = "{cli::pb_spin} embedding text {cli::pb_current} / {cli::pb_total} ({cli::pb_rate}) {cli::pb_eta}",
+      format_done = "{cli::col_green(cli::symbol$tick)} embedded {cli::pb_total} texts {cli::col_silver('[', cli::pb_elapsed, ']')}",
+      clear = FALSE
+    )
+  }
 
   reqs <- purrr::map(text, function(t) {
-    list(model = model,
-         prompt = t,
-         stream = FALSE,
-         model_params = model_params) |>
+    list(
+      model = model,
+      prompt = t,
+      stream = FALSE,
+      model_params = model_params
+    ) |>
       purrr::compact() |>
-      make_req(server = server,
-               endpoint = "/api/embeddings")
+      make_req(server = server, endpoint = "/api/embeddings")
   })
 
   resps <- httr2::req_perform_parallel(reqs, progress = pb)

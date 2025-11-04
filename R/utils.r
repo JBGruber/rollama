@@ -2,7 +2,9 @@ screen_answer <- function(x, model = NULL) {
   pars <- unlist(strsplit(x, "\n", fixed = TRUE))
   cli::cli_h1("Answer from {cli::style_bold({model})}")
   # "{i}" instead of i stops glue from evaluating code inside the answer
-  for (i in pars) cli::cli_text("{i}")
+  for (i in pars) {
+    cli::cli_text("{i}")
+  }
 }
 
 
@@ -15,12 +17,12 @@ screen_answer <- function(x, model = NULL) {
 #'
 #' @return invisible TRUE/FALSE
 #' @export
-check_model_installed <- function(model,
-                                  check_only = FALSE,
-                                  auto_pull = FALSE,
-                                  server = getOption("rollama_server",
-                                                     default = "http://localhost:11434")) {
-
+check_model_installed <- function(
+  model,
+  check_only = FALSE,
+  auto_pull = FALSE,
+  server = getOption("rollama_server", default = "http://localhost:11434")
+) {
   model <- sub("^([^:]+)$", "\\1:latest", model)
   for (sv in server) {
     models_df <- list_models(server = sv)
@@ -99,7 +101,9 @@ as_prob <- function(x) {
   if (!is.null(x)) {
     out <- try(as.numeric(x), silent = TRUE)
     if (methods::is(out, "try-error")) {
-      cli::cli_abort("Names must be parsable to a numeric vector of probability weights")
+      cli::cli_abort(
+        "Names must be parsable to a numeric vector of probability weights"
+      )
     }
     return(out)
   }
@@ -108,9 +112,12 @@ as_prob <- function(x) {
 
 
 check_conversation <- function(msg) {
-  if (!"user" %in% msg$role && nchar(msg$content) > 0)
-    cli::cli_abort(paste("If you supply a conversation object, it needs at",
-                         "least one user message. See {.help query}."))
+  if (!"user" %in% msg$role && nchar(msg$content) > 0) {
+    cli::cli_abort(paste(
+      "If you supply a conversation object, it needs at",
+      "least one user message. See {.help query}."
+    ))
+  }
   return(msg)
 }
 

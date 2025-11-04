@@ -7,23 +7,30 @@
 #' @return TRUE if server is running
 #' @export
 ping_ollama <- function(server = NULL, silent = FALSE, version = FALSE) {
-
-  if (is.null(server)) server <- getOption("rollama_server",
-                                           default = "http://localhost:11434")
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
 
   out <- purrr::map(server, function(sv) {
-    res <- try({
-      httr2::request(sv) |>
-        httr2::req_url_path("api/version") |>
-        httr2::req_perform() |>
-        httr2::resp_body_json()
-    }, silent = TRUE)
+    res <- try(
+      {
+        httr2::request(sv) |>
+          httr2::req_url_path("api/version") |>
+          httr2::req_perform() |>
+          httr2::resp_body_json()
+      },
+      silent = TRUE
+    )
 
     if (!methods::is(res, "try-error") && purrr::pluck_exists(res, "version")) {
-      if (!silent) cli::cli_inform(
-        "{cli::col_green(cli::symbol$play)} Ollama (v{res$version}) is running at {.url {sv}}!"
-      )
-      if (version) return(res$version)
+      if (!silent) {
+        cli::cli_inform(
+          "{cli::col_green(cli::symbol$play)} Ollama (v{res$version}) is running at {.url {sv}}!"
+        )
+      }
+      if (version) {
+        return(res$version)
+      }
       return(TRUE)
     } else {
       if (!silent) {
@@ -36,28 +43,33 @@ ping_ollama <- function(server = NULL, silent = FALSE, version = FALSE) {
 }
 
 
-build_req <- function(model,
-                      msg,
-                      server,
-                      images,
-                      model_params,
-                      format,
-                      template) {
-
-  if (is.null(model)) model <- getOption("rollama_model", default = "llama3.1")
-  if (is.null(server)) server <- getOption("rollama_server",
-                                           default = "http://localhost:11434")
+build_req <- function(
+  model,
+  msg,
+  server,
+  images,
+  model_params,
+  format,
+  template
+) {
+  if (is.null(model)) {
+    model <- getOption("rollama_model", default = "llama3.1")
+  }
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
   seed <- getOption("rollama_seed")
   if (!is.null(seed) && !purrr::pluck_exists(model_params, "seed")) {
     model_params <- append(model_params, list(seed = seed))
   }
 
   if (length(msg) != length(model)) {
-    if (length(model) > 1L)
+    if (length(model) > 1L) {
       cli::cli_alert_info(c(
         "The number of queries is unequal to the number of models you supplied.",
         "We assume you want to run each query with each model"
       ))
+    }
     req_data <- purrr::map(msg, function(ms) {
       purrr::map(model, function(m) {
         list(
@@ -103,15 +115,16 @@ make_req <- function(req_data, server, endpoint) {
     httr2::req_url_path_append(endpoint) |>
     httr2::req_body_json(prep_req_data(req_data), auto_unbox = FALSE) |>
     # see https://github.com/JBGruber/rollama/issues/23
-    httr2::req_options(timeout_ms = 1000 * 60 * 60 * 24,
-                       connecttimeout_ms = 1000 * 60 * 60 * 24) |>
+    httr2::req_options(
+      timeout_ms = 1000 * 60 * 60 * 24,
+      connecttimeout_ms = 1000 * 60 * 60 * 24
+    ) |>
     httr2::req_headers(!!!get_headers())
   return(r)
 }
 
 
 perform_reqs <- function(reqs, verbose) {
-
   model <- purrr::map_chr(reqs, c("body", "data", "model")) |>
     unique()
   pb <- FALSE
@@ -120,9 +133,11 @@ perform_reqs <- function(reqs, verbose) {
   } else if (verbose) {
     pb <- list(
       clear = TRUE,
-      format = c("{cli::pb_spin} {getOption('model')} {?is/are} thinking about ",
-                 "{cli::pb_total - cli::pb_current}/{cli::pb_total} question{?s}",
-                 "[ETA: {cli::pb_eta}]")
+      format = c(
+        "{cli::pb_spin} {getOption('model')} {?is/are} thinking about ",
+        "{cli::pb_total - cli::pb_current}/{cli::pb_total} question{?s}",
+        "[ETA: {cli::pb_eta}]"
+      )
     )
   }
 
@@ -149,22 +164,25 @@ perform_reqs <- function(reqs, verbose) {
 
 
 perform_req <- function(reqs, verbose) {
-
   if (verbose) {
     model <- purrr::map_chr(reqs, c("body", "data", "model")) |>
       unique()
 
-    id <- cli::cli_progress_bar(format = "{cli::pb_spin} {model} {?is/are} thinking",
-                                clear = TRUE)
+    id <- cli::cli_progress_bar(
+      format = "{cli::pb_spin} {model} {?is/are} thinking",
+      clear = TRUE
+    )
 
     # turn off errors since error messages can't be seen in sub-process
     req <- httr2::req_error(reqs[[1]], is_error = function(resp) FALSE)
     # httr2 > 1.2.0 uses weak references to redact tokens, which do not survive
     # into sub-processes
     req$headers <- httr2::req_get_headers(req, redacted = "reveal")
-    rp <- callr::r_bg(httr2::req_perform,
-                      args = list(req = req),
-                      package = TRUE)
+    rp <- callr::r_bg(
+      httr2::req_perform,
+      args = list(req = req),
+      package = TRUE
+    )
 
     while (rp$is_alive()) {
       cli::cli_progress_update(id = id)
@@ -179,8 +197,10 @@ perform_req <- function(reqs, verbose) {
   }
 
   reqs[[1]] |>
-    httr2::req_error(body = function(resp) httr2::resp_body_json(resp) |>
-                       purrr::pluck("error", .default = "unknown error")) |>
+    httr2::req_error(body = function(resp) {
+      httr2::resp_body_json(resp) |>
+        purrr::pluck("error", .default = "unknown error")
+    }) |>
     httr2::req_perform() |>
     list()
 }
@@ -191,8 +211,11 @@ get_headers <- function() {
   if (is.null(agent)) {
     sess <- utils::sessionInfo()
     the$agent <- agent <- paste0(
-      "rollama/", utils::packageVersion("rollama"),
-      "(", sess$platform, ") ",
+      "rollama/",
+      utils::packageVersion("rollama"),
+      "(",
+      sess$platform,
+      ") ",
       sess$R.version$version.string
     )
   }
@@ -225,7 +248,9 @@ prep_req_data <- function(tbl) {
 
 # function to display progress in streaming operations
 pgrs <- function(resp) {
-  if (!getOption("rollama_verbose", default = interactive())) return(TRUE)
+  if (!getOption("rollama_verbose", default = interactive())) {
+    return(TRUE)
+  }
   the$str_prgs$stream_resp <- c(the$str_prgs$stream_resp, resp)
   resp <- the$str_prgs$stream_resp
 
@@ -248,16 +273,20 @@ pgrs <- function(resp) {
     } else {
       the$str_prgs$f <- sub("pulling ", "", purrr::pluck(s, "status"))
       the$str_prgs$done <- purrr::pluck(s, "completed", .default = 0L)
-      the$str_prgs$total <-  purrr::pluck(s, "total", .default = 0L)
+      the$str_prgs$total <- purrr::pluck(s, "total", .default = 0L)
       the$str_prgs$done_pct <-
         paste(round(the$str_prgs$done / the$str_prgs$total * 100, 0), "%")
       if (the$str_prgs$done != the$str_prgs$total) {
-        the$str_prgs$speed <- try(as.integer(
-          the$str_prgs$done /
-            (as.integer(Sys.time()) - as.integer(the$str_prgs$pb_start))
-        ), silent = TRUE)
-        if (methods::is(the$str_prgs$speed, "try-error"))
+        the$str_prgs$speed <- try(
+          as.integer(
+            the$str_prgs$done /
+              (as.integer(Sys.time()) - as.integer(the$str_prgs$pb_start))
+          ),
+          silent = TRUE
+        )
+        if (methods::is(the$str_prgs$speed, "try-error")) {
           the$str_prgs$speed <- 0L
+        }
       } else {
         the$str_prgs$speed <- 1L
       }

@@ -140,17 +140,25 @@
 #'         server = c("http://localhost:11434/",
 #'                    "http://192.168.2.45:11434/"))
 #' }
-query <- function(q,
-                  model = NULL,
-                  screen = TRUE,
-                  server = NULL,
-                  images = NULL,
-                  model_params = NULL,
-                  output = c("response", "text", "list", "data.frame", "httr2_response", "httr2_request"),
-                  format = NULL,
-                  template = NULL,
-                  verbose = getOption("rollama_verbose",
-                                      default = interactive())) {
+query <- function(
+  q,
+  model = NULL,
+  screen = TRUE,
+  server = NULL,
+  images = NULL,
+  model_params = NULL,
+  output = c(
+    "response",
+    "text",
+    "list",
+    "data.frame",
+    "httr2_response",
+    "httr2_request"
+  ),
+  format = NULL,
+  template = NULL,
+  verbose = getOption("rollama_verbose", default = interactive())
+) {
   if (!is.function(output)) {
     output <- match.arg(output)
   }
@@ -160,11 +168,13 @@ query <- function(q,
     config <- getOption("rollama_config", default = NULL)
 
     msg <- purrr::map(q, function(q) {
-      msg <- do.call(rbind, list(
-        if (!is.null(config)) data.frame(role = "system",
-                                         content = config),
-        data.frame(role = "user", content = q)
-      ))
+      msg <- do.call(
+        rbind,
+        list(
+          if (!is.null(config)) data.frame(role = "system", content = config),
+          data.frame(role = "user", content = q)
+        )
+      )
 
       if (length(images) > 0) {
         rlang::check_installed("base64enc")
@@ -179,15 +189,19 @@ query <- function(q,
     msg <- purrr::map(q, check_conversation)
   }
 
-  reqs <- build_req(model = model,
-                    msg = msg,
-                    server = server,
-                    images = images,
-                    model_params = model_params,
-                    format = format,
-                    template = template)
+  reqs <- build_req(
+    model = model,
+    msg = msg,
+    server = server,
+    images = images,
+    model_params = model_params,
+    format = format,
+    template = template
+  )
 
-  if (identical(output, "httr2_request")) return(invisible(reqs))
+  if (identical(output, "httr2_request")) {
+    return(invisible(reqs))
+  }
 
   if (!all(ping_ollama(server = server, silent = TRUE))) {
     cli::cli_alert_danger("Could not connect to Ollama at {.url {sv}}")
@@ -204,8 +218,10 @@ query <- function(q,
   if (screen) {
     res <- purrr::map(resps, httr2::resp_body_json)
     purrr::walk(res, function(r) {
-      screen_answer(purrr::pluck(r, "message", "content"),
-                    purrr::pluck(r, "model"))
+      screen_answer(
+        purrr::pluck(r, "message", "content"),
+        purrr::pluck(r, "model")
+      )
     })
   }
 
@@ -213,17 +229,20 @@ query <- function(q,
     return(invisible(output(resps)))
   }
 
-  if (identical(output, "httr2_response")) return(invisible(resps))
+  if (identical(output, "httr2_response")) {
+    return(invisible(resps))
+  }
 
   if (is.null(res)) {
     res <- purrr::map(resps, httr2::resp_body_json)
   }
 
-  out <- switch(output,
-                "response" = res,
-                "text" = purrr::map_chr(res, c("message", "content")),
-                "list" = process2list(res, reqs),
-                "data.frame" = process2df(res)
+  out <- switch(
+    output,
+    "response" = res,
+    "text" = purrr::map_chr(res, c("message", "content")),
+    "list" = process2list(res, reqs),
+    "data.frame" = process2df(res)
   )
   invisible(out)
 }
@@ -231,16 +250,16 @@ query <- function(q,
 
 #' @rdname query
 #' @export
-chat <- function(q,
-                 model = NULL,
-                 screen = TRUE,
-                 server = NULL,
-                 images = NULL,
-                 model_params = NULL,
-                 template = NULL,
-                 verbose = getOption("rollama_verbose",
-                                     default = interactive())) {
-
+chat <- function(
+  q,
+  model = NULL,
+  screen = TRUE,
+  server = NULL,
+  images = NULL,
+  model_params = NULL,
+  template = NULL,
+  verbose = getOption("rollama_verbose", default = interactive())
+) {
   config <- getOption("rollama_config", default = NULL)
   hist <- chat_history()
 
@@ -255,20 +274,24 @@ chat <- function(q,
     q <- tibble::add_column(q, images = images)
   }
 
-  msg <- do.call(rbind, (list(
-    if (!is.null(config)) data.frame(role = "system",
-                                     content = config),
-    if (nrow(hist) > 0) hist[, c("role", "content")],
-    q
-  )))
+  msg <- do.call(
+    rbind,
+    (list(
+      if (!is.null(config)) data.frame(role = "system", content = config),
+      if (nrow(hist) > 0) hist[, c("role", "content")],
+      q
+    ))
+  )
 
-  resp <- query(q = msg,
-                model = model,
-                screen = screen,
-                server = server,
-                model_params = model_params,
-                template = template,
-                verbose = verbose)
+  resp <- query(
+    q = msg,
+    model = model,
+    screen = screen,
+    server = server,
+    model_params = model_params,
+    template = template,
+    verbose = verbose
+  )
 
   # save response
   r <- purrr::pluck(resp, 1, "message", "content")
@@ -288,8 +311,10 @@ chat <- function(q,
 #' @export
 chat_history <- function() {
   out <- tibble::tibble(
-    role = c(rep("user", length(the$prompts)),
-             rep("assistant", length(the$responses))),
+    role = c(
+      rep("user", length(the$prompts)),
+      rep("assistant", length(the$responses))
+    ),
     content = unname(c(the$prompts, the$responses)),
     time = as.POSIXct(names(c(the$prompts, the$responses)))
   )
@@ -304,7 +329,6 @@ new_chat <- function() {
   the$responses <- NULL
   the$prompts <- NULL
 }
-
 
 
 #' Generate and format queries for a language model
@@ -352,14 +376,15 @@ new_chat <- function() {
 #' if (ping_ollama()) { # only run this example when Ollama is running
 #'   query(queries, screen = TRUE, output = "text")
 #' }
-make_query <- function(text,
-                       prompt,
-                       template = "{prefix}{text}\n{prompt}\n{suffix}",
-                       system = NULL,
-                       prefix = NULL,
-                       suffix = NULL,
-                       examples = NULL) {
-
+make_query <- function(
+  text,
+  prompt,
+  template = "{prefix}{text}\n{prompt}\n{suffix}",
+  system = NULL,
+  prefix = NULL,
+  suffix = NULL,
+  examples = NULL
+) {
   rlang::check_installed("glue")
 
   # Process each input text
@@ -405,11 +430,11 @@ make_query <- function(text,
       suffix = suffix,
       .null = ""
     )
-    full_query <- full_query |> dplyr::add_row(role = "user", content = main_query)
+    full_query <- full_query |>
+      dplyr::add_row(role = "user", content = main_query)
 
     return(full_query)
   })
 
   return(queries)
 }
-
