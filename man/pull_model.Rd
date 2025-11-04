@@ -11,6 +11,7 @@ pull_model(
   model = NULL,
   server = NULL,
   insecure = FALSE,
+  background = FALSE,
   verbose = getOption("rollama_verbose", default = interactive())
 )
 
@@ -29,6 +30,8 @@ in \code{delete_model}).}
 
 \item{insecure}{allow insecure connections to the library. Only use this if
 you are pulling from your own library during development.}
+
+\item{background}{download model(s) in background without blocking the session.}
 
 \item{verbose}{Whether to print status messages to the Console. Either
 \code{TRUE}/\code{FALSE} or see \link[httr2:progress_bars]{httr2::progress_bars}. The default is to have status

@@ -13,6 +13,7 @@
 #'
 #' @param model name of the model(s). Defaults to "llama3.1" when `NULL` (except
 #'   in `delete_model`).
+#' @param background download model(s) in background without blocking the session.
 #' @param insecure allow insecure connections to the library. Only use this if
 #'   you are pulling from your own library during development.
 #' @param destination name of the copied model.
@@ -35,6 +36,7 @@ pull_model <- function(
   model = NULL,
   server = NULL,
   insecure = FALSE,
+  background = FALSE,
   verbose = getOption("rollama_verbose", default = interactive())
 ) {
   if (is.null(model)) {
@@ -52,28 +54,25 @@ pull_model <- function(
     }
   }
 
-  # flush progress
-  the$str_prgs <- NULL
   req <- httr2::request(server) |>
     httr2::req_url_path_append("/api/pull") |>
     httr2::req_body_json(list(name = model, insecure = insecure)) |>
     httr2::req_headers(!!!get_headers())
+
   if (verbose) {
-    httr2::req_perform_stream(req, callback = pgrs, buffer_kb = 0.1)
+    done <- stream_progress(req, verbose, background)
     cli::cli_process_done(.envir = the)
   } else {
-    httr2::req_perform(req)
+    resp <- httr2::req_perform(req)
+    done <- httr2::resp_status(resp) < 400L
   }
-  total <- try(as.integer(the$str_prgs$total), silent = TRUE)
-  if (methods::is(total, "try-error")) {
-    cli::cli_alert_success("model {model} pulled succesfully")
-  } else {
-    total <- prettyunits::pretty_bytes(total)
-    cli::cli_alert_success("model {model} ({total}) pulled succesfully")
-  }
-  the$str_prgs <- NULL
 
-  invisible(show_model(model))
+  if (done) {
+    cli::cli_alert_success("model {model} pulled succesfully!")
+    return(invisible(show_model(model)))
+  } else {
+    cli::cli_alert_success("model {model} downloading in background")
+  }
 }
 
 
@@ -141,7 +140,8 @@ create_model <- function(
   quantize = NULL,
   stream = TRUE,
   ...,
-  server = NULL
+  server = NULL,
+  verbose = getOption("rollama_verbose", default = interactive())
 ) {
   if (is.null(server)) {
     server <- getOption("rollama_server", default = "http://localhost:11434")
@@ -169,7 +169,7 @@ create_model <- function(
     httr2::req_headers(!!!get_headers())
 
   if (stream) {
-    httr2::req_perform_stream(req, callback = pgrs, buffer_kb = 0.1)
+    stream_progress(req, background = FALSE, verbose)
   } else {
     httr2::req_perform(req)
   }

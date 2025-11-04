@@ -15,7 +15,8 @@ create_model(
   quantize = NULL,
   stream = TRUE,
   ...,
-  server = NULL
+  server = NULL,
+  verbose = getOption("rollama_verbose", default = interactive())
 )
 }
 \arguments{
@@ -41,6 +42,11 @@ create_model(
 
 \item{server}{URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".}
+
+\item{verbose}{Whether to print status messages to the Console. Either
+\code{TRUE}/\code{FALSE} or see \link[httr2:progress_bars]{httr2::progress_bars}. The default is to have status
+messages in interactive sessions. Can be changed with
+\code{options(rollama_verbose = FALSE)}.}
 }
 \value{
 (invisible) a tibble with information about the created model
