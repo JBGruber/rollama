@@ -46,7 +46,19 @@
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_model</span><span class="op">(</span><span class="va">model</span>, <span class="va">modelfile</span>, server <span class="op">=</span> <span class="cn">NULL</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">create_model</span><span class="op">(</span></span>
+<span>  <span class="va">model</span>,</span>
+<span>  from <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  template <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  license <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  system <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  parameters <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  messages <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  quantize <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  stream <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>  <span class="va">...</span>,</span>
+<span>  server <span class="op">=</span> <span class="cn">NULL</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -57,9 +69,40 @@
 <dd><p>name of the model to create</p></dd>
 
 
-<dt id="arg-modelfile">modelfile<a class="anchor" aria-label="anchor" href="#arg-modelfile"></a></dt>
-<dd><p>either a path to a model file to be read or the contents of
-the model file as a character vector.</p></dd>
+<dt id="arg-from">from<a class="anchor" aria-label="anchor" href="#arg-from"></a></dt>
+<dd><p>existing model to create from</p></dd>
+
+
+<dt id="arg-template">template<a class="anchor" aria-label="anchor" href="#arg-template"></a></dt>
+<dd><p>prompt template to use for the model</p></dd>
+
+
+<dt id="arg-license">license<a class="anchor" aria-label="anchor" href="#arg-license"></a></dt>
+<dd><p>license string or list of licenses for the model</p></dd>
+
+
+<dt id="arg-system">system<a class="anchor" aria-label="anchor" href="#arg-system"></a></dt>
+<dd><p>system prompt to embed in the model</p></dd>
+
+
+<dt id="arg-parameters">parameters<a class="anchor" aria-label="anchor" href="#arg-parameters"></a></dt>
+<dd><p>key-value parameters for the model</p></dd>
+
+
+<dt id="arg-messages">messages<a class="anchor" aria-label="anchor" href="#arg-messages"></a></dt>
+<dd><p>message history to use for the model (array of ChatMessage objects)</p></dd>
+
+
+<dt id="arg-quantize">quantize<a class="anchor" aria-label="anchor" href="#arg-quantize"></a></dt>
+<dd><p>quantization level to apply (e.g. <code>"q4_K_M"</code>, <code>"q8_0"</code>)</p></dd>
+
+
+<dt id="arg-stream">stream<a class="anchor" aria-label="anchor" href="#arg-stream"></a></dt>
+<dd><p>stream status updates (default: <code>TRUE</code>)</p></dd>
+
+
+<dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
+<dd><p>additional arguments (currently unused)</p></dd>
 
 
 <dt id="arg-server">server<a class="anchor" aria-label="anchor" href="#arg-server"></a></dt>
@@ -69,7 +112,7 @@ the model file as a character vector.</p></dd>
 </dl></div>
     <div class="section level2">
     <h2 id="value">Value<a class="anchor" aria-label="anchor" href="#value"></a></h2>
-    <p>Nothing. Called to create a model on the Ollama server.</p>
+    <p>(invisible) a tibble with information about the created model</p>
     </div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
@@ -84,10 +127,9 @@ are not persistent over sessions.</p>
 
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">modelfile</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/system.file.html" class="external-link">system.file</a></span><span class="op">(</span><span class="st">"extdata"</span>, <span class="st">"modelfile.txt"</span>, package <span class="op">=</span> <span class="st">"rollama"</span><span class="op">)</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="fu">create_model</span><span class="op">(</span><span class="st">"mario"</span>, <span class="va">modelfile</span><span class="op">)</span> <span class="co"># \dontrun{}</span></span></span>
-<span class="r-in"><span><span class="va">modelfile</span> <span class="op">&lt;-</span> <span class="st">"FROM llama3.1\nSYSTEM You are mario from Super Mario Bros."</span></span></span>
-<span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="fu">create_model</span><span class="op">(</span><span class="st">"mario"</span>, <span class="va">modelfile</span><span class="op">)</span> <span class="co"># \dontrun{}</span></span></span>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="kw">if</span> <span class="op">(</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">{</span> <span class="co"># ping_ollama(silent = TRUE)</span></span></span>
+<span class="r-in"><span><span class="fu">create_model</span><span class="op">(</span><span class="st">"mario"</span>, from <span class="op">=</span> <span class="st">"llama3.1"</span>, system <span class="op">=</span> <span class="st">"You are mario from Super Mario Bros."</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">}</span></span></span>
 </code></pre></div>
     </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
