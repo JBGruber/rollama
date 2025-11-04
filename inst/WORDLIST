@@ -4,6 +4,7 @@ Codecov
 DOI
 Embeddings
 GGUF
+Hadley
 Hvitfeldt
 JSON
 LLM
@@ -15,11 +16,15 @@ OpenAI's
 OpenAI’s
 RMDs
 Reichardt
+Renviron
 WebUI
+Wickham
+api
 arXiv
 behaviour
 config
 embeddings
+envvars
 http
 httr
 leaderboards
@@ -28,6 +33,7 @@ modelfile
 modelname
 ollama
 orca
+organisation
 pre
 smldemo
 tibble

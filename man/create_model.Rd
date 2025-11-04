@@ -4,19 +4,46 @@
 \alias{create_model}
 \title{Create a model from a Modelfile}
 \usage{
-create_model(model, modelfile, server = NULL)
+create_model(
+  model,
+  from = NULL,
+  template = NULL,
+  license = NULL,
+  system = NULL,
+  parameters = NULL,
+  messages = NULL,
+  quantize = NULL,
+  stream = TRUE,
+  ...,
+  server = NULL
+)
 }
 \arguments{
 \item{model}{name of the model to create}
 
-\item{modelfile}{either a path to a model file to be read or the contents of
-the model file as a character vector.}
+\item{from}{existing model to create from}
+
+\item{template}{prompt template to use for the model}
+
+\item{license}{license string or list of licenses for the model}
+
+\item{system}{system prompt to embed in the model}
+
+\item{parameters}{key-value parameters for the model}
+
+\item{messages}{message history to use for the model (array of ChatMessage objects)}
+
+\item{quantize}{quantization level to apply (e.g. \code{"q4_K_M"}, \code{"q8_0"})}
+
+\item{stream}{stream status updates (default: \code{TRUE})}
+
+\item{...}{additional arguments (currently unused)}
 
 \item{server}{URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".}
 }
 \value{
-Nothing. Called to create a model on the Ollama server.
+(invisible) a tibble with information about the created model
 }
 \description{
 Create a model from a Modelfile
@@ -31,8 +58,7 @@ options are also available through the \code{query} and \code{chat} functions, y
 are not persistent over sessions.
 }
 \examples{
-modelfile <- system.file("extdata", "modelfile.txt", package = "rollama")
-\dontrun{create_model("mario", modelfile)}
-modelfile <- "FROM llama3.1\nSYSTEM You are mario from Super Mario Bros."
-\dontrun{create_model("mario", modelfile)}
+\dontshow{if (ping_ollama(silent = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+create_model("mario", from = "llama3.1", system = "You are mario from Super Mario Bros.")
+\dontshow{\}) # examplesIf}
 }

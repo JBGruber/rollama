@@ -96,8 +96,15 @@ show_model <- function(model = NULL, server = NULL) {
 #' Create a model from a Modelfile
 #'
 #' @param model name of the model to create
-#' @param modelfile either a path to a model file to be read or the contents of
-#'   the model file as a character vector.
+#' @param from existing model to create from
+#' @param template prompt template to use for the model
+#' @param license license string or list of licenses for the model
+#' @param system system prompt to embed in the model
+#' @param parameters key-value parameters for the model
+#' @param messages message history to use for the model (array of ChatMessage objects)
+#' @param quantize quantization level to apply (e.g. `"q4_K_M"`, `"q8_0"`)
+#' @param stream stream status updates (default: `TRUE`)
+#' @param ... additional arguments (currently unused)
 #' @inheritParams query
 #'
 #' @details Custom models are the way to save your system message and model
@@ -109,32 +116,54 @@ show_model <- function(model = NULL, server = NULL) {
 #'   are not persistent over sessions.
 #'
 #'
-#' @return Nothing. Called to create a model on the Ollama server.
+#' @return (invisible) a tibble with information about the created model
 #' @export
 #'
-#' @examples
-#' modelfile <- system.file("extdata", "modelfile.txt", package = "rollama")
-#' \dontrun{create_model("mario", modelfile)}
-#' modelfile <- "FROM llama3.1\nSYSTEM You are mario from Super Mario Bros."
-#' \dontrun{create_model("mario", modelfile)}
-create_model <- function(model, modelfile, server = NULL) {
-
-  if (is.null(server)) server <- getOption("rollama_server",
-                                           default = "http://localhost:11434")
-  if (isTRUE(file.exists(modelfile))) {
-    modelfile <- readChar(modelfile, file.size(modelfile))
-  } else if (length(modelfile) > 1) {
-    modelfile <- paste0(modelfile, collapse = "\n")
+#' @examplesIf ping_ollama(silent = TRUE)
+#' create_model("mario", from = "llama3.1", system = "You are mario from Super Mario Bros.")
+create_model <- function(
+  model,
+  from = NULL,
+  template = NULL,
+  license = NULL,
+  system = NULL,
+  parameters = NULL,
+  messages = NULL,
+  quantize = NULL,
+  stream = TRUE,
+  ...,
+  server = NULL
+) {
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
+  if("modelfile" %in% names(list(...))) {
+    cli::cli_warn("the parameter modelfile is deprecated")
   }
 
   # flush progress
   the$str_prgs <- NULL
-  httr2::request(server) |>
+  req <- httr2::request(server) |>
     httr2::req_url_path_append("/api/create") |>
     httr2::req_method("POST") |>
-    httr2::req_body_json(list(name = model, modelfile = modelfile)) |>
-    httr2::req_headers(!!!get_headers()) |>
-    httr2::req_perform_stream(callback = pgrs, buffer_kb = 0.1)
+    httr2::req_body_json(list(
+      model = model,
+      from = from,
+      template = template,
+      license = license,
+      system = system,
+      parameters = parameters,
+      messages = messages,
+      quantize = quantize,
+      stream = stream
+    )) |>
+    httr2::req_headers(!!!get_headers())
+
+  if (stream) {
+    httr2::req_perform_stream(req, callback = pgrs, buffer_kb = 0.1)
+  } else {
+    httr2::req_perform(req)
+  }
 
   cli::cli_process_done(.envir = the)
   the$str_prgs <- NULL
