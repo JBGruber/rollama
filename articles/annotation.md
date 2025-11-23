@@ -1,0 +1,414 @@
+# annotation
+
+## Introduction
+
+After you installed Ollama on your machine and downloaded the package
+rollama you can load the package and pull a model. The default model
+(`llama3.1`), is a good all-round chat model. For annotation, however,
+the instruction tuned llama models are often better suited, as they
+follow instructions more diligently and are less likely to trail off
+into a conversation. By changing the option `rollama_model`, we can
+change which model is used by default in the current session:
+
+``` r
+library(rollama)
+options(rollama_model = "llama3.2:3b-instruct-q8_0")
+pull_model()
+#> ✔ model llama3.2:3b-instruct-q8_0 pulled succesfully
+```
+
+## Prompting Strategies
+
+If you want to annotate textual data, you can use various prompting
+strategies. For an overview of common approaches, you can read a paper
+by [Weber and Reichardt (2023)](https://arxiv.org/abs/2401.00284). These
+strategies primarily differ in whether or how many examples are given
+(Zero-shot, One-shot, or Few-shot) and whether reasoning is involved
+(Chain-of-Thought).
+
+When writing a prompt we can give the model content for the system part,
+user part and assistant part. The system message typically includes
+instructions or context that guides the interaction, setting the stage
+for how the user and the assistant should interact. For an annotation
+task we could write: “You assign texts into categories. Answer with just
+the correct category.” The table below summarizes different prompting
+strategies for annotating textual data. Each strategy varies in the
+number of examples given and the incorporation of reasoning.
+
+[TABLE]
+
+### Zero-shot
+
+In this approach, no prior examples are given. The structure includes a
+system prompt providing instructions and a user prompt with the text to
+classify and the classification question (in this example we only
+provide the categories).
+
+``` r
+library(tibble)
+library(purrr)
+q <- tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. Answer with just the correct category.",
+  "user",   "text: the pizza tastes terrible\ncategories: positive, neutral, negative"
+)
+query(q)
+#> 
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────
+#> negative
+```
+
+### One-shot
+
+This involves giving a single example before the actual task. The
+structure includes a system prompt, followed by a user prompt with an
+example text and classification question, the assistant’s example
+classification, and then another user prompt with the new text to
+classify.
+
+``` r
+q <- tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. Answer with just the correct category.",
+  "user", "text: the pizza tastes terrible\ncategories: positive, neutral, negative",
+  "assistant", "Category: Negative",
+  "user", "text: the service is great\ncategories: positive, neutral, negative"
+)
+query(q)
+#> 
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────
+#> Category: Positive
+```
+
+A nice side effect of the one-shot strategy (and all n\>0-strategies) is
+that you can tune the format the model uses in its replies. For example,
+if you want to have an output that easy to parse, you could change the
+assistant message to `"{'Category':'Negative'}"`
+
+``` r
+q <- tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. Answer with just the correct category.",
+  "user", "text: the pizza tastes terrible\ncategories: positive, neutral, negative",
+  "assistant", "{'Category':'Negative'}",
+  "user", "text: the service is great\ncategories: positive, neutral, negative"
+)
+answer <- query(q)
+#> 
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────
+#> {'Category':'Positive'}
+```
+
+This is a valid JSON return and can be parsed into a list with, e.g.,
+[`jsonlite::fromJSON()`](https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html).
+Using this logic, we could request a more informative output:
+
+``` r
+q <- tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. Provide the following information: category, confidence, and the word that is most important for your coding decision.",
+  "user", "text: the pizza tastes terrible\ncategories: positive, neutral, negative",
+  "assistant", "{'Category':'Negative','Confidence':'100%','Important':'terrible'}",
+  "user", "text: the service is great\ncategories: positive, neutral, negative"
+)
+answer <- query(q)
+#> 
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────
+#> {'Category':'Positive','Confidence':'100%','Important':'great'}
+```
+
+By using `pluck(answer, "message", "content")`, you can directly extract
+the result and don’t need to copy it from screen.
+
+### Few-shot
+
+This strategy includes multiple examples (more than one). The structure
+is similar to one-shot but with several iterations of user and assistant
+messages providing examples before the final text to classify.
+
+``` r
+q <- tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. Answer with just the correct category.",
+  "user", "text: the pizza tastes terrible\ncategories: positive, neutral, negative",
+  "assistant", "Category: Negative",
+  "user", "text: the service is great\ncategories: positive, neutral, negative",
+  "assistant", "Category: Positive",
+  "user", "text: I once came here with my wife\ncategories: positive, neutral, negative",
+  "assistant", "Category: Neutral",
+  "user", "text: I once ate pizza\ncategories: positive, neutral, negative"
+)
+query(q)
+#> 
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────
+#> Category: Neutral
+```
+
+### Chain-of-Thought
+
+This approach involves at least one reasoning step. The structure here
+starts with the system prompt, then a user prompt with a text to
+classify and a reasoning question.
+
+``` r
+q_thought <- tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. ",
+  "user",   "text: the pizza tastes terrible\nWhat sentiment (positive, neutral, or negative) would you assign? Provide some thoughts."
+)
+output_thought <- query(q_thought, output = "text")
+#> 
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────
+#> I would assign a negative sentiment to this text.
+#> 
+#> Here's why:
+#> 
+#> * The word "terrible" is a strong adjective that conveys a strong
+#> negative opinion.
+#> * The tone of the sentence is also quite critical and dismissive.
+#> * There are no positive or neutral phrases in the text, which
+#> suggests that the author has a clear dislike for the pizza.
+#> 
+#> Overall, the language and tone used in this text indicate a strong
+#> negative sentiment towards the pizza.
+```
+
+In the next step we can use the assistant’s reasoning and a user prompt
+with the classification question.
+
+``` r
+q <- tribble(
+  ~role,    ~content,
+  "system", "You assign texts into categories. ",
+  "user",   "text: the pizza tastes terrible\nWhat sentiment (positive, neutral, or negative) would you assign? Provide some thoughts.",
+  "assistant", output_thought,
+  "user",   "Now answer with just the correct category (positive, neutral, or negative)"
+)
+resps <- query(q)
+#> 
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────
+#> Negative
+```
+
+### The `make_query` helper function
+
+The `make_query` function is designed to facilitate the creation of a
+structured query for text classification, so that you do not need to
+build the tibble yourself and remember the specific structure.
+
+Components:
+
+- **text** to Classify: The new text(s) to be annotated.
+- **prompt**: Classification question with the categories to be
+  annotated.
+- **template**: Defines the structure for user messages. Defines the
+  structure for user messages. The template can include placeholders
+  like {text}, {prefix}, and {suffix} to dynamically format input.
+- **system**: System Prompt: Provides context or instructions for the
+  classification task (optional).
+- **prefix**: A string to prepend to user queries (optional).
+- **suffix**: A string to append to user queries (optional).
+- **examples**: Prior examples consisting of user messages and assistant
+  responses (for one-shot and few-shot learning)(optional).
+
+### Example usage
+
+#### Zero-shot example
+
+In this example, the function is used without any examples.
+
+``` r
+# Call the make_query function
+q_zs <- make_query(
+  template = "{text}\n{prompt}",
+  text = "the pizza tastes terrible",
+  prompt = "Categories: positive, neutral, negative",
+  system = "You assign texts into categories. Answer with just the correct category.",
+)
+
+# Print the query
+print(q_zs)
+#> [[1]]
+#> # A tibble: 2 × 2
+#>   role   content                                                      
+#>   <chr>  <glue>                                                       
+#> 1 system You assign texts into categories. Answer with just the corre…
+#> 2 user   the pizza tastes terrible
+#> Categories: positive, neutral, nega…
+# Run the query
+query(q_zs)
+#> 
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────
+#> negative
+```
+
+#### One-shot example
+
+Here, one prior example is provided to aid the classification:
+
+``` r
+examples_os <- tibble::tribble(
+  ~text, ~answer,
+  "the pizza tastes terrible", "negative"
+)
+
+q_os <- make_query(
+  text = "the service is great",
+  template = "{text}\n{prompt}",
+  prompt = "Categories: positive, neutral, negative",
+  system = "You assign texts into categories. Answer with just the correct category.",
+  example = examples_os,
+)
+print(q_os)
+#> [[1]]
+#> # A tibble: 4 × 2
+#>   role      content                                                   
+#>   <chr>     <glue>                                                    
+#> 1 system    You assign texts into categories. Answer with just the co…
+#> 2 user      the pizza tastes terrible
+#> Categories: positive, neutral, n…
+#> 3 assistant negative                                                  
+#> 4 user      the service is great
+#> Categories: positive, neutral, negati…
+
+query(q_os)
+#> 
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────
+#> positive
+```
+
+#### Few-shot example with multiple examples
+
+This scenario uses multiple examples to enrich the context for the new
+classification:
+
+``` r
+examples_fs <- tibble::tribble(
+  ~text, ~answer,
+  "the pizza tastes terrible", "negative",
+  "the service is great", "positive",
+  "I once came here with my wife", "neutral"
+)
+
+q_fs <- make_query(
+  text = "I once ate pizza",
+  prompt = "Categories: positive, neutral, negative",
+  template = "{text}\n{prompt}",
+  system = "You assign texts into categories. Answer with just the correct category.",
+  examples = examples_fs
+)
+
+query(q_fs)
+#> 
+#> ── Answer from llama3.2:3b-instruct-q8_0 ─────────────────────────────
+#> neutral
+```
+
+## Batch annotation
+
+In practice, you probably never want to annotate just one text, except
+maybe for testing. Instead you normally have a collections of texts,
+which is why `make_query` takes a vector for the `text` argument. In
+this section, we highlight how this is useful with an example batch of
+texts.
+
+## Example using a dataframe
+
+This example demonstrates how to perform sentiment analysis on a set of
+movie reviews. The process involves creating a dataframe of reviews,
+processing each review to classify its sentiment, and appending the
+results as a new column in the dataframe.
+
+We create a dataframe named `movie_reviews` with two columns:
+
+``` r
+# Create an example dataframe with 5 movie reviews
+movie_reviews <- tibble::tibble(
+  review_id = 1:5,
+  review = c("A stunning visual spectacle with a gripping storyline.",
+             "The plot was predictable, but the acting was superb.",
+             "An overrated film with underwhelming performances.",
+             "A beautiful tale of love and adventure, beautifully shot.",
+             "The movie lacked depth, but the special effects were incredible.")
+)
+# Print the initial dataframe
+movie_reviews
+#> # A tibble: 5 × 2
+#>   review_id review                                                    
+#>       <int> <chr>                                                     
+#> 1         1 A stunning visual spectacle with a gripping storyline.    
+#> 2         2 The plot was predictable, but the acting was superb.      
+#> 3         3 An overrated film with underwhelming performances.        
+#> 4         4 A beautiful tale of love and adventure, beautifully shot. 
+#> 5         5 The movie lacked depth, but the special effects were incr…
+```
+
+We can use `make_query` again to define a query for each of these
+reviews. What we want to do is to perform a sentiment analysis, guided
+by a system message and a classification question.
+
+``` r
+# Process each review using make_query
+queries <- make_query(
+  text = movie_reviews$review,
+  prompt = "Categories: positive, neutral, negative",
+  template = "{prefix}{text}\n{prompt}",
+  system = "Classify the sentiment of the movie review. Answer with just the correct category.",
+  prefix = "Text to classify: "
+)
+```
+
+This produces a list of data.frames that have the same query format we
+are now familiar with. All of them have the same prompt, system message
+and prefix, but each has a different text that came from the movie
+reviews data.frame we created above. The `query` function accepts lists
+of queries, so we can get the annotations simply using:
+
+``` r
+# Process and annotate the movie reviews
+movie_reviews$annotation <- query(queries, screen = FALSE, output = "text")
+
+# Print the annotated dataframe
+movie_reviews
+#> # A tibble: 5 × 3
+#>   review_id review                                          annotation
+#>       <int> <chr>                                           <chr>     
+#> 1         1 A stunning visual spectacle with a gripping st… Positive  
+#> 2         2 The plot was predictable, but the acting was s… positive  
+#> 3         3 An overrated film with underwhelming performan… Negative  
+#> 4         4 A beautiful tale of love and adventure, beauti… Positive  
+#> 5         5 The movie lacked depth, but the special effect… Neutral
+```
+
+We can also use this approach in a ‘tidy’ coding style:
+
+``` r
+library(dplyr, warn.conflicts = FALSE)
+movie_reviews_annotated <- movie_reviews |>
+  mutate(
+    sentiment = make_query(
+      text = review,
+      prompt = "Categories: positive, neutral, negative",
+      template = "{prefix}{text}\n{prompt}",
+      system = "Classify the sentiment of the movie review. Answer with just the correct category.",
+      prefix = "Text to classify: "
+    ) |>
+      query(screen = FALSE, output = "text")
+  )
+movie_reviews_annotated
+#> # A tibble: 5 × 4
+#>   review_id review                                annotation sentiment
+#>       <int> <chr>                                 <chr>      <chr>    
+#> 1         1 A stunning visual spectacle with a g… Positive   Positive 
+#> 2         2 The plot was predictable, but the ac… positive   positive 
+#> 3         3 An overrated film with underwhelming… Negative   Negative 
+#> 4         4 A beautiful tale of love and adventu… Positive   Positive 
+#> 5         5 The movie lacked depth, but the spec… Neutral    Neutral
+```
+
+This takes a little longer than classic supervised machine learning or
+even classification with transformer models. However, the advantage is
+that instructions can be provided using plain English, the models need
+very few examples to perform surprisingly well, and the best models,
+like `llama3.2`, can often deal with more complex categories than other
+approaches.

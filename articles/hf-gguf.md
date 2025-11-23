@@ -1,0 +1,90 @@
+# Hugging Face Models
+
+If you are looking for a model to use, you should probably search for it
+on the [Ollama website](https://ollama.com/search). However, the models
+listed there are not all models that can be used in (r)ollama. Models in
+the GGUF format from *Hugging Face Hub*, a very popular platform for
+sharing machine learning models. To look for a specific model, all you
+need to do is visit <https://huggingface.co/models?library=gguf> (this
+is already filtered to GGUF models, other model formats are not
+compatible with Ollama).
+
+Once you have identified a model, you can simply pass the URL to the
+`pull_model` function:
+
+``` r
+library(rollama)
+pull_model("https://huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
+#> ✔ model https://huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K pulled succesfully
+```
+
+Note that the `:Q2_K` at the end is the [quantization
+scheme](https://huggingface.co/docs/optimum/en/concept_guides/quantization).
+Q2_K is the smallest available version of the model, which gives up some
+performance, but is faster to run. You can find the different
+quantization versions when clicking the `Use this model` on a model
+site. When downloading, Ollama converts the URL automatically into a
+name, we need to query our model list first to see how the model is
+named now:
+
+``` r
+grep("oxy-1-small", list_models()$name, value = TRUE)
+#> [1] "huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K"
+```
+
+But except for the awkward name, we can now use this model as any other
+one:
+
+``` r
+chat("Why is the sky blue?", model = "huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
+#> 
+#> ── Answer from huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K ───────────
+#> The sky appears blue to our eyes due to a process called Rayleigh
+#> scattering. Sunlight entering the Earth’s atmosphere collides with
+#> the air molecules, causing them to scatter in all directions.
+#> Nitrogen and oxygen make up about 95% of the earth's atmosphere.
+#> 
+#> When sunlight encounters these gases, it gets scattered widely
+#> throughout the sky. Shorter wavelengths of visible light fall within
+#> blue’s wavelength range; thus, when sunlight scatters into our eyes
+#> as blue light, we perceive a blue sky.
+#> 
+#> However, at sunrise and sunset hours, the sun is lower on the horizon
+#> compared to noon time. As such the path of sunlight passes through
+#> more atmosphere than usual, which causes the longer wavelengths (red)
+#> to dominate over shorter ones, giving us the shades of red hues like
+#> pink or crimson skies.
+```
+
+Note that this also works with [text embedding
+models](https://jbgruber.github.io/rollama/articles/text-embedding.html).
+Hugging Face Hub has some nice filters with which you can pre-select
+appropriate models and then use full text search to find more. This
+search looks for embedding models with the correct model type, for
+example:
+
+<https://huggingface.co/models?pipeline_tag=sentence-similarity&library=gguf>
+
+The trending models are often quite good for general tasks, but more
+information is available in leaderboards and blog posts. For no
+particular reason, let’s use Snowflake’s Arctic-embed-m-v1.5 embed for
+demonstration purposes here:
+
+``` r
+pull_model("https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16")
+#> ✔ model https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16 pulled succesfully
+embed_text(c("Why is the sky blue?", "I am pretty happy we can work with GGUF models in R"),
+           model = "huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16")
+#> # A tibble: 2 × 768
+#>   dim_1  dim_2 dim_3   dim_4 dim_5  dim_6   dim_7 dim_8  dim_9 dim_10
+#>   <dbl>  <dbl> <dbl>   <dbl> <dbl>  <dbl>   <dbl> <dbl>  <dbl>  <dbl>
+#> 1 0.221  0.128 0.698  0.0980 0.891 -0.145  0.168  0.722 -0.308 -0.674
+#> 2 0.239 -0.332 0.699 -0.125  0.856  0.345 -0.0625 0.361 -0.309 -0.657
+#> # ℹ 758 more variables: dim_11 <dbl>, dim_12 <dbl>, dim_13 <dbl>,
+#> #   dim_14 <dbl>, dim_15 <dbl>, dim_16 <dbl>, dim_17 <dbl>,
+#> #   dim_18 <dbl>, dim_19 <dbl>, dim_20 <dbl>, dim_21 <dbl>,
+#> #   dim_22 <dbl>, dim_23 <dbl>, dim_24 <dbl>, dim_25 <dbl>,
+#> #   dim_26 <dbl>, dim_27 <dbl>, dim_28 <dbl>, dim_29 <dbl>,
+#> #   dim_30 <dbl>, dim_31 <dbl>, dim_32 <dbl>, dim_33 <dbl>,
+#> #   dim_34 <dbl>, dim_35 <dbl>, dim_36 <dbl>, dim_37 <dbl>, …
+```

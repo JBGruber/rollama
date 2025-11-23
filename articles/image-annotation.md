@@ -1,0 +1,66 @@
+# image-annotation
+
+Ollama also supports multimodal models, which can interact with (but not
+create) images.
+
+We start by loading the package:
+
+``` r
+library(rollama)
+```
+
+After loading the package, we need to pull a model that can handle
+images. For example, the [llava](https://llava-vl.github.io/) model.
+Using `pull_model("llava")` will download the model, or just load it if
+it has already been downloaded before.
+
+``` r
+pull_model("llava")
+#> ✔ model llava pulled succesfully
+```
+
+We can use textual and visual input together. For instance, we can ask a
+question and provide a link to a picture or a local file path, such as
+`images = "/home/user/Pictures/IMG_4561.jpg"`.
+
+In the first example, we ask the model to describe the logo of this
+package:
+
+``` r
+query("Excitedly desscribe this logo", model = "llava",
+      images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
+#> 
+#> ── Answer from llava ─────────────────────────────────────────────────
+#> This is an image of a logo for "Rollama." The logo features a playful
+#> and creative design, with a cartoon-style character resting on a bed
+#> of green grass. The character is anthropomorphic, having arms and
+#> legs like a human, but it has animal-like ears and is wearing a blue
+#> helmet. The helmet seems to have a visor, and there's a badge
+#> attached to it that reads "Rollama."
+#> 
+#> The background of the logo is light blue with a faint cloud pattern,
+#> which adds to the whimsical feel of the design. The use of bold
+#> colors and simple shapes gives the logo a friendly and approachable
+#> vibe, suggesting that whatever "Rollama" represents could be fun and
+#> enjoyable.
+#> 
+#> Without additional context, it's not possible to determine the exact
+#> nature or purpose of Rollama from this image alone. However, the
+#> playful design and the badge suggest that it might be related to a
+#> game, an application, or possibly a branding for something
+#> entertaining and engaging.
+```
+
+The second example asks a classification question:
+
+``` r
+query("Which animal is in this image: a llama, dog, or walrus?",
+      model = "llava",
+      images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
+#> 
+#> ── Answer from llava ─────────────────────────────────────────────────
+#> The image shows an animated character that resembles a llama. It has
+#> distinctive features of a llama, such as the large head with two
+#> forward-facing horns and a long, curved neck with short, rounded ears
+#> at the top.
+```
