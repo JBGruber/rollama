@@ -64,6 +64,6 @@ queries <- make_query(
 )
 print(queries)
 if (ping_ollama()) { # only run this example when Ollama is running
-  query(queries, screen = TRUE, output = "text")
+  query(queries, stream = TRUE, output = "text")
 }
 }

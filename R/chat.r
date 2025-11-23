@@ -29,7 +29,7 @@
 #'   options. Default is "llama3.1". Set `option(rollama_model = "modelname")` to
 #'   change default for the current session. See [pull_model] for more
 #'   details.
-#' @param screen Logical. Should the answer be printed to the screen.
+#' @param stream Logical. Should the answer be printed to the screen.
 #' @param server URL to one or several Ollama servers (not the API). Defaults to
 #'   "http://localhost:11434".
 #' @param images path(s) to images (for multimodal models such as llava).
@@ -45,6 +45,7 @@
 #'   value is `"json"`.
 #' @param template the prompt template to use (overrides what is defined in the
 #'   Modelfile).
+#' @param ... not used.
 #' @param verbose Whether to print status messages to the Console. Either
 #'   `TRUE`/`FALSE` or see [httr2::progress_bars]. The default is to have status
 #'   messages in interactive sessions. Can be changed with
@@ -143,7 +144,7 @@
 query <- function(
   q,
   model = NULL,
-  screen = TRUE,
+  stream = TRUE,
   server = NULL,
   images = NULL,
   model_params = NULL,
@@ -157,8 +158,13 @@ query <- function(
   ),
   format = NULL,
   template = NULL,
+  ...,
   verbose = getOption("rollama_verbose", default = interactive())
 ) {
+  # for backwards compatibility
+  if ("screen" %in% names(list(...))) {
+    stream <- list(...)$screen
+  }
   if (!is.function(output)) {
     output <- match.arg(output)
   }
@@ -193,9 +199,9 @@ query <- function(
     model = model,
     msg = msg,
     server = server,
-    images = images,
     model_params = model_params,
     format = format,
+    stream = stream,
     template = template
   )
 
@@ -208,21 +214,27 @@ query <- function(
   }
   check_model_installed(model, server = server)
 
-  if (length(reqs) > 1L) {
-    resps <- perform_reqs(reqs, verbose)
-  } else {
-    resps <- perform_req(reqs, verbose)
-  }
-
   res <- NULL
-  if (screen) {
-    res <- purrr::map(resps, httr2::resp_body_json)
-    purrr::walk(res, function(r) {
-      screen_answer(
-        purrr::pluck(r, "message", "content"),
-        purrr::pluck(r, "model")
-      )
-    })
+
+  if (stream) {
+    if (is.function(output) | identical(output, "httr2_response")) {
+      resps <- perform_reqs(reqs, verbose)
+      res <- purrr::map(resps, httr2::resp_body_json)
+      purrr::walk(res, function(r) {
+        screen_answer(
+          purrr::pluck(r, "message", "content"),
+          purrr::pluck(r, "model")
+        )
+      })
+    } else {
+      res <- purrr::map(reqs, stream_answer)
+    }
+  } else {
+    if (length(reqs) > 1L) {
+      resps <- perform_reqs(reqs, verbose)
+    } else {
+      resps <- perform_req(reqs, verbose)
+    }
   }
 
   if (is.function(output)) {
@@ -253,11 +265,12 @@ query <- function(
 chat <- function(
   q,
   model = NULL,
-  screen = TRUE,
+  stream = TRUE,
   server = NULL,
   images = NULL,
   model_params = NULL,
   template = NULL,
+  ...,
   verbose = getOption("rollama_verbose", default = interactive())
 ) {
   config <- getOption("rollama_config", default = NULL)
@@ -286,10 +299,11 @@ chat <- function(
   resp <- query(
     q = msg,
     model = model,
-    screen = screen,
+    stream = stream,
     server = server,
     model_params = model_params,
     template = template,
+    ...,
     verbose = verbose
   )
 
@@ -374,7 +388,7 @@ new_chat <- function() {
 #' )
 #' print(queries)
 #' if (ping_ollama()) { # only run this example when Ollama is running
-#'   query(queries, screen = TRUE, output = "text")
+#'   query(queries, stream = TRUE, output = "text")
 #' }
 make_query <- function(
   text,

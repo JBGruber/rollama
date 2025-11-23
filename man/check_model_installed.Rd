@@ -8,7 +8,7 @@ check_model_installed(
   model,
   check_only = FALSE,
   auto_pull = FALSE,
-  server = getOption("rollama_server", default = "http://localhost:11434")
+  server = NULL
 )
 }
 \arguments{

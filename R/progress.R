@@ -1,3 +1,36 @@
+stream_answer <- function(req) {
+  cli::cli_h1("Answer from {cli::style_bold({req$body$data$model})}")
+  conn <- httr2::req_perform_connection(req)
+  on.exit(close(conn))
+  line <- answer <- character()
+  repeat {
+    resp <- httr2::resp_stream_lines(conn, lines = 1L) |>
+      jsonlite::fromJSON()
+    # for debugging
+    # resp <- httr2::resp_stream_lines(conn, lines = 1L)
+    # write(resp, "resp.json", append = TRUE)
+    # resp <- jsonlite::fromJSON(resp)
+    line <- c(line, purrr::pluck(resp, "message", "content"))
+    if (!any(grepl("\n", line))) {
+      cat("\r", line, sep = "")
+    } else {
+      cat("\r", line, sep = "")
+      answer <- c(answer, line)
+      line <- character()
+    }
+    if (httr2::resp_stream_is_complete(conn)) break
+  }
+  # to make the output the same as non-streaming
+  answer <- c(answer, line)
+  n_last <- length(purrr::pluck(resp, "message", "content"))
+  purrr::pluck(resp, "message", "content", n_last) <- paste(
+    answer,
+    collapse = ""
+  )
+  return(resp)
+}
+
+
 stream_progress <- function(req, verbose, background, ...) {
   # set up connection
   the$str_prgs$pb_start <- Sys.time()
@@ -5,7 +38,9 @@ stream_progress <- function(req, verbose, background, ...) {
   on.exit(close(conn))
 
   # just set up connection and leave
-  if (background) return(invisible(FALSE))
+  if (background) {
+    return(invisible(FALSE))
+  }
 
   # stream line by line until done
   repeat {
@@ -14,6 +49,7 @@ stream_progress <- function(req, verbose, background, ...) {
   }
   return(invisible(TRUE))
 }
+
 
 # function to display progress in streaming operations
 process_status <- function(status, verbose) {
@@ -32,7 +68,9 @@ process_status <- function(status, verbose) {
   # if total is missing, it's a step update or error
   if (!purrr::pluck_exists(status, "total")) {
     if (isTRUE(status_message == "success")) {
-      if (verbose) cli::cli_progress_message("{cli::col_green(cli::symbol$tick)} success!")
+      if (verbose) {
+        cli::cli_progress_message("{cli::col_green(cli::symbol$tick)} success!")
+      }
       return(TRUE)
     } else if (purrr::pluck_exists(status, "error")) {
       cli::cli_abort("{purrr::pluck(status, \"error\")}")
@@ -62,9 +100,9 @@ process_status <- function(status, verbose) {
 
   # copy some values to package env
   the$str_prgs$done_pct <- done_pct
-  the$str_prgs$total    <- total
-  the$str_prgs$speed    <- speed
-  the$str_prgs$layer    <- layer
+  the$str_prgs$total <- total
+  the$str_prgs$speed <- speed
+  the$str_prgs$layer <- layer
 
   # if there is a total, it's a download update
   # if the layer is different from the last pb update, create a new pb
@@ -88,7 +126,9 @@ process_status <- function(status, verbose) {
     if (total > done) {
       if (verbose) cli::cli_progress_update(force = TRUE, .envir = the)
     } else {
-      if (verbose) cli::cli_process_done(.envir = the)
+      if (verbose) {
+        cli::cli_process_done(.envir = the)
+      }
       the$str_prgs$current_pb <- NULL
     }
   }

@@ -64,7 +64,7 @@ options are also available through the \code{query} and \code{chat} functions, y
 are not persistent over sessions.
 }
 \examples{
-\dontshow{if (ping_ollama(silent = TRUE)) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (ping_ollama(silent = TRUE)) withAutoprint(\{ # examplesIf}
 create_model("mario", from = "llama3.1", system = "You are mario from Super Mario Bros.")
 \dontshow{\}) # examplesIf}
 }

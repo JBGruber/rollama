@@ -21,8 +21,11 @@ check_model_installed <- function(
   model,
   check_only = FALSE,
   auto_pull = FALSE,
-  server = getOption("rollama_server", default = "http://localhost:11434")
+  server = NULL
 ) {
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
   model <- sub("^([^:]+)$", "\\1:latest", model)
   for (sv in server) {
     models_df <- list_models(server = sv)

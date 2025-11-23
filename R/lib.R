@@ -47,9 +47,9 @@ build_req <- function(
   model,
   msg,
   server,
-  images,
   model_params,
   format,
+  stream,
   template
 ) {
   if (is.null(model)) {
@@ -75,7 +75,7 @@ build_req <- function(
         list(
           model = m,
           messages = ms,
-          stream = FALSE,
+          stream = stream,
           options = model_params,
           format = format,
           template = template
@@ -93,7 +93,7 @@ build_req <- function(
       list(
         model = m,
         messages = ms,
-        stream = FALSE,
+        stream = stream,
         options = model_params,
         format = format,
         template = template

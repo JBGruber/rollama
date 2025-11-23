@@ -8,24 +8,26 @@
 query(
   q,
   model = NULL,
-  screen = TRUE,
+  stream = TRUE,
   server = NULL,
   images = NULL,
   model_params = NULL,
   output = c("response", "text", "list", "data.frame", "httr2_response", "httr2_request"),
   format = NULL,
   template = NULL,
+  ...,
   verbose = getOption("rollama_verbose", default = interactive())
 )
 
 chat(
   q,
   model = NULL,
-  screen = TRUE,
+  stream = TRUE,
   server = NULL,
   images = NULL,
   model_params = NULL,
   template = NULL,
+  ...,
   verbose = getOption("rollama_verbose", default = interactive())
 )
 }
@@ -37,7 +39,7 @@ options. Default is "llama3.1". Set \code{option(rollama_model = "modelname")} t
 change default for the current session. See \link{pull_model} for more
 details.}
 
-\item{screen}{Logical. Should the answer be printed to the screen.}
+\item{stream}{Logical. Should the answer be printed to the screen.}
 
 \item{server}{URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".}
@@ -58,6 +60,8 @@ value is \code{"json"}.}
 
 \item{template}{the prompt template to use (overrides what is defined in the
 Modelfile).}
+
+\item{...}{not used.}
 
 \item{verbose}{Whether to print status messages to the Console. Either
 \code{TRUE}/\code{FALSE} or see \link[httr2:progress_bars]{httr2::progress_bars}. The default is to have status
@@ -96,7 +100,7 @@ server as an input.
 }
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 # ask a single question
 query("why is the sky blue?")
 
