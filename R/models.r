@@ -31,18 +31,26 @@
 #' # pulling models from Hugging Face Hub is also possible
 #' pull_model("https://huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
 #' }
-pull_model <- function(model = NULL,
-                       server = NULL,
-                       insecure = FALSE,
-                       verbose = getOption("rollama_verbose",
-                                           default = interactive())) {
-
-  if (is.null(model)) model <- getOption("rollama_model", default = "llama3.1")
-  if (is.null(server)) server <- getOption("rollama_server",
-                                           default = "http://localhost:11434")
-
+pull_model <- function(
+  model = NULL,
+  server = NULL,
+  insecure = FALSE,
+  background = FALSE,
+  verbose = getOption("rollama_verbose", default = interactive())
+) {
+  if (is.null(model)) {
+    model <- getOption("rollama_model", default = "llama3.1")
+  }
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
+  if (!all(ping_ollama(server = server, silent = TRUE))) {
+    cli::cli_alert_danger("Could not connect to Ollama at {.url {server}}")
+  }
   if (length(model) > 1L) {
-    for (m in model) pull_model(m, server, insecure, verbose)
+    for (m in model) {
+      pull_model(m, server, insecure, verbose)
+    }
   }
 
   # flush progress
@@ -73,11 +81,15 @@ pull_model <- function(model = NULL,
 #' @rdname pull_model
 #' @export
 show_model <- function(model = NULL, server = NULL) {
-
-  if (is.null(model)) model <- getOption("rollama_model", default = "llama3.1")
-  if (is.null(server)) server <- getOption("rollama_server",
-                                           default = "http://localhost:11434")
-  if (length(model) != 1L) cli::cli_abort("model needs to be one model name.")
+  if (is.null(model)) {
+    model <- getOption("rollama_model", default = "llama3.1")
+  }
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
+  if (length(model) != 1L) {
+    cli::cli_abort("model needs to be one model name.")
+  }
 
   httr2::request(server) |>
     httr2::req_url_path_append("/api/show") |>
@@ -110,19 +122,27 @@ show_model <- function(model = NULL, server = NULL) {
 #' @return Nothing. Called to create a model on the Ollama server.
 #' @export
 #'
-#' @examples
-#' modelfile <- system.file("extdata", "modelfile.txt", package = "rollama")
-#' \dontrun{create_model("mario", modelfile)}
-#' modelfile <- "FROM llama3.1\nSYSTEM You are mario from Super Mario Bros."
-#' \dontrun{create_model("mario", modelfile)}
-create_model <- function(model, modelfile, server = NULL) {
-
-  if (is.null(server)) server <- getOption("rollama_server",
-                                           default = "http://localhost:11434")
-  if (isTRUE(file.exists(modelfile))) {
-    modelfile <- readChar(modelfile, file.size(modelfile))
-  } else if (length(modelfile) > 1) {
-    modelfile <- paste0(modelfile, collapse = "\n")
+#' @examplesIf ping_ollama(silent = TRUE)
+#' create_model("mario", from = "llama3.1", system = "You are mario from Super Mario Bros.")
+create_model <- function(
+  model,
+  from = NULL,
+  template = NULL,
+  license = NULL,
+  system = NULL,
+  parameters = NULL,
+  messages = NULL,
+  quantize = NULL,
+  stream = TRUE,
+  ...,
+  server = NULL,
+  verbose = getOption("rollama_verbose", default = interactive())
+) {
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
+  if ("modelfile" %in% names(list(...))) {
+    cli::cli_warn("the parameter modelfile is deprecated")
   }
 
   # flush progress
@@ -146,9 +166,9 @@ create_model <- function(model, modelfile, server = NULL) {
 #' @rdname pull_model
 #' @export
 delete_model <- function(model, server = NULL) {
-
-  if (is.null(server)) server <- getOption("rollama_server",
-                                           default = "http://localhost:11434")
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
 
   httr2::request(server) |>
     httr2::req_url_path_append("/api/delete") |>
@@ -164,17 +184,18 @@ delete_model <- function(model, server = NULL) {
 
 #' @rdname pull_model
 #' @export
-copy_model <- function(model,
-                       destination = paste0(model, "-copy"),
-                       server = NULL) {
-
-  if (is.null(server)) server <- getOption("rollama_server",
-                                           default = "http://localhost:11434")
+copy_model <- function(
+  model,
+  destination = paste0(model, "-copy"),
+  server = NULL
+) {
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
 
   httr2::request(server) |>
     httr2::req_url_path_append("/api/copy") |>
-    httr2::req_body_json(list(source = model,
-                              destination = destination)) |>
+    httr2::req_body_json(list(source = model, destination = destination)) |>
     httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
     httr2::req_headers(!!!get_headers()) |>
     httr2::req_perform()
@@ -190,9 +211,9 @@ copy_model <- function(model,
 #' @return a tibble of installed models
 #' @export
 list_models <- function(server = NULL) {
-
-  if (is.null(server)) server <- getOption("rollama_server",
-                                           default = "http://localhost:11434")
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
 
   httr2::request(server) |>
     httr2::req_url_path_append("/api/tags") |>
