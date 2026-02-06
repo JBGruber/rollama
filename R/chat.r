@@ -45,8 +45,9 @@
 #'   value is `"json"`.
 #' @param template the prompt template to use (overrides what is defined in the
 #'   Modelfile).
-#' @param engine which service serves the model. See details for possible
-#'   options.
+#' @param engine which service serves the model. Possible values are "ollama"
+#'   (default), "openai", "openwebui", or "anthropic". For OpenAI and Anthropic,
+#'   set your API key with `options(rollama_api_key = "your-key")`.
 #' @param ... not used.
 #' @param verbose Whether to print status messages to the Console. Either
 #'   `TRUE`/`FALSE` or see [httr2::progress_bars]. The default is to have status
@@ -200,7 +201,10 @@ query <- function(
 
   req_fun <- switch(
     tolower(engine),
-    ollama = build_req_ollama
+    ollama = build_req_ollama,
+    openai = build_req_openai,
+    openwebui = build_req_openwebui,
+    anthropic = build_req_anthropic
   )
 
   reqs <- req_fun(
@@ -217,20 +221,27 @@ query <- function(
     return(invisible(reqs))
   }
 
-  if (!all(ping_ollama(server = server, silent = TRUE))) {
-    cli::cli_alert_danger("Could not connect to Ollama at {.url {sv}}")
-  }
-  check_model_installed(model, server = server)
-
   res <- NULL
 
   if (stream) {
-    if (is.function(output) | identical(output, "httr2_response")) {
+    if (
+      is.function(output) |
+        identical(output, "httr2_response") |
+        # TODO: streaming for other engines?
+        !identical(tolower(engine), "ollama")
+    ) {
       resps <- perform_reqs(reqs, verbose)
       res <- purrr::map(resps, httr2::resp_body_json)
+      pluck_message <- switch(
+        tolower(engine),
+        ollama = function(r) purrr::pluck(r, "message", "content"),
+        function(r) {
+          purrr::pluck(r, "choices", 1, "message", "content")
+        }
+      )
       purrr::walk(res, function(r) {
         screen_answer(
-          purrr::pluck(r, "message", "content"),
+          pluck_message(r),
           purrr::pluck(r, "model")
         )
       })
@@ -257,13 +268,14 @@ query <- function(
     res <- purrr::map(resps, httr2::resp_body_json)
   }
 
-  out <- switch(
-    output,
-    "response" = res,
-    "text" = purrr::map_chr(res, c("message", "content")),
-    "list" = process2list(res, reqs),
-    "data.frame" = process2df(res)
+  output_fun <- switch(
+    tolower(engine),
+    ollama = output_ollama,
+    openai = output_openai,
+    openwebui = output_openwebui,
+    anthropic = output_anthropic
   )
+  out <- output_fun(res, output)
   invisible(out)
 }
 

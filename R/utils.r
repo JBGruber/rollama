@@ -59,8 +59,10 @@ check_model_installed <- function(
 
 
 # process responses to list
-process2list <- function(resps, reqs) {
+process2list <- function(resps, reqs, engine) {
   purrr::map2(resps, reqs, function(resp, req) {
+    openai <- purrr::pluck_exists(resp, "choices", 1, "message", "content")
+
     list(
       request = list(
         model = purrr::pluck(req, "body", "data", "model"),
@@ -69,8 +71,16 @@ process2list <- function(resps, reqs) {
       ),
       response = list(
         model = purrr::pluck(resp, "model"),
-        role = purrr::pluck(resp, "message", "role"),
-        message = purrr::pluck(resp, "message", "content")
+        role = if (openai) {
+          purrr::pluck(resp, "choices", 1, "message", "role")
+        } else {
+          purrr::pluck(resp, "message", "role")
+        },
+        message = if (openai) {
+          purrr::pluck(resp, "choices", 1, "message", "content")
+        } else {
+          purrr::pluck(resp, "message", "content")
+        }
       )
     )
   })
@@ -79,11 +89,19 @@ process2list <- function(resps, reqs) {
 
 # process responses to data.frame
 process2df <- function(resps) {
-  tibble::tibble(
-    model = purrr::map_chr(resps, "model"),
-    role = purrr::map_chr(resps, c("message", "role")),
-    response = purrr::map_chr(resps, c("message", "content"))
-  )
+  if (purrr::pluck_exists(resps, 1, "choices")) {
+    tibble::tibble(
+      model = purrr::map_chr(resps, "model"),
+      role = purrr::map_chr(resps, list("choices", 1, "message", "role")),
+      response = purrr::map_chr(resps, list("choices", 1, "message", "content"))
+    )
+  } else {
+    tibble::tibble(
+      model = purrr::map_chr(resps, "model"),
+      role = purrr::map_chr(resps, c("message", "role")),
+      response = purrr::map_chr(resps, c("message", "content"))
+    )
+  }
 }
 
 
