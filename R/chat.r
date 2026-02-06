@@ -160,6 +160,7 @@ query <- function(
   ),
   format = NULL,
   template = NULL,
+  engine = "Ollama",
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 ) {
@@ -206,9 +207,9 @@ query <- function(
     model = model,
     msg = msg,
     server = server,
-    images = images,
     model_params = model_params,
     format = format,
+    stream = stream,
     template = template
   )
 

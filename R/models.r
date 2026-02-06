@@ -168,7 +168,7 @@ create_model <- function(
     )) |>
     httr2::req_headers(!!!get_headers())
 
-  if (stream) {
+  if (stream & verbose) {
     stream_progress(req, background = FALSE, verbose)
   } else {
     httr2::req_perform(req)
