@@ -275,7 +275,7 @@ query <- function(
     openwebui = output_openwebui,
     anthropic = output_anthropic
   )
-  out <- output_fun(res, output)
+  out <- output_fun(res = res, output = output, reqs = reqs)
   invisible(out)
 }
 

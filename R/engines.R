@@ -112,7 +112,7 @@ make_req <- function(req_data, server, endpoint, engine = "ollama") {
 }
 
 
-output_ollama <- function(res, output) {
+output_ollama <- function(res, output, reqs) {
   switch(
     output,
     "response" = res,
@@ -175,7 +175,7 @@ output_openwebui <- function(res, output) {
   switch(
     output,
     "response" = res,
-    "text" = purrr::map_chr(res, c("message", "content")),
+    "text" = purrr::map_chr(res, list("choices", 1, "message", "content")),
     "list" = process2list(res, reqs),
     "data.frame" = process2df(res)
   )
@@ -228,6 +228,8 @@ build_req_openai <- function(
   return(req_data)
 }
 
+
+output_openai <- output_openwebui
 
 ### Anthropic
 build_req_anthropic <- function(
@@ -295,7 +297,7 @@ build_req_anthropic <- function(
 }
 
 
-output_anthropic <- function(res, output) {
+output_anthropic <- function(res, output, reqs) {
   switch(
     output,
     "response" = res,
