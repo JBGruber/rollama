@@ -156,7 +156,14 @@ build_req_openwebui <- function(
     }
     # Add response format if specified
     if (!is.null(format)) {
-      req_body$response_format <- list(type = format)
+      if (is.character(format)) {
+        # Simple format like "json" -> "json_object"
+        format_type <- if (format == "json") "json_object" else format
+        req_body$response_format <- list(type = format_type)
+      } else if (is.list(format)) {
+        # Already a properly structured response_format, use directly
+        req_body$response_format <- format
+      }
     }
     req_body |>
       purrr::compact() |>
@@ -171,7 +178,7 @@ build_req_openwebui <- function(
 }
 
 
-output_openwebui <- function(res, output) {
+output_openwebui <- function(res, output, reqs) {
   switch(
     output,
     "response" = res,
@@ -215,7 +222,14 @@ build_req_openai <- function(
     }
     # Add response format if specified
     if (!is.null(format)) {
-      req_body$response_format <- list(type = format)
+      if (is.character(format)) {
+        # Simple format like "json" -> "json_object"
+        format_type <- if (format == "json") "json_object" else format
+        req_body$response_format <- list(type = format_type)
+      } else if (is.list(format)) {
+        # Already a properly structured response_format, use directly
+        req_body$response_format <- format
+      }
     }
     req_body |>
       purrr::compact() |>
