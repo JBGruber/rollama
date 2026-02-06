@@ -45,6 +45,8 @@
 #'   value is `"json"`.
 #' @param template the prompt template to use (overrides what is defined in the
 #'   Modelfile).
+#' @param engine which service serves the model. See details for possible
+#'   options.
 #' @param ... not used.
 #' @param verbose Whether to print status messages to the Console. Either
 #'   `TRUE`/`FALSE` or see [httr2::progress_bars]. The default is to have status
@@ -195,13 +197,18 @@ query <- function(
     msg <- purrr::map(q, check_conversation)
   }
 
-  reqs <- build_req(
+  req_fun <- switch(
+    tolower(engine),
+    ollama = build_req_ollama
+  )
+
+  reqs <- req_fun(
     model = model,
     msg = msg,
     server = server,
+    images = images,
     model_params = model_params,
     format = format,
-    stream = stream,
     template = template
   )
 
