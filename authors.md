@@ -13,14 +13,14 @@
 Source:
 [`DESCRIPTION`](https://github.com/JBGruber/rollama/blob/main/DESCRIPTION)
 
-Gruber J, Weber M (2025). *rollama: Communicate with 'Ollama' to Run
+Gruber J, Weber M (2026). *rollama: Communicate with 'Ollama' to Run
 Large Language Models Locally*. R package version 0.2.2.9000,
 <https://jbgruber.github.io/rollama/>.
 
     @Manual{,
       title = {rollama: Communicate with 'Ollama' to Run Large Language Models Locally},
       author = {Johannes B. Gruber and Maximilian Weber},
-      year = {2025},
+      year = {2026},
       note = {R package version 0.2.2.9000},
       url = {https://jbgruber.github.io/rollama/},
     }
