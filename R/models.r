@@ -244,3 +244,23 @@ list_models <- function(server = NULL) {
     purrr::map(\(x) purrr::list_flatten(x, name_spec = "{inner}")) |>
     dplyr::bind_rows()
 }
+
+#' List running models
+#'
+#' @inheritParams query
+#'
+#' @return a tibble of running models
+#' @export
+list_running_models <- function(server = NULL) {
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
+
+  httr2::request(server) |>
+    httr2::req_url_path_append("/api/ps") |>
+    httr2::req_headers(!!!get_headers()) |>
+    httr2::req_perform() |>
+    httr2::resp_body_json(simplifyVector = TRUE) |>
+    purrr::pluck("models") |>
+    tibble::as_tibble()
+}
