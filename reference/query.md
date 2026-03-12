@@ -15,6 +15,9 @@ query(
   output = c("response", "text", "list", "data.frame", "httr2_response", "httr2_request"),
   format = NULL,
   template = NULL,
+  tools = NULL,
+  think = NULL,
+  keep_alive = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 )
@@ -27,6 +30,9 @@ chat(
   images = NULL,
   model_params = NULL,
   template = NULL,
+  tools = NULL,
+  think = NULL,
+  keep_alive = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 )
@@ -82,6 +88,23 @@ chat(
 
   the prompt template to use (overrides what is defined in the
   Modelfile).
+
+- tools:
+
+  a list of tools (functions) the model may call. Each tool should
+  follow the Ollama tool schema with fields `type`, `function`
+  (containing `name`, `description`, and `parameters`).
+
+- think:
+
+  logical. If `TRUE`, enables extended thinking / reasoning mode
+  (supported by compatible models such as DeepSeek-R1).
+
+- keep_alive:
+
+  controls how long the model is kept in memory after the request.
+  Accepts a duration string such as `"5m"` or `"1h"`, `0` to unload
+  immediately, or `-1` to keep the model loaded indefinitely.
 
 - ...:
 
@@ -214,6 +237,49 @@ options(rollama_seed = 42)
 # VRAM, which might be interesting for larger models)
 query("why is the sky blue?",
        model_params = list(num_gpu = 0))
+
+# enable extended thinking / reasoning mode (supported models e.g. DeepSeek-R1)
+query("what is 3 * 12?", model = "deepseek-r1", think = TRUE)
+
+# use tools (function calling) — tool calling is a two-step process:
+# 1. The model returns a tool_call (empty content) instead of a text answer.
+# 2. You execute the function and send the result back so the model can
+#    formulate a final answer.
+
+# define the actual R function
+add_numbers <- function(a, b) as.numeric(a) + as.numeric(b)
+
+# describe it to the model
+tools <- list(list(
+  type = "function",
+  `function` = list(
+    name = "add_numbers",
+    description = "Add two numbers together",
+    parameters = list(
+      type = "object",
+      properties = list(
+        a = list(type = "number", description = "First number"),
+        b = list(type = "number", description = "Second number")
+      ),
+      required = list("a", "b")
+    )
+  )
+))
+
+# Step 1: model decides which tool to call and with which arguments
+question <- "What is 4 + 7?"
+resp <- query(question, model = "llama3.1", tools = tools, stream = FALSE)
+tool_call <- resp[[1]]$message$tool_calls[[1]]
+
+# Step 2: call the real function with the model-supplied arguments
+result <- do.call(add_numbers, tool_call$`function`$arguments)
+
+# Step 3: send the result back so the model can give a final answer
+conversation <- data.frame(
+  role    = c("user", "assistant", "tool"),
+  content = c(question, "", as.character(result))
+)
+query(conversation, model = "llama3.1")
 
 # Asking the same question to multiple models is also supported
 query("why is the sky blue?", model = c("llama3.1", "orca-mini"))

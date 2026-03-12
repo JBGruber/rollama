@@ -56,6 +56,9 @@
 <span>  output <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"response"</span>, <span class="st">"text"</span>, <span class="st">"list"</span>, <span class="st">"data.frame"</span>, <span class="st">"httr2_response"</span>, <span class="st">"httr2_request"</span><span class="op">)</span>,</span>
 <span>  format <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  template <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tools <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  think <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  keep_alive <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"rollama_verbose"</span>, default <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
@@ -68,6 +71,9 @@
 <span>  images <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  model_params <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  template <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  tools <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  think <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  keep_alive <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span>,</span>
 <span>  verbose <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">getOption</a></span><span class="op">(</span><span class="st">"rollama_verbose"</span>, default <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/interactive.html" class="external-link">interactive</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -122,6 +128,23 @@ value is <code>"json"</code>.</p></dd>
 <dt id="arg-template">template<a class="anchor" aria-label="anchor" href="#arg-template"></a></dt>
 <dd><p>the prompt template to use (overrides what is defined in the
 Modelfile).</p></dd>
+
+
+<dt id="arg-tools">tools<a class="anchor" aria-label="anchor" href="#arg-tools"></a></dt>
+<dd><p>a list of tools (functions) the model may call. Each tool
+should follow the Ollama tool schema with fields <code>type</code>, <code>function</code>
+(containing <code>name</code>, <code>description</code>, and <code>parameters</code>).</p></dd>
+
+
+<dt id="arg-think">think<a class="anchor" aria-label="anchor" href="#arg-think"></a></dt>
+<dd><p>logical. If <code>TRUE</code>, enables extended thinking / reasoning
+mode (supported by compatible models such as DeepSeek-R1).</p></dd>
+
+
+<dt id="arg-keep-alive">keep_alive<a class="anchor" aria-label="anchor" href="#arg-keep-alive"></a></dt>
+<dd><p>controls how long the model is kept in memory after the
+request. Accepts a duration string such as <code>"5m"</code> or <code>"1h"</code>, <code>0</code> to
+unload immediately, or <code>-1</code> to keep the model loaded indefinitely.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
@@ -238,6 +261,49 @@ server as an input.</p></li>
 <span class="r-in"><span><span class="co"># VRAM, which might be interesting for larger models)</span></span></span>
 <span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="st">"why is the sky blue?"</span>,</span></span>
 <span class="r-in"><span>       model_params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>num_gpu <span class="op">=</span> <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># enable extended thinking / reasoning mode (supported models e.g. DeepSeek-R1)</span></span></span>
+<span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="st">"what is 3 * 12?"</span>, model <span class="op">=</span> <span class="st">"deepseek-r1"</span>, think <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># use tools (function calling) — tool calling is a two-step process:</span></span></span>
+<span class="r-in"><span><span class="co"># 1. The model returns a tool_call (empty content) instead of a text answer.</span></span></span>
+<span class="r-in"><span><span class="co"># 2. You execute the function and send the result back so the model can</span></span></span>
+<span class="r-in"><span><span class="co">#    formulate a final answer.</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># define the actual R function</span></span></span>
+<span class="r-in"><span><span class="va">add_numbers</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">a</span>, <span class="va">b</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">a</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">as.numeric</a></span><span class="op">(</span><span class="va">b</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># describe it to the model</span></span></span>
+<span class="r-in"><span><span class="va">tools</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  type <span class="op">=</span> <span class="st">"function"</span>,</span></span>
+<span class="r-in"><span>  `function` <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>    name <span class="op">=</span> <span class="st">"add_numbers"</span>,</span></span>
+<span class="r-in"><span>    description <span class="op">=</span> <span class="st">"Add two numbers together"</span>,</span></span>
+<span class="r-in"><span>    parameters <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>      type <span class="op">=</span> <span class="st">"object"</span>,</span></span>
+<span class="r-in"><span>      properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>        a <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"number"</span>, description <span class="op">=</span> <span class="st">"First number"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>        b <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>type <span class="op">=</span> <span class="st">"number"</span>, description <span class="op">=</span> <span class="st">"Second number"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>      <span class="op">)</span>,</span></span>
+<span class="r-in"><span>      required <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="st">"a"</span>, <span class="st">"b"</span><span class="op">)</span></span></span>
+<span class="r-in"><span>    <span class="op">)</span></span></span>
+<span class="r-in"><span>  <span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Step 1: model decides which tool to call and with which arguments</span></span></span>
+<span class="r-in"><span><span class="va">question</span> <span class="op">&lt;-</span> <span class="st">"What is 4 + 7?"</span></span></span>
+<span class="r-in"><span><span class="va">resp</span> <span class="op">&lt;-</span> <span class="fu">query</span><span class="op">(</span><span class="va">question</span>, model <span class="op">=</span> <span class="st">"llama3.1"</span>, tools <span class="op">=</span> <span class="va">tools</span>, stream <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">tool_call</span> <span class="op">&lt;-</span> <span class="va">resp</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">$</span><span class="va">message</span><span class="op">$</span><span class="va">tool_calls</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Step 2: call the real function with the model-supplied arguments</span></span></span>
+<span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">add_numbers</span>, <span class="va">tool_call</span><span class="op">$</span><span class="va">`function`</span><span class="op">$</span><span class="va">arguments</span><span class="op">)</span></span></span>
+<span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="co"># Step 3: send the result back so the model can give a final answer</span></span></span>
+<span class="r-in"><span><span class="va">conversation</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  role    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"user"</span>, <span class="st">"assistant"</span>, <span class="st">"tool"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  content <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">question</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="va">conversation</span>, model <span class="op">=</span> <span class="st">"llama3.1"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="co"># Asking the same question to multiple models is also supported</span></span></span>
 <span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="st">"why is the sky blue?"</span>, model <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"llama3.1"</span>, <span class="st">"orca-mini"</span><span class="op">)</span><span class="op">)</span></span></span>
