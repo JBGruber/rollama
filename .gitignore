@@ -16,3 +16,5 @@ paper/paper.pdf
 paper/paper_files
 load-experiments.R
 use_github_release2.r
+.env
+api.md

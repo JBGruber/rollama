@@ -50,7 +50,10 @@ build_req <- function(
   model_params,
   format,
   stream,
-  template
+  template,
+  tools = NULL,
+  think = NULL,
+  keep_alive = NULL
 ) {
   if (is.null(model)) {
     model <- getOption("rollama_model", default = "llama3.1")
@@ -78,7 +81,10 @@ build_req <- function(
           stream = stream,
           options = model_params,
           format = format,
-          template = template
+          template = template,
+          tools = tools,
+          think = think,
+          keep_alive = keep_alive
         ) |>
           purrr::compact() |> # remove NULL values
           make_req(
@@ -96,7 +102,10 @@ build_req <- function(
         stream = stream,
         options = model_params,
         format = format,
-        template = template
+        template = template,
+        tools = tools,
+        think = think,
+        keep_alive = keep_alive
       ) |>
         purrr::compact() |> # remove NULL values
         make_req(

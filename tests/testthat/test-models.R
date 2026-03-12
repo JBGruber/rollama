@@ -14,29 +14,31 @@ test_that("show model", {
 
 test_that("create model", {
   skip_if_not(ping_ollama(silent = TRUE))
-  expect_equal(nrow(create_model(
-    "mario",
-    from = "llama3.1",
-    system = "You are mario from Super Mario Bros.")
-  ), 1L)
+  expect_equal(
+    nrow(create_model(
+      "mario",
+      from = "llama3.1",
+      system = "You are mario from Super Mario Bros."
+    )),
+    1L
+  )
 })
 
 test_that("copy model", {
   skip_if_not(ping_ollama(silent = TRUE))
-  expect_message(copy_model("mario"),
-                 "model.mario.copied.to.mario-copy")
+  expect_message(copy_model("mario"), "model.mario.copied.to.mario-copy")
 })
 
 test_that("delete model", {
   skip_if_not(ping_ollama(silent = TRUE))
-  expect_message(delete_model("mario"),
-                 "model.mario.removed")
-  expect_message(delete_model("mario-copy"),
-                 "model.mario-copy.removed")
+  expect_message(delete_model("mario"), "model.mario.removed")
+  expect_message(delete_model("mario-copy"), "model.mario-copy.removed")
 })
 
 test_that("model missing", {
   skip_if_not(ping_ollama(silent = TRUE))
-  expect_error(check_model_installed("NOMODEL"),
-               "Model.NOMODEL:latest.not.installed.")
+  expect_error(
+    check_model_installed("NOMODEL"),
+    "Model.NOMODEL:latest.not.installed."
+  )
 })
