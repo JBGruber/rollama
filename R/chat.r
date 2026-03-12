@@ -452,3 +452,125 @@ make_query <- function(
 
   return(queries)
 }
+
+
+#' Generate an image using an image generation model
+#'
+#' @description Uses Ollama's `/api/generate` endpoint with image generation
+#'   models (e.g., `x/z-image-turbo`) to create images from text prompts.
+#'
+#' @param prompt A text prompt describing the image to generate.
+#' @param model which model to use. Must be an image generation model. See
+#'   <https://ollama.com/search?c=image> for options.
+#' @param width Width of the generated image in pixels (optional).
+#' @param height Height of the generated image in pixels (optional).
+#' @param steps Number of diffusion steps (optional).
+#' @param model_params a named list of additional model parameters.
+#' @param output what the function should return. Either `"path"` (saves image
+#'   to a file and returns the path) or `"raw"` (returns raw bytes) or
+#'   `"httr2_request"` (returns the request object without performing it).
+#' @param path file path to save the image. If `NULL` and `output = "path"`,
+#'   a temporary file is used.
+#' @inheritParams query
+#'
+#' @return Depending on `output`: a file path, raw bytes, or an httr2 request.
+#' @export
+#'
+#' @examplesIf interactive()
+#' # generate an image and save it to a temp file
+#' img_path <- generate_image("a sunset over mountains", model = "x/z-image-turbo")
+#' # open the file with your system viewer
+#' utils::browseURL(img_path)
+generate_image <- function(
+  prompt,
+  model = NULL,
+  server = NULL,
+  width = NULL,
+  height = NULL,
+  steps = NULL,
+  model_params = NULL,
+  output = c("path", "raw", "httr2_request"),
+  path = NULL,
+  verbose = getOption("rollama_verbose", default = interactive())
+) {
+  if (is.null(model)) {
+    model <- getOption("rollama_model", default = "llama3.1")
+  }
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
+  output <- match.arg(output)
+
+  req_data <- list(
+    model = model,
+    prompt = prompt,
+    stream = TRUE,
+    options = model_params,
+    width = width,
+    height = height,
+    steps = steps
+  ) |>
+    purrr::compact() |>
+    make_req(server = server, endpoint = "/api/generate")
+
+  if (identical(output, "httr2_request")) {
+    return(invisible(req_data))
+  }
+
+  if (!all(ping_ollama(server = server, silent = TRUE))) {
+    cli::cli_alert_danger("Could not connect to Ollama at {.url {server}}")
+  }
+  check_model_installed(model, server = server)
+
+  if (verbose) {
+    pb_id <- cli::cli_progress_bar(
+      format = paste0(
+        "{cli::pb_spin} Generating image",
+        "{?./ [{completed}/{total} steps]}"
+      ),
+      clear = TRUE
+    )
+  }
+
+  conn <- httr2::req_perform_connection(req_data)
+  on.exit(close(conn))
+
+  completed <- total <- NULL
+  final_resp <- NULL
+  repeat {
+    line <- httr2::resp_stream_lines(conn, lines = 1L)
+    status <- try(jsonlite::fromJSON(line), silent = TRUE)
+    if (!methods::is(status, "try-error")) {
+      if (purrr::pluck_exists(status, "completed")) {
+        completed <- purrr::pluck(status, "completed")
+        total <- purrr::pluck(status, "total")
+        if (verbose) cli::cli_progress_update(id = pb_id)
+      }
+      if (isTRUE(purrr::pluck(status, "done"))) {
+        final_resp <- status
+      }
+    }
+    if (httr2::resp_stream_is_complete(conn)) break
+  }
+
+  if (verbose) cli::cli_progress_done(id = pb_id)
+
+  if (is.null(final_resp) || !purrr::pluck_exists(final_resp, "image")) {
+    cli::cli_abort("No image was returned from the server.")
+  }
+
+  rlang::check_installed("base64enc")
+  image_raw <- base64enc::base64decode(purrr::pluck(final_resp, "image"))
+
+  if (identical(output, "raw")) {
+    return(invisible(image_raw))
+  }
+
+  # output == "path"
+  if (is.null(path)) {
+    path <- tempfile(fileext = ".png")
+  }
+  writeBin(image_raw, path)
+  if (verbose) cli::cli_inform("Image saved to {.path {path}}")
+  invisible(path)
+}
