@@ -41,7 +41,6 @@ stream_progress <- function(req, verbose, background, ...) {
   if (background) {
     return(invisible(FALSE))
   }
-
   # stream line by line until done
   repeat {
     status <- httr2::resp_stream_lines(conn, lines = 1)
@@ -52,11 +51,8 @@ stream_progress <- function(req, verbose, background, ...) {
 
 
 # function to display progress in streaming operations
+#' @importFrom prettyunits pretty_bytes
 process_status <- function(status, verbose) {
-  if (!getOption("rollama_verbose", default = interactive())) {
-    # return FALSE to not break the loop
-    return(FALSE)
-  }
   # for debugging
   # write(status, file = "status.txt", append = TRUE)
   status <- try(jsonlite::fromJSON(status), silent = TRUE)

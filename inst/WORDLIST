@@ -1,12 +1,12 @@
 CMD
 ChatGPT
+ChatMessage
 Codecov
-DOI
+DeepSeek
 Embeddings
 GGUF
 Hadley
 Hvitfeldt
-JSON
 LLM
 LLMs
 Modelfile
@@ -20,9 +20,7 @@ Renviron
 WebUI
 Wickham
 api
-arXiv
 behaviour
-config
 embeddings
 envvars
 http

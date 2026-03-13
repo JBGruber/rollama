@@ -6,8 +6,8 @@ test_that("Test query", {
 
 test_that("Test chat", {
   skip_if_not(ping_ollama(silent = TRUE))
-  expect_message(chat("Please only say 'yes'"), "Yes")
-  expect_message(chat("One more time"), "Yes")
+  expect_message(chat("Please only say 'yes'"), "Answer from")
+  expect_output(chat("One more time")[[1]]$message$content, "Yes")
   expect_equal(nrow(chat_history()), 4L)
   # check order of history
   expect_equal(
