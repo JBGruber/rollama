@@ -3,6 +3,7 @@
 # rollama 0.3.0
 
 * query now supports logprobs output
+* update parameters in embed_text()
 
 # rollama 0.2.1
 
