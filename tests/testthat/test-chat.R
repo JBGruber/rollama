@@ -2,6 +2,14 @@ test_that("Test query", {
   skip_if_not(ping_ollama(silent = TRUE))
   expect_message(query("test"), ".")
   expect_message(query("test", verbose = TRUE), ".")
+  expect_equal(
+    length(
+      query("test", logprobs = TRUE, top_logprobs = 2L)[[1]]$logprobs[[
+        1
+      ]]$top_logprobs
+    ),
+    2L
+  )
 })
 
 test_that("Test chat", {

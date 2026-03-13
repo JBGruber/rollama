@@ -43,8 +43,10 @@
 #'   "httr2_request" or a function see details.
 #' @param format the format to return a response in. Currently the only accepted
 #'   value is `"json"`.
-#' @param template the prompt template to use (overrides what is defined in the
-#'   Modelfile).
+#' @param logprobs logical. If `TRUE`, the response includes log probabilities
+#'   of the output tokens.
+#' @param top_logprobs integer (0–20). Number of most-likely tokens to return
+#'   log probabilities for at each output position. Requires `logprobs = TRUE`.
 #' @param tools a list of tools (functions) the model may call. Each tool
 #'   should follow the Ollama tool schema with fields `type`, `function`
 #'   (containing `name`, `description`, and `parameters`).
@@ -208,10 +210,11 @@ query <- function(
     "httr2_request"
   ),
   format = NULL,
-  template = NULL,
   tools = NULL,
   think = NULL,
   keep_alive = NULL,
+  logprobs = FALSE,
+  top_logprobs = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 ) {
@@ -256,10 +259,11 @@ query <- function(
     model_params = model_params,
     format = format,
     stream = stream,
-    template = template,
     tools = tools,
     think = think,
-    keep_alive = keep_alive
+    keep_alive = keep_alive,
+    logprobs = logprobs,
+    top_logprobs = top_logprobs
   )
 
   if (identical(output, "httr2_request")) {
@@ -267,7 +271,7 @@ query <- function(
   }
 
   if (!all(ping_ollama(server = server, silent = TRUE))) {
-    cli::cli_alert_danger("Could not connect to Ollama at {.url {sv}}")
+    cli::cli_alert_danger("Could not connect to Ollama at {.url {server}}")
   }
   check_model_installed(model, server = server)
 
@@ -326,10 +330,11 @@ chat <- function(
   server = NULL,
   images = NULL,
   model_params = NULL,
-  template = NULL,
   tools = NULL,
   think = NULL,
   keep_alive = NULL,
+  logprobs = NULL,
+  top_logprobs = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 ) {
@@ -362,10 +367,11 @@ chat <- function(
     stream = stream,
     server = server,
     model_params = model_params,
-    template = template,
     tools = tools,
     think = think,
     keep_alive = keep_alive,
+    logprobs = logprobs,
+    top_logprobs = top_logprobs,
     ...,
     verbose = verbose
   )

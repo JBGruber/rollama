@@ -3,19 +3,25 @@ stream_answer <- function(req) {
   conn <- httr2::req_perform_connection(req)
   on.exit(close(conn))
   line <- answer <- character()
+  logprobs <- list()
   repeat {
     resp <- httr2::resp_stream_lines(conn, lines = 1L) |>
-      jsonlite::fromJSON()
+      jsonlite::fromJSON(simplifyVector = FALSE)
     # for debugging
     # resp <- httr2::resp_stream_lines(conn, lines = 1L)
     # write(resp, "resp.json", append = TRUE)
-    # resp <- jsonlite::fromJSON(resp)
+    # resp <- jsonlite::fromJSON(resp, simplifyVector = FALSE)
     line <- c(line, purrr::pluck(resp, "message", "content"))
+    logprobs <- c(
+      logprobs,
+      purrr::pluck(resp, "logprobs", .default = NULL)
+    )
     if (!any(grepl("\n", line))) {
       cat("\r", line, sep = "")
     } else {
       cat("\r", line, sep = "")
       answer <- c(answer, line)
+
       line <- character()
     }
     if (httr2::resp_stream_is_complete(conn)) break
@@ -27,6 +33,9 @@ stream_answer <- function(req) {
     answer,
     collapse = ""
   )
+  if (length(logprobs) > 0) {
+    purrr::pluck(resp, "logprobs") <- logprobs
+  }
   return(resp)
 }
 

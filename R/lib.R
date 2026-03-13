@@ -50,10 +50,11 @@ build_req <- function(
   model_params,
   format,
   stream,
-  template,
   tools = NULL,
   think = NULL,
-  keep_alive = NULL
+  keep_alive = NULL,
+  logprobs = NULL,
+  top_logprobs = NULL
 ) {
   if (is.null(model)) {
     model <- getOption("rollama_model", default = "llama3.1")
@@ -81,10 +82,11 @@ build_req <- function(
           stream = stream,
           options = model_params,
           format = format,
-          template = template,
           tools = tools,
           think = think,
-          keep_alive = keep_alive
+          keep_alive = keep_alive,
+          logprobs = logprobs,
+          top_logprobs = top_logprobs
         ) |>
           purrr::compact() |> # remove NULL values
           make_req(
@@ -102,10 +104,11 @@ build_req <- function(
         stream = stream,
         options = model_params,
         format = format,
-        template = template,
         tools = tools,
         think = think,
-        keep_alive = keep_alive
+        keep_alive = keep_alive,
+        logprobs = logprobs,
+        top_logprobs = top_logprobs
       ) |>
         purrr::compact() |> # remove NULL values
         make_req(
@@ -253,4 +256,3 @@ prep_req_data <- function(tbl) {
     }
   })
 }
-

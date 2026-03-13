@@ -14,10 +14,11 @@ query(
   model_params = NULL,
   output = c("response", "text", "list", "data.frame", "httr2_response", "httr2_request"),
   format = NULL,
-  template = NULL,
   tools = NULL,
   think = NULL,
   keep_alive = NULL,
+  logprobs = FALSE,
+  top_logprobs = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 )
@@ -29,10 +30,11 @@ chat(
   server = NULL,
   images = NULL,
   model_params = NULL,
-  template = NULL,
   tools = NULL,
   think = NULL,
   keep_alive = NULL,
+  logprobs = NULL,
+  top_logprobs = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 )
@@ -64,9 +66,6 @@ reproducible results (see examples).}
 \item{format}{the format to return a response in. Currently the only accepted
 value is \code{"json"}.}
 
-\item{template}{the prompt template to use (overrides what is defined in the
-Modelfile).}
-
 \item{tools}{a list of tools (functions) the model may call. Each tool
 should follow the Ollama tool schema with fields \code{type}, \code{function}
 (containing \code{name}, \code{description}, and \code{parameters}).}
@@ -77,6 +76,12 @@ mode (supported by compatible models such as DeepSeek-R1).}
 \item{keep_alive}{controls how long the model is kept in memory after the
 request. Accepts a duration string such as \code{"5m"} or \code{"1h"}, \code{0} to
 unload immediately, or \code{-1} to keep the model loaded indefinitely.}
+
+\item{logprobs}{logical. If \code{TRUE}, the response includes log probabilities
+of the output tokens.}
+
+\item{top_logprobs}{integer (0–20). Number of most-likely tokens to return
+log probabilities for at each output position. Requires \code{logprobs = TRUE}.}
 
 \item{...}{not used.}
 

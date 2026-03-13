@@ -27,6 +27,7 @@ http
 httr
 leaderboards
 llava
+logprobs
 modelfile
 modelname
 ollama
