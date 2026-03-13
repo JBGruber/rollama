@@ -15,3 +15,7 @@
 ^paper$
 ^codecov\.yml$
 ^use_github_release2\.r$
+^check_api\.sh$
+^\.env$
+^plan\.md$
+^openapi\.yaml$
