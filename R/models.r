@@ -58,7 +58,7 @@ pull_model <- function(
 
   req <- httr2::request(server) |>
     httr2::req_url_path_append("/api/pull") |>
-    httr2::req_body_json(list(name = model, insecure = insecure)) |>
+    httr2::req_body_json(list(model = model, insecure = insecure)) |>
     httr2::req_headers(!!!get_headers())
 
   if (verbose) {
@@ -194,7 +194,7 @@ delete_model <- function(model, server = NULL) {
   httr2::request(server) |>
     httr2::req_url_path_append("/api/delete") |>
     httr2::req_method("DELETE") |>
-    httr2::req_body_json(list(name = model)) |>
+    httr2::req_body_json(list(model = model)) |>
     httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
     httr2::req_headers(!!!get_headers()) |>
     httr2::req_perform()
