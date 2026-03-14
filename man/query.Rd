@@ -19,6 +19,7 @@ query(
   keep_alive = NULL,
   logprobs = FALSE,
   top_logprobs = NULL,
+  cache = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 )
@@ -82,6 +83,22 @@ of the output tokens.}
 
 \item{top_logprobs}{integer (0–20). Number of most-likely tokens to return
 log probabilities for at each output position. Requires \code{logprobs = TRUE}.}
+
+\item{cache}{where to cache responses on disk so that long annotation
+pipelines can be resumed after an interruption. Two forms are accepted:
+\itemize{
+\item A \strong{single directory path} (e.g. \code{"my_cache"}). Each response is
+stored as \verb{\{directory\}/\{md5_hash\}.json}, where the hash is derived from
+the request content (model, messages, options). Re-running the same
+request always hits the same file, even across sessions.
+\item A \strong{character vector} with one explicit file path per request.
+Use this when you need to control file names yourself.
+}
+Existing, valid cache files are loaded instead of re-querying Ollama.
+Corrupted or missing files are re-requested and then saved. Caching
+requires \code{stream = FALSE} (a warning is emitted and streaming is disabled
+automatically when \code{cache} is set). The \code{"httr2_response"} output type
+and custom output functions are not compatible with caching.}
 
 \item{...}{not used.}
 

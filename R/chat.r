@@ -55,6 +55,21 @@
 #' @param keep_alive controls how long the model is kept in memory after the
 #'   request. Accepts a duration string such as `"5m"` or `"1h"`, `0` to
 #'   unload immediately, or `-1` to keep the model loaded indefinitely.
+#' @param cache where to cache responses on disk so that long annotation
+#'   pipelines can be resumed after an interruption. Two forms are accepted:
+#'   \itemize{
+#'     \item A **single directory path** (e.g. `"my_cache"`). Each response is
+#'       stored as `{directory}/{md5_hash}.json`, where the hash is derived from
+#'       the request content (model, messages, options). Re-running the same
+#'       request always hits the same file, even across sessions.
+#'     \item A **character vector** with one explicit file path per request.
+#'       Use this when you need to control file names yourself.
+#'   }
+#'   Existing, valid cache files are loaded instead of re-querying Ollama.
+#'   Corrupted or missing files are re-requested and then saved. Caching
+#'   requires `stream = FALSE` (a warning is emitted and streaming is disabled
+#'   automatically when `cache` is set). The `"httr2_response"` output type
+#'   and custom output functions are not compatible with caching.
 #' @param ... not used.
 #' @param verbose Whether to print status messages to the Console. Either
 #'   `TRUE`/`FALSE` or see [httr2::progress_bars]. The default is to have status
@@ -215,6 +230,7 @@ query <- function(
   keep_alive = NULL,
   logprobs = FALSE,
   top_logprobs = NULL,
+  cache = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 ) {
@@ -258,6 +274,23 @@ query <- function(
     msg <- purrr::map(q, check_conversation)
   }
 
+  if (!is.null(cache)) {
+    if (is.function(output) || identical(output, "httr2_response")) {
+      cli::cli_abort(c(
+        "Caching is not compatible with {.code output = \"httr2_response\"} or \\
+         a custom output function.",
+        "i" = "Use a standard output type such as {.val text} or \\
+               {.val data.frame} when {.arg cache} is set."
+      ))
+    }
+    if (stream) {
+      cli::cli_alert_info(
+        "{.arg cache} requires {.code stream = FALSE}. Disabling streaming."
+      )
+      stream <- FALSE
+    }
+  }
+
   reqs <- build_req(
     model = model,
     msg = msg,
@@ -282,8 +315,13 @@ query <- function(
   check_model_installed(model, server = server)
 
   res <- NULL
+  resps <- NULL
 
-  if (stream) {
+  cache_paths <- resolve_cache_paths(cache, reqs)
+
+  if (!is.null(cache_paths)) {
+    resps <- perform_reqs_with_cache(reqs, cache_paths, verbose)
+  } else if (stream) {
     if (is.function(output) | identical(output, "httr2_response")) {
       resps <- perform_reqs(reqs, verbose)
       res <- purrr::map(resps, httr2::resp_body_json)

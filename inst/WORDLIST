@@ -1,3 +1,4 @@
+Anthropic
 CMD
 ChatGPT
 ChatMessage
@@ -5,6 +6,8 @@ Codecov
 DeepSeek
 Embeddings
 GGUF
+Groq
+HTTPS
 Hadley
 Hvitfeldt
 LLM
@@ -12,6 +15,7 @@ LLMs
 Modelfile
 ORCID
 Ollama
+OpenAI
 OpenAI's
 OpenAI’s
 RMDs
@@ -21,7 +25,11 @@ WebUI
 Wickham
 api
 behaviour
+centred
+chatbots
+ellmer
 embeddings
+entiority
 envvars
 http
 httr
@@ -31,10 +39,16 @@ logprobs
 modelfile
 modelname
 ollama
+ollamar
 orca
 organisation
+philosphy
 pre
+prioritising
+quantisation
 smldemo
 tibble
 tibbles
+tidyllm
+tidyverse
 unnesting

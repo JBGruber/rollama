@@ -1,10 +1,9 @@
 # rollama (development version)
 
-# rollama 0.3.0
-
 * query now supports logprobs output
 * update parameters in embed_text()
 * update parameters and output in show_model()
+* adds option to cache responses
 
 # rollama 0.2.1
 
