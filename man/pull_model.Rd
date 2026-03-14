@@ -2,16 +2,24 @@
 % Please edit documentation in R/models.r
 \name{pull_model}
 \alias{pull_model}
+\alias{push_model}
 \alias{show_model}
 \alias{delete_model}
 \alias{copy_model}
-\title{Pull, show and delete models}
+\title{Pull, push, show and delete models}
 \usage{
 pull_model(
   model = NULL,
   server = NULL,
   insecure = FALSE,
   background = FALSE,
+  verbose = getOption("rollama_verbose", default = interactive())
+)
+
+push_model(
+  model,
+  server = NULL,
+  insecure = FALSE,
   verbose = getOption("rollama_verbose", default = interactive())
 )
 
@@ -33,6 +41,11 @@ you are pulling from your own library during development.}
 
 \item{background}{download model(s) in background without blocking the session.}
 
+\item{verbose}{Whether to print status messages to the Console. Either
+\code{TRUE}/\code{FALSE} or see \link[httr2:progress_bars]{httr2::progress_bars}. The default is to have status
+messages in interactive sessions. Can be changed with
+\code{options(rollama_verbose = FALSE)}.}
+
 \item{detailed}{when \code{TRUE}, the column \code{model_info} will contain much more
 detailed information about the model.}
 
@@ -40,14 +53,24 @@ detailed information about the model.}
 }
 \value{
 (invisible) a tibble with information about the model (except in
-\code{delete_model})
+\code{delete_model} and \code{push_model})
 }
 \description{
-Pull, show and delete models
+Pull, push, show and delete models
 }
 \details{
 \itemize{
-\item \code{pull_model()}: downloads model
+\item \code{pull_model()}: downloads a model from the Ollama registry or Hugging Face
+\item \code{push_model()}: uploads a locally created model to the Ollama registry
+(ollama.com) so others can pull it. The model name must include your
+namespace (i.e. \code{"your_username/model_name"}). Before pushing you need to
+add your public key (\verb{~/.ollama/id_ed25519.pub}) to your ollama.com account
+settings. This is mainly useful after \code{create_model()} — you build a custom
+model locally (e.g. with a system prompt, quantisation, or fine-tuned
+weights) and then share it with collaborators or the public. You can also
+push to a private/self-hosted registry by using a model name that starts
+with the registry host (e.g. \code{"registry.example.com/mymodel"}); set
+\code{insecure = TRUE} if that registry does not use HTTPS.
 \item \code{show_model()}: displays information about a local model
 \item \code{copy_model()}: creates a model with another name from an existing model
 \item \code{delete_model()}: deletes local model
@@ -58,6 +81,17 @@ an optional namespace such as example/model. Some examples are
 orca-mini:3b-q4_1 and llama3.1:70b. The tag is optional and, if not provided,
 will default to latest. The tag is used to identify a specific version.
 }
+\note{
+\code{push_model()} is intended for advanced users. It requires setup steps
+that must be completed outside of R: you need an account on
+\url{https://ollama.com}, and your Ollama public key
+(\verb{~/.ollama/id_ed25519.pub} on Linux/macOS) must be registered in your
+account settings. The model name must be prefixed with your ollama.com
+username (e.g. \code{"your_username/model_name"}); pushing without a namespace
+will fail with a permission error. Unfortunately, more user-friendly
+guidance cannot be provided here as the setup process is managed entirely
+by Ollama outside of R.
+}
 \examples{
 \dontrun{
 # download a model and save information in an object
@@ -66,5 +100,9 @@ model_info <- pull_model("mixtral")
 model_info <- show_model("mixtral")
 # pulling models from Hugging Face Hub is also possible
 pull_model("https://huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
+# create a custom model and share it on ollama.com
+create_model("your_username/mario", from = "llama3.1",
+             system = "You are Mario from Super Mario Bros.")
+push_model("your_username/mario")
 }
 }

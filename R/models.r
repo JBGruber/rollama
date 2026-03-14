@@ -1,7 +1,17 @@
-#' Pull, show and delete models
+#' Pull, push, show and delete models
 #'
 #' @details
-#' - `pull_model()`: downloads model
+#' - `pull_model()`: downloads a model from the Ollama registry or Hugging Face
+#' - `push_model()`: uploads a locally created model to the Ollama registry
+#'   (ollama.com) so others can pull it. The model name must include your
+#'   namespace (i.e. `"your_username/model_name"`). Before pushing you need to
+#'   add your public key (`~/.ollama/id_ed25519.pub`) to your ollama.com account
+#'   settings. This is mainly useful after `create_model()` — you build a custom
+#'   model locally (e.g. with a system prompt, quantisation, or fine-tuned
+#'   weights) and then share it with collaborators or the public. You can also
+#'   push to a private/self-hosted registry by using a model name that starts
+#'   with the registry host (e.g. `"registry.example.com/mymodel"`); set
+#'   `insecure = TRUE` if that registry does not use HTTPS.
 #' - `show_model()`: displays information about a local model
 #' - `copy_model()`: creates a model with another name from an existing model
 #' - `delete_model()`: deletes local model
@@ -22,7 +32,7 @@
 #' @inheritParams query
 #'
 #' @return (invisible) a tibble with information about the model (except in
-#'   `delete_model`)
+#'   `delete_model` and `push_model`)
 #' @export
 #'
 #' @examples
@@ -33,6 +43,10 @@
 #' model_info <- show_model("mixtral")
 #' # pulling models from Hugging Face Hub is also possible
 #' pull_model("https://huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
+#' # create a custom model and share it on ollama.com
+#' create_model("your_username/mario", from = "llama3.1",
+#'              system = "You are Mario from Super Mario Bros.")
+#' push_model("your_username/mario")
 #' }
 pull_model <- function(
   model = NULL,
@@ -75,6 +89,50 @@ pull_model <- function(
   } else {
     cli::cli_alert_success("model {model} downloading in background")
   }
+}
+
+
+#' @rdname pull_model
+#'
+#' @note `push_model()` is intended for advanced users. It requires setup steps
+#'   that must be completed outside of R: you need an account on
+#'   \url{https://ollama.com}, and your Ollama public key
+#'   (`~/.ollama/id_ed25519.pub` on Linux/macOS) must be registered in your
+#'   account settings. The model name must be prefixed with your ollama.com
+#'   username (e.g. `"your_username/model_name"`); pushing without a namespace
+#'   will fail with a permission error. Unfortunately, more user-friendly
+#'   guidance cannot be provided here as the setup process is managed entirely
+#'   by Ollama outside of R.
+#'
+#' @export
+push_model <- function(
+  model,
+  server = NULL,
+  insecure = FALSE,
+  verbose = getOption("rollama_verbose", default = interactive())
+) {
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
+
+  req <- httr2::request(server) |>
+    httr2::req_url_path_append("/api/push") |>
+    httr2::req_body_json(list(model = model, insecure = insecure)) |>
+    httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
+    httr2::req_headers(!!!get_headers())
+
+  if (verbose) {
+    done <- stream_progress(req, verbose, background = FALSE)
+    cli::cli_process_done(.envir = the)
+  } else {
+    resp <- httr2::req_perform(req)
+    done <- httr2::resp_status(resp) < 400L
+  }
+
+  if (done) {
+    cli::cli_alert_success("model {model} pushed successfully!")
+  }
+  invisible(NULL)
 }
 
 
