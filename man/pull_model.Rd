@@ -15,7 +15,7 @@ pull_model(
   verbose = getOption("rollama_verbose", default = interactive())
 )
 
-show_model(model = NULL, server = NULL)
+show_model(model = NULL, detailed = FALSE, server = NULL)
 
 delete_model(model, server = NULL)
 
@@ -33,10 +33,8 @@ you are pulling from your own library during development.}
 
 \item{background}{download model(s) in background without blocking the session.}
 
-\item{verbose}{Whether to print status messages to the Console. Either
-\code{TRUE}/\code{FALSE} or see \link[httr2:progress_bars]{httr2::progress_bars}. The default is to have status
-messages in interactive sessions. Can be changed with
-\code{options(rollama_verbose = FALSE)}.}
+\item{detailed}{when \code{TRUE}, the column \code{model_info} will contain much more
+detailed information about the model.}
 
 \item{destination}{name of the copied model.}
 }

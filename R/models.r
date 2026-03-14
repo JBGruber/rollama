@@ -17,6 +17,8 @@
 #' @param insecure allow insecure connections to the library. Only use this if
 #'   you are pulling from your own library during development.
 #' @param destination name of the copied model.
+#' @param detailed when `TRUE`, the column `model_info` will contain much more
+#'   detailed information about the model.
 #' @inheritParams query
 #'
 #' @return (invisible) a tibble with information about the model (except in
@@ -78,7 +80,7 @@ pull_model <- function(
 
 #' @rdname pull_model
 #' @export
-show_model <- function(model = NULL, server = NULL) {
+show_model <- function(model = NULL, detailed = FALSE, server = NULL) {
   if (is.null(model)) {
     model <- getOption("rollama_model", default = "llama3.1")
   }
@@ -86,17 +88,16 @@ show_model <- function(model = NULL, server = NULL) {
     server <- getOption("rollama_server", default = "http://localhost:11434")
   }
   if (length(model) != 1L) {
-    cli::cli_abort("model needs to be one model name.")
+    cli::cli_abort("{.code model} needs to be one model name.")
   }
 
   httr2::request(server) |>
     httr2::req_url_path_append("/api/show") |>
-    httr2::req_body_json(list(name = model)) |>
+    httr2::req_body_json(list(model = model, verbose = detailed)) |>
     httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
     httr2::req_headers(!!!get_headers()) |>
     httr2::req_perform() |>
     httr2::resp_body_json() |>
-    purrr::list_flatten(name_spec = "{inner}") |>
     as_tibble_onerow()
 }
 

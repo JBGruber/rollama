@@ -4,6 +4,7 @@
 
 * query now supports logprobs output
 * update parameters in embed_text()
+* update parameters and output in show_model()
 
 # rollama 0.2.1
 
