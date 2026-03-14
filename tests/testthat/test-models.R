@@ -57,3 +57,11 @@ test_that("model missing", {
     "Model.NOMODEL:latest.not.installed."
   )
 })
+
+test_that("list running models", {
+  skip_if_not(ping_ollama(silent = TRUE))
+  query("test", keep_alive = "30s")
+  expect_s3_class(list_running_models(), "data.frame")
+  expect_gte(ncol(list_running_models()), 8L)
+  expect_gte(nrow(list_running_models()), 1L)
+})
