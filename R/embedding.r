@@ -11,7 +11,7 @@
 #'   Only available for models that support it.
 #' @param model_params a named list of additional model parameters listed in the
 #'   [documentation for the
-#'   Modelfile](https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values).
+#'   Modelfile](https://docs.ollama.com/modelfile#valid-parameters-and-values).
 #' @param verbose Whether to print status messages to the Console
 #'   (\code{TRUE}/\code{FALSE}). The default is to have status messages in
 #'   interactive sessions. Can be changed with \code{options(rollama_verbose =

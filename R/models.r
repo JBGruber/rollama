@@ -178,7 +178,7 @@ show_model <- function(model = NULL, detailed = FALSE, server = NULL) {
 #'   parameters in a dedicated shareable way. If you use `show_model()`, you can
 #'   look at the configuration of a model in the column modelfile. To get more
 #'   information and a list of valid parameters, check out
-#'   <https://github.com/ollama/ollama/blob/main/docs/modelfile.md>. Most
+#'   <https://docs.ollama.com/modelfile>. Most
 #'   options are also available through the `query` and `chat` functions, yet
 #'   are not persistent over sessions.
 #'

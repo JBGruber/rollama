@@ -37,7 +37,7 @@ request. Accepts a duration string such as \code{"5m"} or \code{"1h"}, \code{0} 
 unload immediately, or \code{-1} to keep the model loaded indefinitely.}
 
 \item{model_params}{a named list of additional model parameters listed in the
-\href{https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values}{documentation for the Modelfile}.}
+\href{https://docs.ollama.com/modelfile#valid-parameters-and-values}{documentation for the Modelfile}.}
 
 \item{verbose}{Whether to print status messages to the Console
 (\code{TRUE}/\code{FALSE}). The default is to have status messages in

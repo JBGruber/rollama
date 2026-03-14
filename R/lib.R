@@ -56,12 +56,6 @@ build_req <- function(
   logprobs = NULL,
   top_logprobs = NULL
 ) {
-  if (is.null(model)) {
-    model <- getOption("rollama_model", default = "llama3.1")
-  }
-  if (is.null(server)) {
-    server <- getOption("rollama_server", default = "http://localhost:11434")
-  }
   seed <- getOption("rollama_seed")
   if (!is.null(seed) && !purrr::pluck_exists(model_params, "seed")) {
     model_params <- append(model_params, list(seed = seed))

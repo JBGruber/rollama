@@ -55,7 +55,7 @@ details.}
 \item{images}{path(s) to images (for multimodal models such as llava).}
 
 \item{model_params}{a named list of additional model parameters listed in the
-\href{https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values}{documentation for the Modelfile}
+\href{https://docs.ollama.com/modelfile#valid-parameters-and-values}{documentation for the Modelfile}
 such as temperature. Use a seed and set the temperature to zero to get
 reproducible results (see examples).}
 

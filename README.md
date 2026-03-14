@@ -21,6 +21,18 @@ ChatGPT/OpenAI’s API. Ollama is very easy to deploy and handles a huge
 number of models. Checkout the project here:
 <https://github.com/ollama/ollama>.
 
+While there are several R packages for working with LLMs, `rollama`
+takes an opinionated approach centred on local, open-weight models:
+prioritising privacy, reproducibility, and ease of use for research
+tasks. The package and its learning materials are particularly focused
+on annotating text and images — making it a natural fit for (social)
+scientists who want to use LLMs without relying on proprietary APIs or
+sending sensitive data to third-party servers. It also offers deep
+integration with the Ollama ecosystem beyond just chat, including model
+management features like creating, copying, and pushing custom models.
+See the [Similar packages](#similar-packages) section for a comparison
+with related packages.
+
 ## Installation
 
 You can install this package from CRAN:
@@ -47,7 +59,7 @@ you can access it with:
 
 ``` r
 rollama::ping_ollama()
-#> ▶ Ollama (v0.6.1) is running at <http://localhost:11434>!
+#> ▶ Ollama (v0.0.0) is running at <http://localhost:11434>!
 ```
 
 ### Installation of Ollama through Docker
@@ -253,6 +265,29 @@ query(q_zs, output = "text")
   embedding](https://jbgruber.github.io/rollama/articles/text-embedding.html)
 - [Use more models (GGUF format) from Hugging
   Face](https://jbgruber.github.io/rollama/articles/hf-gguf.html)
+
+## Similar packages
+
+There are some similar R packages for working with LLMs:
+
+- [ellmer](https://ellmer.tidyverse.org) is part of the Posit/tidyverse
+  ecosystem and supports a broad range of providers (OpenAI, Anthropic,
+  Google Gemini, Azure, AWS Bedrock, Ollama, and many more). It is
+  especially good for interactive console chats, chatbots in Shiny,
+  advanced tool-calling, and structured data extraction via schema
+  functions.
+- [tidyllm](https://edubruell.github.io/tidyllm) supports multiple
+  providers (Anthropic Claude, OpenAI, Google Gemini, Groq, Mistral,
+  Perplexity, and Ollama) with a pipeline-oriented, side-effect-free
+  interface. Highlights include media handling (PDFs, images,
+  video/audio for Gemini), batch processing for cost savings, and a tidy
+  workflow designed for integration into data analysis pipelines.
+- [ollamar](https://hauselin.github.io/ollama-r) has the closest overlap
+  with `rollama` as it wraps the Ollama API in its entiority. The design
+  philosphy however, is quite different, as the package closely mirrors
+  the official Ollama Python/JavaScript libraries. It therefore feels
+  more familiar for users of these languages, but potentially less
+  familiar for many R users.
 
 ## Citation
 

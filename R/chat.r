@@ -35,7 +35,7 @@
 #' @param images path(s) to images (for multimodal models such as llava).
 #' @param model_params a named list of additional model parameters listed in the
 #'   [documentation for the
-#'   Modelfile](https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values)
+#'   Modelfile](https://docs.ollama.com/modelfile#valid-parameters-and-values)
 #'   such as temperature. Use a seed and set the temperature to zero to get
 #'   reproducible results (see examples).
 #' @param output what the function should return. Possible values are
@@ -224,6 +224,12 @@ query <- function(
   }
   if (!is.function(output)) {
     output <- match.arg(output)
+  }
+  if (is.null(model)) {
+    model <- getOption("rollama_model", default = "llama3.1")
+  }
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
   }
 
   # q can be a string, a data.frame, or list of data.frames
