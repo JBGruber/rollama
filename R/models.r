@@ -62,11 +62,11 @@ pull_model <- function(
     server <- getOption("rollama_server", default = "http://localhost:11434")
   }
   if (!all(ping_ollama(server = server, silent = TRUE))) {
-    cli::cli_alert_danger("Could not connect to Ollama at {.url {sv}}")
+    cli::cli_alert_danger("Could not connect to Ollama at {.url {server}}")
   }
   if (length(model) > 1L) {
     for (m in model) {
-      pull_model(m, server, insecure, verbose)
+      pull_model(m, server, insecure, background, verbose)
     }
   }
 
@@ -84,7 +84,7 @@ pull_model <- function(
   }
 
   if (done) {
-    cli::cli_alert_success("model {model} pulled succesfully!")
+    cli::cli_alert_success("model {model} pulled successfully!")
     return(invisible(show_model(model)))
   } else {
     cli::cli_alert_success("model {model} downloading in background")
