@@ -11,15 +11,16 @@ stream_answer <- function(req) {
     # resp <- httr2::resp_stream_lines(conn, lines = 1L)
     # write(resp, "resp.json", append = TRUE)
     # resp <- jsonlite::fromJSON(resp, simplifyVector = FALSE)
-    line <- c(line, purrr::pluck(resp, "message", "content"))
+    new_token <- purrr::pluck(resp, "message", "content", .default = "")
+    line <- c(line, new_token)
     logprobs <- c(
       logprobs,
       purrr::pluck(resp, "logprobs", .default = NULL)
     )
     if (!any(grepl("\n", line))) {
-      cat("\r", line, sep = "")
+      cat(new_token, sep = "")
     } else {
-      cat("\r", line, sep = "")
+      cat(new_token, sep = "")
       answer <- c(answer, line)
 
       line <- character()

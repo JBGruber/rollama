@@ -59,7 +59,7 @@ you can access it with:
 
 ``` r
 rollama::ping_ollama()
-#> ▶ Ollama (v0.0.0) is running at <http://localhost:11434>!
+#> ▶ Ollama (v0.17.4) is running at <http://localhost:11434>!
 ```
 
 ### Installation of Ollama through Docker
@@ -102,9 +102,9 @@ as the beginning of a new chat:
 query("Why is the sky blue? Answer with one sentence.")
 #> 
 #> ── Answer from llama3.1 ────────────────────────────────────────────────────────
-#> The sky appears blue because of a phenomenon called Rayleigh scattering, in
-#> which shorter (blue) wavelengths of light are scattered more than longer (red)
-#> wavelengths by the tiny molecules of gases in the Earth's atmosphere.
+#> The sky appears blue because of a phenomenon called Rayleigh scattering, in which 
+#> shorter (blue) wavelengths of light are scattered more than longer (red) wavelengths 
+#> by the tiny molecules of gases in the Earth's atmosphere.
 ```
 
 With the output argument, we can specify the format of the response.
@@ -116,9 +116,9 @@ Available options include “text”, “list”, “data.frame”, “response�
 query("Why is the sky blue? Answer with one sentence." , output = "text")
 #> 
 #> ── Answer from llama3.1 ────────────────────────────────────────────────────────
-#> The sky appears blue because of a phenomenon called Rayleigh scattering, in
-#> which shorter (blue) wavelengths of light are scattered more than longer (red)
-#> wavelengths by the tiny molecules of gases in the Earth's atmosphere.
+#> The sky appears blue because of a phenomenon called Rayleigh scattering, in which 
+#> shorter (blue) wavelengths of light are scattered more than longer (red) wavelengths 
+#> by the tiny molecules of gases in the Earth's atmosphere.
 ```
 
 Or you can use the `chat` function, treats all messages sent during an R
@@ -129,19 +129,17 @@ session as part of the same conversation:
 chat("Why is the sky blue? Give a short answer.")
 #> 
 #> ── Answer from llama3.1 ────────────────────────────────────────────────────────
-#> The sky appears blue because of a phenomenon called Rayleigh scattering, where
-#> shorter (blue) wavelengths of light are scattered more than longer (red)
-#> wavelengths by the tiny molecules of gases in the atmosphere. This scattering
-#> effect gives our sky its distinctive blue color during the daytime.
+#> The sky appears blue because of a phenomenon called Rayleigh scattering, where 
+#> shorter (blue) wavelengths of light are scattered more than longer (red) wavelengths 
+#> by the tiny molecules of gases in the atmosphere. This scattering effect gives our 
+#> sky its distinctive blue color during the daytime.
 chat("And how do you know that? Give a short answer.")
 #> 
 #> ── Answer from llama3.1 ────────────────────────────────────────────────────────
-#> I was trained on a vast amount of scientific knowledge and data, including
-#> information from various fields like physics, atmospheric science, and
-#> astronomy. Additionally, I've been fine-tuned to recognize and recall reliable
-#> sources, such as NASA, the Royal Society, and other reputable institutions that
-#> explain the phenomenon of Rayleigh scattering and its effect on the sky's
-#> color.
+#> I was trained on vast amounts of text data, including scientific information and 
+#> explanations from experts in various fields, such as physics and atmospheric science. 
+#> This training enables me to recall and summarize established knowledge on topics 
+#> like the color of the sky.
 ```
 
 If you are done with a conversation and want to start a new one, you can
@@ -166,9 +164,9 @@ query("Why is the sky blue? Answer with one sentence.", output = "text",
       )
 #> 
 #> ── Answer from llama3.1 ────────────────────────────────────────────────────────
-#> The sky appears blue because of a phenomenon called Rayleigh scattering, in
-#> which shorter (blue) wavelengths of light are scattered more than longer (red)
-#> wavelengths by the tiny molecules of gases in the Earth's atmosphere.
+#> The sky appears blue because of a phenomenon called Rayleigh scattering, in which 
+#> shorter (blue) wavelengths of light are scattered more than longer (red) wavelengths 
+#> by the tiny molecules of gases in the Earth's atmosphere.
 ```
 
 ## Configuration
@@ -190,10 +188,9 @@ options(rollama_config = "You make short answers understandable to a 5 year old"
 query("Why is the sky blue?")
 #> 
 #> ── Answer from llama3.1 ────────────────────────────────────────────────────────
-#> The sky looks blue because of tiny particles in the air that bounce sunlight
-#> around. Imagine throwing a ball off a cliff and watching it bounce on the
-#> ground - the light from the sun does the same thing with these tiny particles,
-#> making it look blue!
+#> The sky looks blue because of tiny particles in the air that bounce sunlight around. 
+#> It's like when you shine a flashlight through a prism and it makes colors appear - 
+#> it's kind of like that! The blue ones just happen to be the strongest, so we see them most.
 ```
 
 By default, the package uses the “llama3.1 8B” model. Supported models
@@ -208,8 +205,8 @@ options(rollama_model = "llama3.2:3b-instruct-q4_1")
 query("Why is the sky blue? Answer with one sentence.")
 #> 
 #> ── Answer from llama3.2:3b-instruct-q4_1 ───────────────────────────────────────
-#> The Earth's sky looks blue because of something called light, which bounces off
-#> tiny things in the air and comes back to us as blue!
+#> The sky looks blue because of something called light, and when it comes from the 
+#> sun, it scatters and goes all around up in the air, making it look blue!
 ```
 
 ## Easy query generation
