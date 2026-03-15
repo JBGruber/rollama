@@ -142,9 +142,116 @@ type_object <- function(
 
 #' @export
 print.rollama_type <- function(x, ...) {
-  schema <- as_json_schema(x)
-  cat(jsonlite::toJSON(schema, pretty = TRUE, auto_unbox = TRUE), "\n")
+  cli::cat_line(cli::col_grey("<rollama structured output schema>"))
+  if (x$type == "object") {
+    desc_str <- if (is.null(x$description)) {
+      "<NULL>"
+    } else {
+      paste0('"', x$description, '"')
+    }
+    req_str <- if (isTRUE(x$required)) {
+      paste0(" (", cli::col_br_red("required"), ")")
+    } else {
+      ""
+    }
+    cli::cat_line(paste0(
+      cli::col_grey("\u251c\u2500object: "),
+      desc_str,
+      req_str
+    ))
+    if (length(x$properties) > 0) {
+      cli::cat_line(cli::col_grey("\u2514\u2500properties"))
+      props <- x$properties
+      n <- length(props)
+      for (i in seq_along(props)) {
+        rollama_type_line(
+          props[[i]],
+          name = names(props)[i],
+          prefix = "  ",
+          is_last = i == n
+        )
+      }
+    }
+  } else {
+    rollama_type_line(x, name = NULL, prefix = "", is_last = TRUE)
+  }
   invisible(x)
+}
+
+
+rollama_type_trunc <- function(s, max_chars = 32) {
+  if (!is.null(s) && nchar(s) > max_chars) {
+    paste0(substr(s, 1, max_chars), "...")
+  } else {
+    s
+  }
+}
+
+
+rollama_type_line <- function(x, name = NULL, prefix = "", is_last = TRUE) {
+  conn <- if (is_last) "\u2514\u2500" else "\u251c\u2500"
+  cont <- if (is_last) "  " else paste0(cli::col_grey("\u2502"), " ")
+  type <- x$type
+  name <- if (!is.null(name)) paste0("<", name) else "<"
+
+  if (type == "enum") {
+    values_str <- rollama_type_trunc(paste(
+      paste0('"', x$values, '"'),
+      collapse = ", "
+    ))
+    content <- cli::col_blue(paste0(
+      c(name, paste0("<one_of: ", values_str)),
+      collapse = ", ",
+      ">"
+    ))
+  } else {
+    content <- if (!is.null(x$description)) {
+      if (name != "<") {
+        name <- paste0(name, ": ")
+      }
+      paste(name, cli::style_italic(rollama_type_trunc(x$description)), ">")
+    } else {
+      paste0(name, ">")
+    }
+  }
+  content <- if (content == "<>") NULL else paste(cli::col_blue(content), " ")
+
+  content <- if (isTRUE(x$required)) {
+    paste0(content, "(", cli::col_br_red("required"), ")")
+  } else {
+    ""
+  }
+
+  cli::cat_line(paste0(
+    prefix,
+    cli::col_grey(paste0(conn, type, ": ")),
+    content
+  ))
+
+  child_prefix <- paste0(prefix, cont)
+
+  if (type == "object" && length(x$properties) > 0) {
+    cli::cat_line(paste0(child_prefix, cli::col_grey("\u2514\u2500properties")))
+    prop_prefix <- paste0(child_prefix, "  ")
+    props <- x$properties
+    n <- length(props)
+    for (i in seq_along(props)) {
+      rollama_type_line(
+        props[[i]],
+        name = names(props)[i],
+        prefix = prop_prefix,
+        is_last = i == n
+      )
+    }
+  } else if (type == "array" && !is.null(x$items)) {
+    cli::cat_line(paste0(child_prefix, cli::col_grey("\u2514\u2500items")))
+    rollama_type_line(
+      x$items,
+      name = NULL,
+      prefix = paste0(child_prefix, "  "),
+      is_last = TRUE
+    )
+  }
 }
 
 
@@ -258,7 +365,9 @@ as_json_schema.character <- function(x, ...) {
   tryCatch(
     jsonlite::parse_json(x, simplifyVector = TRUE),
     error = function(e) {
-      cli::cli_abort("Could not parse {.arg format} as JSON: {conditionMessage(e)}")
+      cli::cli_abort(
+        "Could not parse {.arg format} as JSON: {conditionMessage(e)}"
+      )
     }
   )
 }
@@ -270,23 +379,36 @@ as_json_schema.character <- function(x, ...) {
 as_json_schema.S7_object <- function(x, ...) {
   if (inherits(x, "ellmer::TypeBasic")) {
     out <- list(type = x@type)
-    if (!is.null(x@description)) out$description <- x@description
+    if (!is.null(x@description)) {
+      out$description <- x@description
+    }
     out
   } else if (inherits(x, "ellmer::TypeEnum")) {
     out <- list(type = "string", enum = as.list(x@values))
-    if (!is.null(x@description)) out$description <- x@description
+    if (!is.null(x@description)) {
+      out$description <- x@description
+    }
     out
   } else if (inherits(x, "ellmer::TypeArray")) {
     out <- list(type = "array", items = as_json_schema(x@items))
-    if (!is.null(x@description)) out$description <- x@description
+    if (!is.null(x@description)) {
+      out$description <- x@description
+    }
     out
   } else if (inherits(x, "ellmer::TypeObject")) {
     props <- lapply(x@properties, as_json_schema)
-    required_names <- names(Filter(function(p) isTRUE(p@required), x@properties))
+    required_names <- names(Filter(
+      function(p) isTRUE(p@required),
+      x@properties
+    ))
     out <- list(type = "object", properties = props)
-    if (length(required_names) > 0) out$required <- as.list(required_names)
+    if (length(required_names) > 0) {
+      out$required <- as.list(required_names)
+    }
     out$additionalProperties <- isTRUE(x@additional_properties)
-    if (!is.null(x@description)) out$description <- x@description
+    if (!is.null(x@description)) {
+      out$description <- x@description
+    }
     out
   } else if (inherits(x, "tidyllm::tidyllm_field")) {
     type <- S7::prop(x, "type")
@@ -298,12 +420,18 @@ as_json_schema.S7_object <- function(x, ...) {
       inner <- schema
     } else {
       inner <- list(type = type)
-      if (length(enum) > 0) inner$enum <- as.list(enum)
-      if (length(description) > 0 && !isTRUE(vector)) inner$description <- description
+      if (length(enum) > 0) {
+        inner$enum <- as.list(enum)
+      }
+      if (length(description) > 0 && !isTRUE(vector)) {
+        inner$description <- description
+      }
     }
     if (isTRUE(vector)) {
       out <- list(type = "array", items = inner)
-      if (length(description) > 0) out$description <- description
+      if (length(description) > 0) {
+        out$description <- description
+      }
       return(out)
     }
     inner
