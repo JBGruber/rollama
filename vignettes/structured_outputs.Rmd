@@ -1,0 +1,279 @@
+---
+title: "Using Structured Outputs"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Using Structured Outputs}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Structured outputs are an efficient way to convince models to focus on outputting specific information.
+This can help with annotation and information extraction.
+Essentially, you tell the model what information you want in your reply by defining a schema that declares the types and structure, or you can even limit what information the model is allowed to return. 
+
+```{r setup}
+library(rollama)
+```
+
+The way you defince a structured output in `rollama` is by declaring a schema with each element being a named type declaration:
+
+```{r}
+country_schema <- create_schema(
+  name = type_string(description = "Name of the country"),
+  capital = type_string(description = "Name of the capital"),
+  population = type_number(
+    description = "Number of inhabitants, convert to absolute numbers"
+  ),
+  # Note that description is optional
+  continent = type_enum(
+    values = c(
+      "Asia",
+      "Africa",
+      "North America",
+      "South America",
+      "Antarctica",
+      "Europe",
+      "Australia"
+    )
+  ),
+  nato_member = type_boolean(),
+  official_languages = type_array(
+    items = type_string(),
+    description = "Official languages"
+  )
+)
+country_schema
+```
+
+You can use this, for example, to extract only specific information from an input text:
+
+```{r}
+input_text <- "Canada is a country in North America. With a population of over 41 million, it has widely varying population densities, with the majority residing in its urban areas and large areas being sparsely populated. Its capital is Ottawa and its three largest metropolitan areas are Toronto, Montreal, and Vancouver. Canada is officially bilingual (English and French). It is a member of the North Atlantic Treaty Organization (NATO)."
+
+res <- make_query(
+  input_text,
+  prompt = "Extract information about the country from the text below. Do not make things up. Convert numbers into their full numeric form.",
+  template = "{prompt}\n\nTEXT:\n\n{text}"
+) |>
+  query(
+    model = "llama3.2:1b",
+    format = country_schema,
+    output = "text",
+    stream = FALSE
+  )
+```
+
+What makes this so useful is that you can directly parse this output into an R object:
+
+```{r}
+jsonlite::fromJSON(res) |>
+  tibble::as_tibble()
+```
+
+
+## Alternative ways to provide Structured Outputs
+
+If you find `rollama`s structured output types and schema creation confusing (let us know, but also) just use the schema creation that seems most natural to you.
+
+### Create as a list
+
+```{r}
+country_schema_list <- list(
+  type = "object",
+  properties = list(
+    name = list(type = "string", description = "Name of the country"),
+    capital = list(type = "string", description = "Name of the capital"),
+    population = list(
+      type = "number",
+      description = "Number of inhabitants, convert to absolute numbers"
+    ),
+    continent = list(
+      type = "string",
+      enum = list(
+        "Asia",
+        "Africa",
+        "North America",
+        "South America",
+        "Antarctica",
+        "Europe",
+        "Australia"
+      )
+    ),
+    nato_member = list(type = "boolean"),
+    official_languages = list(
+      type = "array",
+      items = list(type = "string"),
+      description = "Official languages"
+    )
+  ),
+  required = list(
+    "name",
+    "capital",
+    "population",
+    "continent",
+    "nato_member",
+    "official_languages"
+  ),
+  additionalProperties = FALSE
+)
+q <- make_query(
+  input_text,
+  prompt = "Extract information about the country from the text below. Do not make things up. Convert numbers into their full numeric form.",
+  template = "{prompt}\n\nTEXT:\n\n{text}"
+)
+query(
+  q,
+  model = "llama3.2:1b",
+  format = country_schema_list,
+  output = "text"
+)
+```
+
+
+### Create as json string
+
+```{r}
+country_schema_json <- '{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the country"
+    },
+    "capital": {
+      "type": "string",
+      "description": "Name of the capital"
+    },
+    "population": {
+      "type": "number",
+      "description": "Number of inhabitants, convert to absolute numbers"
+    },
+    "continent": {
+      "type": "string",
+      "enum": [
+        "Asia",
+        "Africa",
+        "North America",
+        "South America",
+        "Antarctica",
+        "Europe",
+        "Australia"
+      ]
+    },
+    "nato_member": {
+      "type": "boolean"
+    },
+    "official_languages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Official languages"
+    }
+  },
+  "required": [
+    "name",
+    "capital",
+    "population",
+    "continent",
+    "nato_member",
+    "official_languages"
+  ],
+  "additionalProperties": false
+}'
+query(
+  q,
+  model = "llama3.2:1b",
+  format = country_schema_json,
+  output = "text"
+)
+```
+
+### Using ellmer
+
+
+```{r}
+library(ellmer)
+country_schema_ellmer <- type_object(
+  name = type_string(description = "Name of the country"),
+  capital = type_string(description = "Name of the capital"),
+  population = type_number(
+    description = "Number of inhabitants, convert to absolute numbers"
+  ),
+  # Note that description is optional
+  continent = type_enum(
+    values = c(
+      "Asia",
+      "Africa",
+      "North America",
+      "South America",
+      "Antarctica",
+      "Europe",
+      "Australia"
+    )
+  ),
+  nato_member = type_boolean(),
+  official_languages = type_array(
+    items = type_string(),
+    description = "Official languages"
+  )
+)
+country_schema_ellmer
+```
+
+```{r}
+query(
+  q,
+  model = "llama3.2:1b",
+  format = country_schema_ellmer,
+  output = "text"
+)
+```
+
+### Using tidyllm
+
+
+```{r}
+library(tidyllm)
+country_schema_tidyllm <- field_object(
+  name = field_chr(.description = "Name of the country"),
+  capital = field_chr(.description = "Name of the capital"),
+  population = field_dbl(
+    .description = "Number of inhabitants, convert to absolute numbers"
+  ),
+  continent = field_fct(
+    .levels = c(
+      "Asia",
+      "Africa",
+      "North America",
+      "South America",
+      "Antarctica",
+      "Europe",
+      "Australia"
+    )
+  ),
+  nato_member = field_lgl(),
+  official_languages = field_chr(
+    .description = "Official languages",
+    .vector = TRUE
+  )
+)
+country_schema_tidyllm
+```
+
+
+```{r}
+query(
+  q,
+  model = "llama3.2:1b",
+  format = country_schema_tidyllm,
+  output = "text"
+)
+```
