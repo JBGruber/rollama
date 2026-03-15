@@ -7,9 +7,24 @@ test_that("pull model", {
 
 test_that("show model", {
   skip_if_not(ping_ollama(silent = TRUE))
-  expect_equal(nrow(show_model()), 1L)
+  out <- show_model()
+  expect_equal(nrow(out), 1L)
+  expect_s3_class(out, "tbl_df")
   expect_equal(ncol(list_models()), 11L)
   expect_s3_class(list_models(), "tbl_df")
+})
+
+test_that("show model detailed", {
+  skip_if_not(ping_ollama(silent = TRUE))
+  out_default <- show_model(detailed = FALSE)
+  out_detailed <- show_model(detailed = TRUE)
+  expect_equal(nrow(out_detailed), 1L)
+  expect_s3_class(out_detailed, "tbl_df")
+  # detailed = TRUE should return at least as many columns
+  expect_gt(
+    length(unlist(out_detailed$model_info)),
+    length(unlist(out_default$model_info))
+  )
 })
 
 test_that("create model", {
@@ -41,4 +56,12 @@ test_that("model missing", {
     check_model_installed("NOMODEL"),
     "Model.NOMODEL:latest.not.installed."
   )
+})
+
+test_that("list running models", {
+  skip_if_not(ping_ollama(silent = TRUE))
+  query("test", keep_alive = "30s")
+  expect_s3_class(list_running_models(), "data.frame")
+  expect_gte(ncol(list_running_models()), 8L)
+  expect_gte(nrow(list_running_models()), 1L)
 })

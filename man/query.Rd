@@ -14,10 +14,12 @@ query(
   model_params = NULL,
   output = c("response", "text", "list", "data.frame", "httr2_response", "httr2_request"),
   format = NULL,
-  template = NULL,
   tools = NULL,
   think = NULL,
   keep_alive = NULL,
+  logprobs = FALSE,
+  top_logprobs = NULL,
+  cache = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 )
@@ -29,10 +31,11 @@ chat(
   server = NULL,
   images = NULL,
   model_params = NULL,
-  template = NULL,
   tools = NULL,
   think = NULL,
   keep_alive = NULL,
+  logprobs = NULL,
+  top_logprobs = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 )
@@ -53,7 +56,7 @@ details.}
 \item{images}{path(s) to images (for multimodal models such as llava).}
 
 \item{model_params}{a named list of additional model parameters listed in the
-\href{https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values}{documentation for the Modelfile}
+\href{https://docs.ollama.com/modelfile#valid-parameters-and-values}{documentation for the Modelfile}
 such as temperature. Use a seed and set the temperature to zero to get
 reproducible results (see examples).}
 
@@ -63,9 +66,6 @@ reproducible results (see examples).}
 
 \item{format}{the format to return a response in. Currently the only accepted
 value is \code{"json"}.}
-
-\item{template}{the prompt template to use (overrides what is defined in the
-Modelfile).}
 
 \item{tools}{a list of tools (functions) the model may call. Each tool
 should follow the Ollama tool schema with fields \code{type}, \code{function}
@@ -77,6 +77,28 @@ mode (supported by compatible models such as DeepSeek-R1).}
 \item{keep_alive}{controls how long the model is kept in memory after the
 request. Accepts a duration string such as \code{"5m"} or \code{"1h"}, \code{0} to
 unload immediately, or \code{-1} to keep the model loaded indefinitely.}
+
+\item{logprobs}{logical. If \code{TRUE}, the response includes log probabilities
+of the output tokens.}
+
+\item{top_logprobs}{integer (0–20). Number of most-likely tokens to return
+log probabilities for at each output position. Requires \code{logprobs = TRUE}.}
+
+\item{cache}{where to cache responses on disk so that long annotation
+pipelines can be resumed after an interruption. Two forms are accepted:
+\itemize{
+\item A \strong{single directory path} (e.g. \code{"my_cache"}). Each response is
+stored as \verb{\{directory\}/\{md5_hash\}.json}, where the hash is derived from
+the request content (model, messages, options). Re-running the same
+request always hits the same file, even across sessions.
+\item A \strong{character vector} with one explicit file path per request.
+Use this when you need to control file names yourself.
+}
+Existing, valid cache files are loaded instead of re-querying Ollama.
+Corrupted or missing files are re-requested and then saved. Caching
+requires \code{stream = FALSE} (a warning is emitted and streaming is disabled
+automatically when \code{cache} is set). The \code{"httr2_response"} output type
+and custom output functions are not compatible with caching.}
 
 \item{...}{not used.}
 

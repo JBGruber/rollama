@@ -1,7 +1,17 @@
-#' Pull, show and delete models
+#' Pull, push, show and delete models
 #'
 #' @details
-#' - `pull_model()`: downloads model
+#' - `pull_model()`: downloads a model from the Ollama registry or Hugging Face
+#' - `push_model()`: uploads a locally created model to the Ollama registry
+#'   (ollama.com) so others can pull it. The model name must include your
+#'   namespace (i.e. `"your_username/model_name"`). Before pushing you need to
+#'   add your public key (`~/.ollama/id_ed25519.pub`) to your ollama.com account
+#'   settings. This is mainly useful after `create_model()` — you build a custom
+#'   model locally (e.g. with a system prompt, quantisation, or fine-tuned
+#'   weights) and then share it with collaborators or the public. You can also
+#'   push to a private/self-hosted registry by using a model name that starts
+#'   with the registry host (e.g. `"registry.example.com/mymodel"`); set
+#'   `insecure = TRUE` if that registry does not use HTTPS.
 #' - `show_model()`: displays information about a local model
 #' - `copy_model()`: creates a model with another name from an existing model
 #' - `delete_model()`: deletes local model
@@ -17,10 +27,12 @@
 #' @param insecure allow insecure connections to the library. Only use this if
 #'   you are pulling from your own library during development.
 #' @param destination name of the copied model.
+#' @param detailed when `TRUE`, the column `model_info` will contain much more
+#'   detailed information about the model.
 #' @inheritParams query
 #'
 #' @return (invisible) a tibble with information about the model (except in
-#'   `delete_model`)
+#'   `delete_model` and `push_model`)
 #' @export
 #'
 #' @examples
@@ -31,6 +43,10 @@
 #' model_info <- show_model("mixtral")
 #' # pulling models from Hugging Face Hub is also possible
 #' pull_model("https://huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
+#' # create a custom model and share it on ollama.com
+#' create_model("your_username/mario", from = "llama3.1",
+#'              system = "You are Mario from Super Mario Bros.")
+#' push_model("your_username/mario")
 #' }
 pull_model <- function(
   model = NULL,
@@ -46,17 +62,17 @@ pull_model <- function(
     server <- getOption("rollama_server", default = "http://localhost:11434")
   }
   if (!all(ping_ollama(server = server, silent = TRUE))) {
-    cli::cli_alert_danger("Could not connect to Ollama at {.url {sv}}")
+    cli::cli_alert_danger("Could not connect to Ollama at {.url {server}}")
   }
   if (length(model) > 1L) {
     for (m in model) {
-      pull_model(m, server, insecure, verbose)
+      pull_model(m, server, insecure, background, verbose)
     }
   }
 
   req <- httr2::request(server) |>
     httr2::req_url_path_append("/api/pull") |>
-    httr2::req_body_json(list(name = model, insecure = insecure)) |>
+    httr2::req_body_json(list(model = model, insecure = insecure)) |>
     httr2::req_headers(!!!get_headers())
 
   if (verbose) {
@@ -68,7 +84,7 @@ pull_model <- function(
   }
 
   if (done) {
-    cli::cli_alert_success("model {model} pulled succesfully!")
+    cli::cli_alert_success("model {model} pulled successfully!")
     return(invisible(show_model(model)))
   } else {
     cli::cli_alert_success("model {model} downloading in background")
@@ -77,8 +93,52 @@ pull_model <- function(
 
 
 #' @rdname pull_model
+#'
+#' @note `push_model()` is intended for advanced users. It requires setup steps
+#'   that must be completed outside of R: you need an account on
+#'   \url{https://ollama.com}, and your Ollama public key
+#'   (`~/.ollama/id_ed25519.pub` on Linux/macOS) must be registered in your
+#'   account settings. The model name must be prefixed with your ollama.com
+#'   username (e.g. `"your_username/model_name"`); pushing without a namespace
+#'   will fail with a permission error. Unfortunately, more user-friendly
+#'   guidance cannot be provided here as the setup process is managed entirely
+#'   by Ollama outside of R.
+#'
 #' @export
-show_model <- function(model = NULL, server = NULL) {
+push_model <- function(
+  model,
+  server = NULL,
+  insecure = FALSE,
+  verbose = getOption("rollama_verbose", default = interactive())
+) {
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
+  }
+
+  req <- httr2::request(server) |>
+    httr2::req_url_path_append("/api/push") |>
+    httr2::req_body_json(list(model = model, insecure = insecure)) |>
+    httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
+    httr2::req_headers(!!!get_headers())
+
+  if (verbose) {
+    done <- stream_progress(req, verbose, background = FALSE)
+    cli::cli_process_done(.envir = the)
+  } else {
+    resp <- httr2::req_perform(req)
+    done <- httr2::resp_status(resp) < 400L
+  }
+
+  if (done) {
+    cli::cli_alert_success("model {model} pushed successfully!")
+  }
+  invisible(NULL)
+}
+
+
+#' @rdname pull_model
+#' @export
+show_model <- function(model = NULL, detailed = FALSE, server = NULL) {
   if (is.null(model)) {
     model <- getOption("rollama_model", default = "llama3.1")
   }
@@ -86,17 +146,16 @@ show_model <- function(model = NULL, server = NULL) {
     server <- getOption("rollama_server", default = "http://localhost:11434")
   }
   if (length(model) != 1L) {
-    cli::cli_abort("model needs to be one model name.")
+    cli::cli_abort("{.code model} needs to be one model name.")
   }
 
   httr2::request(server) |>
     httr2::req_url_path_append("/api/show") |>
-    httr2::req_body_json(list(name = model)) |>
+    httr2::req_body_json(list(model = model, verbose = detailed)) |>
     httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
     httr2::req_headers(!!!get_headers()) |>
     httr2::req_perform() |>
     httr2::resp_body_json() |>
-    purrr::list_flatten(name_spec = "{inner}") |>
     as_tibble_onerow()
 }
 
@@ -119,7 +178,7 @@ show_model <- function(model = NULL, server = NULL) {
 #'   parameters in a dedicated shareable way. If you use `show_model()`, you can
 #'   look at the configuration of a model in the column modelfile. To get more
 #'   information and a list of valid parameters, check out
-#'   <https://github.com/ollama/ollama/blob/main/docs/modelfile.md>. Most
+#'   <https://docs.ollama.com/modelfile>. Most
 #'   options are also available through the `query` and `chat` functions, yet
 #'   are not persistent over sessions.
 #'
@@ -193,7 +252,7 @@ delete_model <- function(model, server = NULL) {
   httr2::request(server) |>
     httr2::req_url_path_append("/api/delete") |>
     httr2::req_method("DELETE") |>
-    httr2::req_body_json(list(name = model)) |>
+    httr2::req_body_json(list(model = model)) |>
     httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
     httr2::req_headers(!!!get_headers()) |>
     httr2::req_perform()

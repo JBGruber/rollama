@@ -17,4 +17,5 @@ paper/paper_files
 load-experiments.R
 use_github_release2.r
 .env
-api.md
+plan.md
+openapi.yaml

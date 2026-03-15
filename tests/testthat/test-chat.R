@@ -2,12 +2,20 @@ test_that("Test query", {
   skip_if_not(ping_ollama(silent = TRUE))
   expect_message(query("test"), ".")
   expect_message(query("test", verbose = TRUE), ".")
+  expect_equal(
+    length(
+      query("test", logprobs = TRUE, top_logprobs = 2L)[[1]]$logprobs[[
+        1
+      ]]$top_logprobs
+    ),
+    2L
+  )
 })
 
 test_that("Test chat", {
   skip_if_not(ping_ollama(silent = TRUE))
-  expect_message(chat("Please only say 'yes'"), "Yes")
-  expect_message(chat("One more time"), "Yes")
+  expect_message(chat("Please only say 'yes'"), "Answer from")
+  expect_output(chat("One more time")[[1]]$message$content, "Yes")
   expect_equal(nrow(chat_history()), 4L)
   # check order of history
   expect_equal(

@@ -50,20 +50,18 @@ build_req <- function(
   model_params,
   format,
   stream,
-  template,
   tools = NULL,
   think = NULL,
-  keep_alive = NULL
+  keep_alive = NULL,
+  logprobs = NULL,
+  top_logprobs = NULL
 ) {
-  if (is.null(model)) {
-    model <- getOption("rollama_model", default = "llama3.1")
-  }
-  if (is.null(server)) {
-    server <- getOption("rollama_server", default = "http://localhost:11434")
-  }
   seed <- getOption("rollama_seed")
   if (!is.null(seed) && !purrr::pluck_exists(model_params, "seed")) {
     model_params <- append(model_params, list(seed = seed))
+  }
+  if (!is.null(format)) {
+    format <- as_json_schema(format)
   }
 
   if (length(msg) != length(model)) {
@@ -81,10 +79,11 @@ build_req <- function(
           stream = stream,
           options = model_params,
           format = format,
-          template = template,
           tools = tools,
           think = think,
-          keep_alive = keep_alive
+          keep_alive = keep_alive,
+          logprobs = logprobs,
+          top_logprobs = top_logprobs
         ) |>
           purrr::compact() |> # remove NULL values
           make_req(
@@ -102,10 +101,11 @@ build_req <- function(
         stream = stream,
         options = model_params,
         format = format,
-        template = template,
         tools = tools,
         think = think,
-        keep_alive = keep_alive
+        keep_alive = keep_alive,
+        logprobs = logprobs,
+        top_logprobs = top_logprobs
       ) |>
         purrr::compact() |> # remove NULL values
         make_req(
@@ -169,6 +169,55 @@ perform_reqs <- function(reqs, verbose) {
   }
 
   httr2::resps_successes(resps)
+}
+
+perform_reqs_with_cache <- function(reqs, cache_paths, verbose) {
+  valid <- purrr::map_lgl(cache_paths, check_cache_valid)
+
+  model <- purrr::map_chr(reqs, c("body", "data", "model")) |>
+    unique()
+  pb <- FALSE
+  if (!is.logical(verbose)) {
+    pb <- verbose
+  } else if (verbose) {
+    n_cached <- sum(valid)
+    n_run <- sum(!valid)
+    if (n_cached > 0L && n_run > 0L) {
+      cli::cli_alert_info(
+        "Loading {n_cached} cached response{?s}, running {n_run} new request{?s}."
+      )
+    } else if (n_cached > 0L) {
+      cli::cli_alert_info("Loading all {n_cached} response{?s} from cache.")
+    }
+    pb <- list(
+      clear = TRUE,
+      format = c(
+        "{cli::pb_spin} {getOption('model')} {?is/are} thinking about ",
+        "{cli::pb_total - cli::pb_current}/{cli::pb_total} question{?s}",
+        "[ETA: {cli::pb_eta}]"
+      )
+    )
+  }
+  resps <- vector("list", length(reqs))
+  withr::with_options(list(cli.progress_show_after = 0, model = model), {
+    resps[!valid] <- httr2::req_perform_parallel(
+      reqs = reqs[!valid],
+      paths = cache_paths[!valid],
+      on_error = "continue",
+      progress = pb
+    )
+  })
+
+  # verify that all responses are valid
+  if (!all(purrr::map_lgl(cache_paths, check_cache_valid))) {
+    cli::cli_alert_warning(
+      "Some responses were corrupted, rerunning failed requests"
+    )
+    # call itself to execute again
+    resps <- perform_reqs_with_cache(reqs, cache_paths, verbose)
+  }
+  resps[valid] <- purrr::map(cache_paths[valid], read_cache)
+  return(resps)
 }
 
 
@@ -253,4 +302,3 @@ prep_req_data <- function(tbl) {
     }
   })
 }
-

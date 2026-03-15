@@ -3,19 +3,26 @@ stream_answer <- function(req) {
   conn <- httr2::req_perform_connection(req)
   on.exit(close(conn))
   line <- answer <- character()
+  logprobs <- list()
   repeat {
     resp <- httr2::resp_stream_lines(conn, lines = 1L) |>
-      jsonlite::fromJSON()
+      jsonlite::fromJSON(simplifyVector = FALSE)
     # for debugging
     # resp <- httr2::resp_stream_lines(conn, lines = 1L)
     # write(resp, "resp.json", append = TRUE)
-    # resp <- jsonlite::fromJSON(resp)
-    line <- c(line, purrr::pluck(resp, "message", "content"))
+    # resp <- jsonlite::fromJSON(resp, simplifyVector = FALSE)
+    new_token <- purrr::pluck(resp, "message", "content", .default = "")
+    line <- c(line, new_token)
+    logprobs <- c(
+      logprobs,
+      purrr::pluck(resp, "logprobs", .default = NULL)
+    )
     if (!any(grepl("\n", line))) {
-      cat("\r", line, sep = "")
+      cat(new_token, sep = "")
     } else {
-      cat("\r", line, sep = "")
+      cat(new_token, sep = "")
       answer <- c(answer, line)
+
       line <- character()
     }
     if (httr2::resp_stream_is_complete(conn)) break
@@ -27,6 +34,9 @@ stream_answer <- function(req) {
     answer,
     collapse = ""
   )
+  if (length(logprobs) > 0) {
+    purrr::pluck(resp, "logprobs") <- logprobs
+  }
   return(resp)
 }
 
@@ -41,7 +51,6 @@ stream_progress <- function(req, verbose, background, ...) {
   if (background) {
     return(invisible(FALSE))
   }
-
   # stream line by line until done
   repeat {
     status <- httr2::resp_stream_lines(conn, lines = 1)
@@ -52,11 +61,8 @@ stream_progress <- function(req, verbose, background, ...) {
 
 
 # function to display progress in streaming operations
+#' @importFrom prettyunits pretty_bytes
 process_status <- function(status, verbose) {
-  if (!getOption("rollama_verbose", default = interactive())) {
-    # return FALSE to not break the loop
-    return(FALSE)
-  }
   # for debugging
   # write(status, file = "status.txt", append = TRUE)
   status <- try(jsonlite::fromJSON(status), silent = TRUE)

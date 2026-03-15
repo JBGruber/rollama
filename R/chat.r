@@ -35,7 +35,7 @@
 #' @param images path(s) to images (for multimodal models such as llava).
 #' @param model_params a named list of additional model parameters listed in the
 #'   [documentation for the
-#'   Modelfile](https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values)
+#'   Modelfile](https://docs.ollama.com/modelfile#valid-parameters-and-values)
 #'   such as temperature. Use a seed and set the temperature to zero to get
 #'   reproducible results (see examples).
 #' @param output what the function should return. Possible values are
@@ -43,8 +43,10 @@
 #'   "httr2_request" or a function see details.
 #' @param format the format to return a response in. Currently the only accepted
 #'   value is `"json"`.
-#' @param template the prompt template to use (overrides what is defined in the
-#'   Modelfile).
+#' @param logprobs logical. If `TRUE`, the response includes log probabilities
+#'   of the output tokens.
+#' @param top_logprobs integer (0–20). Number of most-likely tokens to return
+#'   log probabilities for at each output position. Requires `logprobs = TRUE`.
 #' @param tools a list of tools (functions) the model may call. Each tool
 #'   should follow the Ollama tool schema with fields `type`, `function`
 #'   (containing `name`, `description`, and `parameters`).
@@ -53,6 +55,21 @@
 #' @param keep_alive controls how long the model is kept in memory after the
 #'   request. Accepts a duration string such as `"5m"` or `"1h"`, `0` to
 #'   unload immediately, or `-1` to keep the model loaded indefinitely.
+#' @param cache where to cache responses on disk so that long annotation
+#'   pipelines can be resumed after an interruption. Two forms are accepted:
+#'   \itemize{
+#'     \item A **single directory path** (e.g. `"my_cache"`). Each response is
+#'       stored as `{directory}/{md5_hash}.json`, where the hash is derived from
+#'       the request content (model, messages, options). Re-running the same
+#'       request always hits the same file, even across sessions.
+#'     \item A **character vector** with one explicit file path per request.
+#'       Use this when you need to control file names yourself.
+#'   }
+#'   Existing, valid cache files are loaded instead of re-querying Ollama.
+#'   Corrupted or missing files are re-requested and then saved. Caching
+#'   requires `stream = FALSE` (a warning is emitted and streaming is disabled
+#'   automatically when `cache` is set). The `"httr2_response"` output type
+#'   and custom output functions are not compatible with caching.
 #' @param ... not used.
 #' @param verbose Whether to print status messages to the Console. Either
 #'   `TRUE`/`FALSE` or see [httr2::progress_bars]. The default is to have status
@@ -208,10 +225,12 @@ query <- function(
     "httr2_request"
   ),
   format = NULL,
-  template = NULL,
   tools = NULL,
   think = NULL,
   keep_alive = NULL,
+  logprobs = FALSE,
+  top_logprobs = NULL,
+  cache = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 ) {
@@ -221,6 +240,12 @@ query <- function(
   }
   if (!is.function(output)) {
     output <- match.arg(output)
+  }
+  if (is.null(model)) {
+    model <- getOption("rollama_model", default = "llama3.1")
+  }
+  if (is.null(server)) {
+    server <- getOption("rollama_server", default = "http://localhost:11434")
   }
 
   # q can be a string, a data.frame, or list of data.frames
@@ -249,6 +274,23 @@ query <- function(
     msg <- purrr::map(q, check_conversation)
   }
 
+  if (!is.null(cache)) {
+    if (is.function(output) || identical(output, "httr2_response")) {
+      cli::cli_abort(c(
+        "Caching is not compatible with {.code output = \"httr2_response\"} or \\
+         a custom output function.",
+        "i" = "Use a standard output type such as {.val text} or \\
+               {.val data.frame} when {.arg cache} is set."
+      ))
+    }
+    if (stream) {
+      cli::cli_alert_info(
+        "{.arg cache} requires {.code stream = FALSE}. Disabling streaming."
+      )
+      stream <- FALSE
+    }
+  }
+
   reqs <- build_req(
     model = model,
     msg = msg,
@@ -256,10 +298,11 @@ query <- function(
     model_params = model_params,
     format = format,
     stream = stream,
-    template = template,
     tools = tools,
     think = think,
-    keep_alive = keep_alive
+    keep_alive = keep_alive,
+    logprobs = logprobs,
+    top_logprobs = top_logprobs
   )
 
   if (identical(output, "httr2_request")) {
@@ -267,13 +310,18 @@ query <- function(
   }
 
   if (!all(ping_ollama(server = server, silent = TRUE))) {
-    cli::cli_alert_danger("Could not connect to Ollama at {.url {sv}}")
+    cli::cli_alert_danger("Could not connect to Ollama at {.url {server}}")
   }
   check_model_installed(model, server = server)
 
   res <- NULL
+  resps <- NULL
 
-  if (stream) {
+  cache_paths <- resolve_cache_paths(cache, reqs)
+
+  if (!is.null(cache_paths)) {
+    resps <- perform_reqs_with_cache(reqs, cache_paths, verbose)
+  } else if (stream) {
     if (is.function(output) | identical(output, "httr2_response")) {
       resps <- perform_reqs(reqs, verbose)
       res <- purrr::map(resps, httr2::resp_body_json)
@@ -326,10 +374,11 @@ chat <- function(
   server = NULL,
   images = NULL,
   model_params = NULL,
-  template = NULL,
   tools = NULL,
   think = NULL,
   keep_alive = NULL,
+  logprobs = NULL,
+  top_logprobs = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 ) {
@@ -362,10 +411,11 @@ chat <- function(
     stream = stream,
     server = server,
     model_params = model_params,
-    template = template,
     tools = tools,
     think = think,
     keep_alive = keep_alive,
+    logprobs = logprobs,
+    top_logprobs = top_logprobs,
     ...,
     verbose = verbose
   )

@@ -8,6 +8,9 @@ embed_text(
   text,
   model = NULL,
   server = NULL,
+  truncate = NULL,
+  dimensions = NULL,
+  keep_alive = NULL,
   model_params = NULL,
   verbose = getOption("rollama_verbose", default = interactive())
 )
@@ -23,8 +26,18 @@ details.}
 \item{server}{URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".}
 
+\item{truncate}{whether to truncate the input to fit within the model's
+context length (\code{TRUE}/\code{FALSE}).}
+
+\item{dimensions}{the desired number of dimensions in the embedding output.
+Only available for models that support it.}
+
+\item{keep_alive}{controls how long the model is kept in memory after the
+request. Accepts a duration string such as \code{"5m"} or \code{"1h"}, \code{0} to
+unload immediately, or \code{-1} to keep the model loaded indefinitely.}
+
 \item{model_params}{a named list of additional model parameters listed in the
-\href{https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values}{documentation for the Modelfile}.}
+\href{https://docs.ollama.com/modelfile#valid-parameters-and-values}{documentation for the Modelfile}.}
 
 \item{verbose}{Whether to print status messages to the Console
 (\code{TRUE}/\code{FALSE}). The default is to have status messages in

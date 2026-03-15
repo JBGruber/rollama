@@ -41,7 +41,8 @@ check_model_installed <- function(
           " Model{?s} {.emph {mdl}} not installed on {sv}.",
           " Would you like to download {?it/them}?"
         )
-        auto_pull <- utils::askYesNo(cli::cli_text(msg))
+        cli::cli_text(msg)
+        auto_pull <- utils::askYesNo("Download?")
       }
       if (!auto_pull) {
         cli::cli_abort("Model {mdl} not installed on {sv}.")
@@ -133,4 +134,63 @@ throw_error <- function(fails) {
       cli::cli_alert_danger("error: {f}")
     }
   }
+}
+
+
+# Compute a stable hash for a request.
+req_hash <- function(req) {
+  rlang::hash(req$body$data)
+}
+
+
+# Resolve cache paths from the cache argument and the list of requests.
+# Returns NULL when cache is NULL, a character vector of file paths otherwise.
+resolve_cache_paths <- function(cache, reqs) {
+  if (is.null(cache)) {
+    return(NULL)
+  }
+
+  if (length(cache) == 1L && tools::file_ext(cache) == "") {
+    if (!dir.exists(cache) && length(reqs) > 1L) {
+      dir.create(cache, recursive = TRUE)
+      cli::cli_inform("Created cache directory {.path {cache}}")
+    }
+    hashes <- purrr::map_chr(reqs, req_hash)
+    return(file.path(cache, paste0(hashes, ".json")))
+  }
+
+  if (length(cache) == length(reqs)) {
+    return(as.character(cache))
+  }
+
+  cli::cli_abort(c(
+    "{.arg cache} length mismatch.",
+    "i" = "Supply a single directory path or a character vector with one \\
+           path per request ({length(reqs)} expected, {length(cache)} given)."
+  ))
+}
+
+
+read_cache <- function(path) {
+  content <- readBin(path, what = "raw", n = file.info(path)$size)
+  httr2::response(
+    status_code = 200,
+    headers = list(`Content-Type` = "application/json; charset=utf-8"),
+    body = content
+  )
+}
+
+
+# TRUE when the file exists and contains parseable JSON.
+check_cache_valid <- function(path) {
+  if (!file.exists(path)) {
+    return(FALSE)
+  }
+  tryCatch(
+    {
+      jsonlite::read_json(path)
+      TRUE
+    },
+    error = function(e) FALSE
+  )
 }

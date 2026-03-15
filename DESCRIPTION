@@ -29,12 +29,13 @@ Imports:
     rlang,
     tibble,
     withr
-Suggests: 
+Suggests:
     base64enc,
     covr,
     glue,
     knitr,
     rmarkdown,
+    S7,
     spelling,
     testthat (>= 3.0.0)
 Depends:
