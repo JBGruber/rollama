@@ -60,6 +60,9 @@ build_req <- function(
   if (!is.null(seed) && !purrr::pluck_exists(model_params, "seed")) {
     model_params <- append(model_params, list(seed = seed))
   }
+  if (!is.null(format)) {
+    format <- as_json_schema(format)
+  }
 
   if (length(msg) != length(model)) {
     if (length(model) > 1L) {

@@ -4,9 +4,22 @@ devtools::check()
 
 # re-compute vignettes
 setwd(here::here("vignettes"))
-knitr::knit("vignettes/annotation.Rmd.orig", output = "vignettes/annotation.Rmd")
-knitr::knit("vignettes/image-annotation.Rmd.orig", output = "vignettes/image-annotation.Rmd")
-knitr::knit("vignettes/text-embedding.Rmd.orig", output = "vignettes/text-embedding.Rmd")
+knitr::knit(
+  "annotation.Rmd.orig",
+  output = "annotation.Rmd"
+)
+knitr::knit(
+  "image-annotation.Rmd.orig",
+  output = "image-annotation.Rmd"
+)
+knitr::knit(
+  "text-embedding.Rmd.orig",
+  output = "text-embedding.Rmd"
+)
+knitr::knit(
+  "structured_outputs.Rmd.orig",
+  output = "structured_outputs.Rmd"
+)
 
 # render site to have a look
 setwd(here::here())
