@@ -41,7 +41,8 @@ check_model_installed <- function(
           " Model{?s} {.emph {mdl}} not installed on {sv}.",
           " Would you like to download {?it/them}?"
         )
-        auto_pull <- utils::askYesNo(cli::cli_text(msg))
+        cli::cli_text(msg)
+        auto_pull <- utils::askYesNo("Download?")
       }
       if (!auto_pull) {
         cli::cli_abort("Model {mdl} not installed on {sv}.")
