@@ -40,6 +40,7 @@
     <li><a class="dropdown-item" href="articles/authentication.html">authentication</a></li>
     <li><a class="dropdown-item" href="articles/hf-gguf.html">Hugging Face Models</a></li>
     <li><a class="dropdown-item" href="articles/image-annotation.html">image-annotation</a></li>
+    <li><a class="dropdown-item" href="articles/structured_outputs.html">Using Structured Outputs</a></li>
     <li><a class="dropdown-item" href="articles/text-embedding.html">text-embedding</a></li>
   </ul>
 </li>
@@ -66,6 +67,7 @@
 <!-- badges: start -->
 
 <p>The goal of <code>rollama</code> is to wrap the Ollama API, which allows you to run different LLMs locally and create an experience similar to ChatGPT/OpenAI’s API. Ollama is very easy to deploy and handles a huge number of models. Checkout the project here: <a href="https://github.com/ollama/ollama" class="external-link uri">https://github.com/ollama/ollama</a>.</p>
+<p>While there are several R packages for working with LLMs, <code>rollama</code> takes an opinionated approach centred on local, open-weight models: prioritising privacy, reproducibility, and ease of use for research tasks. The package and its learning materials are particularly focused on annotating text and images — making it a natural fit for (social) scientists who want to use LLMs without relying on proprietary APIs or sending sensitive data to third-party servers. It also offers deep integration with the Ollama ecosystem beyond just chat, including model management features like creating, copying, and pushing custom models. See the <a href="#similar-packages">Similar packages</a> section for a comparison with related packages.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
@@ -79,7 +81,7 @@
 <p>However, <code>rollama</code> is just the client package. The models are run in <code>Ollama</code>, which you need to install on your system, on a remote system or through <a href="https://docs.docker.com/desktop/" class="external-link">Docker</a>. The easiest way is to simply download and install the Ollama application from <a href="https://ollama.com/" class="external-link">their website</a>. Once <code>Ollama</code> is running, you can see if you can access it with:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu">rollama</span><span class="fu">::</span><span class="fu"><a href="reference/ping_ollama.html">ping_ollama</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ▶ Ollama (v0.6.1) is running at &lt;http://localhost:11434&gt;!</span></span></code></pre></div>
+<span><span class="co">#&gt; ▶ Ollama (v0.17.4) is running at &lt;http://localhost:11434&gt;!</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="installation-of-ollama-through-docker">Installation of Ollama through Docker<a class="anchor" aria-label="anchor" href="#installation-of-ollama-through-docker"></a>
 </h3>
@@ -101,37 +103,35 @@
 <span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="st">"Why is the sky blue? Answer with one sentence."</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.1 ────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, in</span></span>
-<span><span class="co">#&gt; which shorter (blue) wavelengths of light are scattered more than longer (red)</span></span>
-<span><span class="co">#&gt; wavelengths by the tiny molecules of gases in the Earth's atmosphere.</span></span></code></pre></div>
+<span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, in which </span></span>
+<span><span class="co">#&gt; shorter (blue) wavelengths of light are scattered more than longer (red) wavelengths </span></span>
+<span><span class="co">#&gt; by the tiny molecules of gases in the Earth's atmosphere.</span></span></code></pre></div>
 <p>With the output argument, we can specify the format of the response. Available options include “text”, “list”, “data.frame”, “response”, “httr2_response”, and “httr2_request”:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># ask a single question and specify the output format</span></span>
 <span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="st">"Why is the sky blue? Answer with one sentence."</span> , output <span class="op">=</span> <span class="st">"text"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.1 ────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, in</span></span>
-<span><span class="co">#&gt; which shorter (blue) wavelengths of light are scattered more than longer (red)</span></span>
-<span><span class="co">#&gt; wavelengths by the tiny molecules of gases in the Earth's atmosphere.</span></span></code></pre></div>
+<span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, in which </span></span>
+<span><span class="co">#&gt; shorter (blue) wavelengths of light are scattered more than longer (red) wavelengths </span></span>
+<span><span class="co">#&gt; by the tiny molecules of gases in the Earth's atmosphere.</span></span></code></pre></div>
 <p>Or you can use the <code>chat</code> function, treats all messages sent during an R session as part of the same conversation:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># hold a conversation</span></span>
 <span><span class="fu"><a href="reference/query.html">chat</a></span><span class="op">(</span><span class="st">"Why is the sky blue? Give a short answer."</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.1 ────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, where</span></span>
-<span><span class="co">#&gt; shorter (blue) wavelengths of light are scattered more than longer (red)</span></span>
-<span><span class="co">#&gt; wavelengths by the tiny molecules of gases in the atmosphere. This scattering</span></span>
-<span><span class="co">#&gt; effect gives our sky its distinctive blue color during the daytime.</span></span>
+<span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, where </span></span>
+<span><span class="co">#&gt; shorter (blue) wavelengths of light are scattered more than longer (red) wavelengths </span></span>
+<span><span class="co">#&gt; by the tiny molecules of gases in the atmosphere. This scattering effect gives our </span></span>
+<span><span class="co">#&gt; sky its distinctive blue color during the daytime.</span></span>
 <span><span class="fu"><a href="reference/query.html">chat</a></span><span class="op">(</span><span class="st">"And how do you know that? Give a short answer."</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.1 ────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; I was trained on a vast amount of scientific knowledge and data, including</span></span>
-<span><span class="co">#&gt; information from various fields like physics, atmospheric science, and</span></span>
-<span><span class="co">#&gt; astronomy. Additionally, I've been fine-tuned to recognize and recall reliable</span></span>
-<span><span class="co">#&gt; sources, such as NASA, the Royal Society, and other reputable institutions that</span></span>
-<span><span class="co">#&gt; explain the phenomenon of Rayleigh scattering and its effect on the sky's</span></span>
-<span><span class="co">#&gt; color.</span></span></code></pre></div>
+<span><span class="co">#&gt; I was trained on vast amounts of text data, including scientific information and </span></span>
+<span><span class="co">#&gt; explanations from experts in various fields, such as physics and atmospheric science. </span></span>
+<span><span class="co">#&gt; This training enables me to recall and summarize established knowledge on topics </span></span>
+<span><span class="co">#&gt; like the color of the sky.</span></span></code></pre></div>
 <p>If you are done with a conversation and want to start a new one, you can do that like so:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="reference/chat_history.html">new_chat</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
@@ -148,9 +148,9 @@
 <span>      <span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.1 ────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, in</span></span>
-<span><span class="co">#&gt; which shorter (blue) wavelengths of light are scattered more than longer (red)</span></span>
-<span><span class="co">#&gt; wavelengths by the tiny molecules of gases in the Earth's atmosphere.</span></span></code></pre></div>
+<span><span class="co">#&gt; The sky appears blue because of a phenomenon called Rayleigh scattering, in which </span></span>
+<span><span class="co">#&gt; shorter (blue) wavelengths of light are scattered more than longer (red) wavelengths </span></span>
+<span><span class="co">#&gt; by the tiny molecules of gases in the Earth's atmosphere.</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="configuration">Configuration<a class="anchor" aria-label="anchor" href="#configuration"></a>
@@ -164,10 +164,9 @@
 <span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="st">"Why is the sky blue?"</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.1 ────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; The sky looks blue because of tiny particles in the air that bounce sunlight</span></span>
-<span><span class="co">#&gt; around. Imagine throwing a ball off a cliff and watching it bounce on the</span></span>
-<span><span class="co">#&gt; ground - the light from the sun does the same thing with these tiny particles,</span></span>
-<span><span class="co">#&gt; making it look blue!</span></span></code></pre></div>
+<span><span class="co">#&gt; The sky looks blue because of tiny particles in the air that bounce sunlight around. </span></span>
+<span><span class="co">#&gt; It's like when you shine a flashlight through a prism and it makes colors appear - </span></span>
+<span><span class="co">#&gt; it's kind of like that! The blue ones just happen to be the strongest, so we see them most.</span></span></code></pre></div>
 <p>By default, the package uses the “llama3.1 8B” model. Supported models can be found at <a href="https://ollama.com/library" class="external-link uri">https://ollama.com/library</a>. To download a specific model make use of the additional information available in “Tags” <a href="https://ollama.com/library/llama3.2/tags" class="external-link uri">https://ollama.com/library/llama3.2/tags</a>. Change this via <code>rollama_model</code>:</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/options.html" class="external-link">options</a></span><span class="op">(</span>rollama_model <span class="op">=</span> <span class="st">"llama3.2:3b-instruct-q4_1"</span><span class="op">)</span></span>
@@ -175,8 +174,8 @@
 <span><span class="fu"><a href="reference/query.html">query</a></span><span class="op">(</span><span class="st">"Why is the sky blue? Answer with one sentence."</span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llama3.2:3b-instruct-q4_1 ───────────────────────────────────────</span></span>
-<span><span class="co">#&gt; The Earth's sky looks blue because of something called light, which bounces off</span></span>
-<span><span class="co">#&gt; tiny things in the air and comes back to us as blue!</span></span></code></pre></div>
+<span><span class="co">#&gt; The sky looks blue because of something called light, and when it comes from the </span></span>
+<span><span class="co">#&gt; sun, it scatters and goes all around up in the air, making it look blue!</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="easy-query-generation">Easy query generation<a class="anchor" aria-label="anchor" href="#easy-query-generation"></a>
@@ -225,6 +224,19 @@ In this example, the function is used without examples:</p>
 <li><a href="https://jbgruber.github.io/rollama/articles/image-annotation.html">Annotate images</a></li>
 <li><a href="https://jbgruber.github.io/rollama/articles/text-embedding.html">Get text embedding</a></li>
 <li><a href="https://jbgruber.github.io/rollama/articles/hf-gguf.html">Use more models (GGUF format) from Hugging Face</a></li>
+</ul>
+</div>
+<div class="section level2">
+<h2 id="similar-packages">Similar packages<a class="anchor" aria-label="anchor" href="#similar-packages"></a>
+</h2>
+<p>There are some similar R packages for working with LLMs:</p>
+<ul>
+<li>
+<a href="https://ellmer.tidyverse.org" class="external-link">ellmer</a> is part of the Posit/tidyverse ecosystem and supports a broad range of providers (OpenAI, Anthropic, Google Gemini, Azure, AWS Bedrock, Ollama, and many more). It is especially good for interactive console chats, chatbots in Shiny, advanced tool-calling, and structured data extraction via schema functions.</li>
+<li>
+<a href="https://edubruell.github.io/tidyllm" class="external-link">tidyllm</a> supports multiple providers (Anthropic Claude, OpenAI, Google Gemini, Groq, Mistral, Perplexity, and Ollama) with a pipeline-oriented, side-effect-free interface. Highlights include media handling (PDFs, images, video/audio for Gemini), batch processing for cost savings, and a tidy workflow designed for integration into data analysis pipelines.</li>
+<li>
+<a href="https://hauselin.github.io/ollama-r" class="external-link">ollamar</a> has the closest overlap with <code>rollama</code> as it wraps the Ollama API in its entiority. The design philosphy however, is quite different, as the package closely mirrors the official Ollama Python/JavaScript libraries. It therefore feels more familiar for users of these languages, but potentially less familiar for many R users.</li>
 </ul>
 </div>
 <div class="section level2">

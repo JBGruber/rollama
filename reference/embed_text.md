@@ -9,6 +9,9 @@ embed_text(
   text,
   model = NULL,
   server = NULL,
+  truncate = NULL,
+  dimensions = NULL,
+  keep_alive = NULL,
   model_params = NULL,
   verbose = getOption("rollama_verbose", default = interactive())
 )
@@ -33,11 +36,27 @@ embed_text(
   URL to one or several Ollama servers (not the API). Defaults to
   "http://localhost:11434".
 
+- truncate:
+
+  whether to truncate the input to fit within the model's context length
+  (`TRUE`/`FALSE`).
+
+- dimensions:
+
+  the desired number of dimensions in the embedding output. Only
+  available for models that support it.
+
+- keep_alive:
+
+  controls how long the model is kept in memory after the request.
+  Accepts a duration string such as `"5m"` or `"1h"`, `0` to unload
+  immediately, or `-1` to keep the model loaded indefinitely.
+
 - model_params:
 
   a named list of additional model parameters listed in the
   [documentation for the
-  Modelfile](https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values).
+  Modelfile](https://docs.ollama.com/modelfile#valid-parameters-and-values).
 
 - verbose:
 

@@ -9,6 +9,15 @@
   : Check if one or several models are installed on the server
 - [`create_model()`](https://jbgruber.github.io/rollama/reference/create_model.md)
   : Create a model from a Modelfile
+- [`create_schema()`](https://jbgruber.github.io/rollama/reference/create_schema.md)
+  [`type_string()`](https://jbgruber.github.io/rollama/reference/create_schema.md)
+  [`type_boolean()`](https://jbgruber.github.io/rollama/reference/create_schema.md)
+  [`type_integer()`](https://jbgruber.github.io/rollama/reference/create_schema.md)
+  [`type_number()`](https://jbgruber.github.io/rollama/reference/create_schema.md)
+  [`type_enum()`](https://jbgruber.github.io/rollama/reference/create_schema.md)
+  [`type_array()`](https://jbgruber.github.io/rollama/reference/create_schema.md)
+  [`type_object()`](https://jbgruber.github.io/rollama/reference/create_schema.md)
+  : Create a structured output schema
 - [`embed_text()`](https://jbgruber.github.io/rollama/reference/embed_text.md)
   : Generate Embeddings
 - [`list_models()`](https://jbgruber.github.io/rollama/reference/list_models.md)
@@ -20,10 +29,11 @@
 - [`ping_ollama()`](https://jbgruber.github.io/rollama/reference/ping_ollama.md)
   : Ping server to see if Ollama is reachable
 - [`pull_model()`](https://jbgruber.github.io/rollama/reference/pull_model.md)
+  [`push_model()`](https://jbgruber.github.io/rollama/reference/pull_model.md)
   [`show_model()`](https://jbgruber.github.io/rollama/reference/pull_model.md)
   [`delete_model()`](https://jbgruber.github.io/rollama/reference/pull_model.md)
   [`copy_model()`](https://jbgruber.github.io/rollama/reference/pull_model.md)
-  : Pull, show and delete models
+  : Pull, push, show and delete models
 - [`query()`](https://jbgruber.github.io/rollama/reference/query.md)
   [`chat()`](https://jbgruber.github.io/rollama/reference/query.md) :
   Chat with a LLM through Ollama

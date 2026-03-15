@@ -6,8 +6,9 @@ articles:
   authentication: authentication.html
   hf-gguf: hf-gguf.html
   image-annotation: image-annotation.html
+  structured_outputs: structured_outputs.html
   text-embedding: text-embedding.html
-last_built: 2026-03-12T22:24Z
+last_built: 2026-03-15T20:59Z
 urls:
   reference: https://jbgruber.github.io/rollama/reference
   article: https://jbgruber.github.io/rollama/articles

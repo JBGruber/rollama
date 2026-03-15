@@ -14,10 +14,12 @@ query(
   model_params = NULL,
   output = c("response", "text", "list", "data.frame", "httr2_response", "httr2_request"),
   format = NULL,
-  template = NULL,
   tools = NULL,
   think = NULL,
   keep_alive = NULL,
+  logprobs = FALSE,
+  top_logprobs = NULL,
+  cache = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 )
@@ -29,10 +31,11 @@ chat(
   server = NULL,
   images = NULL,
   model_params = NULL,
-  template = NULL,
   tools = NULL,
   think = NULL,
   keep_alive = NULL,
+  logprobs = NULL,
+  top_logprobs = NULL,
   ...,
   verbose = getOption("rollama_verbose", default = interactive())
 )
@@ -69,7 +72,7 @@ chat(
 
   a named list of additional model parameters listed in the
   [documentation for the
-  Modelfile](https://github.com/ollama/ollama/blob/main/docs/modelfile.md#valid-parameters-and-values)
+  Modelfile](https://docs.ollama.com/modelfile#valid-parameters-and-values)
   such as temperature. Use a seed and set the temperature to zero to get
   reproducible results (see examples).
 
@@ -83,11 +86,6 @@ chat(
 
   the format to return a response in. Currently the only accepted value
   is `"json"`.
-
-- template:
-
-  the prompt template to use (overrides what is defined in the
-  Modelfile).
 
 - tools:
 
@@ -105,6 +103,36 @@ chat(
   controls how long the model is kept in memory after the request.
   Accepts a duration string such as `"5m"` or `"1h"`, `0` to unload
   immediately, or `-1` to keep the model loaded indefinitely.
+
+- logprobs:
+
+  logical. If `TRUE`, the response includes log probabilities of the
+  output tokens.
+
+- top_logprobs:
+
+  integer (0–20). Number of most-likely tokens to return log
+  probabilities for at each output position. Requires `logprobs = TRUE`.
+
+- cache:
+
+  where to cache responses on disk so that long annotation pipelines can
+  be resumed after an interruption. Two forms are accepted:
+
+  - A **single directory path** (e.g. `"my_cache"`). Each response is
+    stored as `{directory}/{md5_hash}.json`, where the hash is derived
+    from the request content (model, messages, options). Re-running the
+    same request always hits the same file, even across sessions.
+
+  - A **character vector** with one explicit file path per request. Use
+    this when you need to control file names yourself.
+
+  Existing, valid cache files are loaded instead of re-querying Ollama.
+  Corrupted or missing files are re-requested and then saved. Caching
+  requires `stream = FALSE` (a warning is emitted and streaming is
+  disabled automatically when `cache` is set). The `"httr2_response"`
+  output type and custom output functions are not compatible with
+  caching.
 
 - ...:
 

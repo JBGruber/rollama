@@ -6,6 +6,7 @@
 <url><loc>https://jbgruber.github.io/rollama/articles/hf-gguf.html</loc></url>
 <url><loc>https://jbgruber.github.io/rollama/articles/image-annotation.html</loc></url>
 <url><loc>https://jbgruber.github.io/rollama/articles/index.html</loc></url>
+<url><loc>https://jbgruber.github.io/rollama/articles/structured_outputs.html</loc></url>
 <url><loc>https://jbgruber.github.io/rollama/articles/text-embedding.html</loc></url>
 <url><loc>https://jbgruber.github.io/rollama/authors.html</loc></url>
 <url><loc>https://jbgruber.github.io/rollama/index.html</loc></url>
@@ -13,6 +14,7 @@
 <url><loc>https://jbgruber.github.io/rollama/reference/chat_history.html</loc></url>
 <url><loc>https://jbgruber.github.io/rollama/reference/check_model_installed.html</loc></url>
 <url><loc>https://jbgruber.github.io/rollama/reference/create_model.html</loc></url>
+<url><loc>https://jbgruber.github.io/rollama/reference/create_schema.html</loc></url>
 <url><loc>https://jbgruber.github.io/rollama/reference/embed_text.html</loc></url>
 <url><loc>https://jbgruber.github.io/rollama/reference/index.html</loc></url>
 <url><loc>https://jbgruber.github.io/rollama/reference/list_models.html</loc></url>
