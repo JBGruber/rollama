@@ -2,7 +2,7 @@
 title: "Hugging Face Models"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{hf-gguf}
+  %\VignetteIndexEntry{Hugging Face Models}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

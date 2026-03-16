@@ -1,4 +1,27 @@
 url: https://jbgruber.github.io/rollama/
 template:
   bootstrap: 5
+  bootswatch: minty
+  light-switch: true
+  bslib:
+    navbar-bg: "#3C8FA9"
+    link-color: "#3C8FA9"
+
+navbar:
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: Annotation
+        href: articles/annotation.html
+      - text: Image Annotation
+        href: articles/image-annotation.html
+      - text: Text Embedding
+        href: articles/text-embedding.html
+      - text: Structured Outputs
+        href: articles/structured_outputs.html
+      - text: Authentication
+        href: articles/authentication.html
+      - text: Hugging Face Models
+        href: articles/hf-gguf.html
 
