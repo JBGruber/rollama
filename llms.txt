@@ -259,18 +259,18 @@ There are some similar R packages for working with LLMs:
   especially good for interactive console chats, chatbots in Shiny,
   advanced tool-calling, and structured data extraction via schema
   functions.
-- [tidyllm](https://edubruell.github.io/tidyllm) supports multiple
+- [tidyllm](https://edubruell.github.io/tidyllm/) supports multiple
   providers (Anthropic Claude, OpenAI, Google Gemini, Groq, Mistral,
   Perplexity, and Ollama) with a pipeline-oriented, side-effect-free
   interface. Highlights include media handling (PDFs, images,
   video/audio for Gemini), batch processing for cost savings, and a tidy
   workflow designed for integration into data analysis pipelines.
-- [ollamar](https://hauselin.github.io/ollama-r) has the closest overlap
-  with `rollama` as it wraps the Ollama API in its entiority. The design
-  philosphy however, is quite different, as the package closely mirrors
-  the official Ollama Python/JavaScript libraries. It therefore feels
-  more familiar for users of these languages, but potentially less
-  familiar for many R users.
+- [ollamar](https://hauselin.github.io/ollama-r/) has the closest
+  overlap with `rollama` as it wraps the Ollama API in its entiority.
+  The design philosphy however, is quite different, as the package
+  closely mirrors the official Ollama Python/JavaScript libraries. It
+  therefore feels more familiar for users of these languages, but
+  potentially less familiar for many R users.
 
 ## Citation
 

@@ -3,7 +3,8 @@
 arguments, or supply raw JSON via .schema. These functions specify a JSON
 schema that LLMs can be told to use in their outputs. This is particularly
 effective for structured data extraction. Their names are based on the JSON schema, which is what the APIs expect behind the
-scenes.
+scenes. See the structured outputs article
+for a tutorial.
 type_boolean(), type_integer(), type_number(), and type_string()
 each represent scalars. These are equivalent to length-1 logical,
 integer, double, and character vectors (respectively).
@@ -35,7 +36,8 @@ valid JSON schema object.
 arguments, or supply raw JSON via .schema. These functions specify a JSON
 schema that LLMs can be told to use in their outputs. This is particularly
 effective for structured data extraction. Their names are based on the JSON schema, which is what the APIs expect behind the
-scenes.
+scenes. See the structured outputs article
+for a tutorial.
 type_boolean(), type_integer(), type_number(), and type_string()
 each represent scalars. These are equivalent to length-1 logical,
 integer, double, and character vectors (respectively).
@@ -116,7 +118,8 @@ valid JSON schema object.
 arguments, or supply raw JSON via <code>.schema</code>. These functions specify a JSON
 schema that LLMs can be told to use in their outputs. This is particularly
 effective for structured data extraction. Their names are based on the <a href="https://json-schema.org" class="external-link">JSON schema</a>, which is what the APIs expect behind the
-scenes.</p><ul><li><p><code>type_boolean()</code>, <code>type_integer()</code>, <code>type_number()</code>, and <code>type_string()</code>
+scenes. See the <a href="https://jbgruber.github.io/rollama/articles/structured_outputs.html">structured outputs article</a>
+for a tutorial.</p><ul><li><p><code>type_boolean()</code>, <code>type_integer()</code>, <code>type_number()</code>, and <code>type_string()</code>
 each represent scalars. These are equivalent to length-1 logical,
 integer, double, and character vectors (respectively).</p></li>
 <li><p><code>type_enum()</code> is equivalent to a length-1 factor; it is a string that can
@@ -206,6 +209,12 @@ valid JSON schema object.</p></li>
 object.</p></dd>
 
 </dl></div>
+    <div class="section level2">
+    <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>
+    <div class="dont-index"><p><code><a href="query.html">query()</a></code> and <code><a href="query.html">chat()</a></code> where the schema is passed via the <code>format</code>
+argument. <a href="https://jbgruber.github.io/rollama/articles/structured_outputs.html">Structured outputs article</a>
+for a tutorial.</p></div>
+    </div>
 
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

@@ -84,8 +84,12 @@ chat(
 
 - format:
 
-  the format to return a response in. Currently the only accepted value
-  is `"json"`.
+  the format to return a response in. Use `"json"` to request arbitrary
+  JSON output or use
+  [`create_schema()`](https://jbgruber.github.io/rollama/reference/create_schema.md)
+  to request a specific structured output. See the [structured outputs
+  article](https://jbgruber.github.io/rollama/articles/structured_outputs.html)
+  for details.
 
 - tools:
 

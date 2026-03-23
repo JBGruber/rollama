@@ -145,7 +145,7 @@ also never enter it in the Console. This way, you never have to double
 check before sending an R file or your history to someone else.
 
 However, as per [Hadley
-Wickham](https://cran.r-project.org/web/packages/httr/vignettes/secrets.html)
+Wickham](https://CRAN.R-project.org/package=httr/vignettes/secrets.html)
 
 > Asking each time is a hassle, so you might want to store the secret
 > across sessions. One easy way to do that is with environment

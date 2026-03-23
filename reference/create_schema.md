@@ -5,7 +5,9 @@ arguments, or supply raw JSON via `.schema`. These functions specify a
 JSON schema that LLMs can be told to use in their outputs. This is
 particularly effective for structured data extraction. Their names are
 based on the [JSON schema](https://json-schema.org), which is what the
-APIs expect behind the scenes.
+APIs expect behind the scenes. See the [structured outputs
+article](https://jbgruber.github.io/rollama/articles/structured_outputs.html)
+for a tutorial.
 
 - `type_boolean()`, `type_integer()`, `type_number()`, and
   `type_string()` each represent scalars. These are equivalent to
@@ -101,3 +103,11 @@ type_object(
 - .required, required:
 
   Whether this field is required in the parent object.
+
+## See also
+
+[`query()`](https://jbgruber.github.io/rollama/reference/query.md) and
+[`chat()`](https://jbgruber.github.io/rollama/reference/query.md) where
+the schema is passed via the `format` argument. [Structured outputs
+article](https://jbgruber.github.io/rollama/articles/structured_outputs.html)
+for a tutorial.
