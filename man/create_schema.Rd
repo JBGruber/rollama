@@ -58,7 +58,8 @@ Build a JSON Schema for structured output. Pass named type objects as
 arguments, or supply raw JSON via \code{.schema}. These functions specify a JSON
 schema that LLMs can be told to use in their outputs. This is particularly
 effective for structured data extraction. Their names are based on the \href{https://json-schema.org}{JSON schema}, which is what the APIs expect behind the
-scenes.
+scenes. See the \href{https://jbgruber.github.io/rollama/articles/structured_outputs.html}{structured outputs article}
+for a tutorial.
 \itemize{
 \item \code{type_boolean()}, \code{type_integer()}, \code{type_number()}, and \code{type_string()}
 each represent scalars. These are equivalent to length-1 logical,
@@ -87,4 +88,9 @@ the type using the \verb{type_*()} functions. You can point to a file with the
 \code{path} argument or provide a JSON string with \code{text}. The schema must be a
 valid JSON schema object.
 }
+}
+\seealso{
+\code{\link[=query]{query()}} and \code{\link[=chat]{chat()}} where the schema is passed via the \code{format}
+argument. \href{https://jbgruber.github.io/rollama/articles/structured_outputs.html}{Structured outputs article}
+for a tutorial.
 }

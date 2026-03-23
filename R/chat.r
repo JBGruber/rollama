@@ -41,8 +41,10 @@
 #' @param output what the function should return. Possible values are
 #'   "response", "text", "list", "data.frame", "httr2_response" or
 #'   "httr2_request" or a function see details.
-#' @param format the format to return a response in. Currently the only accepted
-#'   value is `"json"`.
+#' @param format the format to return a response in. Use `"json"` to request
+#'   arbitrary JSON output or use [create_schema()] to request a specific
+#'   structured output. See the [structured outputs article](https://jbgruber.github.io/rollama/articles/structured_outputs.html)
+#'   for details.
 #' @param logprobs logical. If `TRUE`, the response includes log probabilities
 #'   of the output tokens.
 #' @param top_logprobs integer (0–20). Number of most-likely tokens to return

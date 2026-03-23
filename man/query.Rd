@@ -64,8 +64,10 @@ reproducible results (see examples).}
 "response", "text", "list", "data.frame", "httr2_response" or
 "httr2_request" or a function see details.}
 
-\item{format}{the format to return a response in. Currently the only accepted
-value is \code{"json"}.}
+\item{format}{the format to return a response in. Use \code{"json"} to request
+arbitrary JSON output or use \code{\link[=create_schema]{create_schema()}} to request a specific
+structured output. See the \href{https://jbgruber.github.io/rollama/articles/structured_outputs.html}{structured outputs article}
+for details.}
 
 \item{tools}{a list of tools (functions) the model may call. Each tool
 should follow the Ollama tool schema with fields \code{type}, \code{function}

@@ -6,7 +6,8 @@
 #' schema that LLMs can be told to use in their outputs. This is particularly
 #' effective for structured data extraction. Their names are based on the [JSON
 #' schema](https://json-schema.org), which is what the APIs expect behind the
-#' scenes.
+#' scenes. See the [structured outputs article](https://jbgruber.github.io/rollama/articles/structured_outputs.html)
+#' for a tutorial.
 #'
 #' * `type_boolean()`, `type_integer()`, `type_number()`, and `type_string()`
 #'   each represent scalars. These are equivalent to length-1 logical,
@@ -40,6 +41,10 @@
 #'   the type using the `type_*()` functions. You can point to a file with the
 #'   `path` argument or provide a JSON string with `text`. The schema must be a
 #'   valid JSON schema object.
+#'
+#' @seealso [query()] and [chat()] where the schema is passed via the `format`
+#'   argument. [Structured outputs article](https://jbgruber.github.io/rollama/articles/structured_outputs.html)
+#'   for a tutorial.
 #'
 #' @param ... Named rollama type objects representing top-level properties.
 #' @param .description,description Optional description for the schema.
