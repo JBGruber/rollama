@@ -1,10 +1,17 @@
 # rollama (development version)
 
+* adds option to cache responses
 * query now supports logprobs output
+* make it possible to supply several questions at once
+* add authentication vignette
+* implemented structured outputs (including new vignette)
+* synced package with Ollama API changes
+* adds list_running_models()
+* updated chat() and query()
 * update parameters in embed_text()
 * update parameters and output in show_model()
-* adds list_running_models()
-* adds option to cache responses
+* rewrote progress and answer streaming
+* bug fixes
 
 # rollama 0.2.1
 
