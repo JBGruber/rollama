@@ -241,7 +241,7 @@ jsonlite::fromJSON(res_image) |>
 
 ## Alternative Ways to Provide Structured Outputs
 
-If you find `rollama`s structured output types and schema creation confusing (let us know, but also) just use the schema creation that seems most natural to you.
+If you find `rollama`'s structured output types and schema creation confusing (let us know, but also) just use the schema creation that seems most natural to you.
 
 ### Create as a list
 
