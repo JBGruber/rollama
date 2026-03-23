@@ -72,7 +72,11 @@ pull_model <- function(
 
   req <- httr2::request(server) |>
     httr2::req_url_path_append("/api/pull") |>
-    httr2::req_body_json(list(model = model, insecure = insecure)) |>
+    httr2::req_body_json(list(
+      model = model,
+      insecure = insecure,
+      stream = verbose
+    )) |>
     httr2::req_headers(!!!get_headers())
 
   if (verbose) {
@@ -117,7 +121,11 @@ push_model <- function(
 
   req <- httr2::request(server) |>
     httr2::req_url_path_append("/api/push") |>
-    httr2::req_body_json(list(model = model, insecure = insecure)) |>
+    httr2::req_body_json(list(
+      model = model,
+      insecure = insecure,
+      stream = verbose
+    )) |>
     httr2::req_error(body = function(resp) httr2::resp_body_json(resp)$error) |>
     httr2::req_headers(!!!get_headers())
 
