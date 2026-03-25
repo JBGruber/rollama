@@ -19,3 +19,4 @@
 ^\.env$
 ^plan\.md$
 ^openapi\.yaml$
+^.claude$
