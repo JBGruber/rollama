@@ -2,6 +2,8 @@
 # should come before the first test
 test_that("Auto pull model", {
   skip_if_not(ping_ollama(silent = TRUE))
-  expect_true(check_model_installed(getOption("rollama_model", default = "llama3.1"),
-                                    auto_pull = TRUE))
+  expect_true(check_model_installed(
+    c(getOption("rollama_model", default = "llama3.1"), "nomic-embed-text"),
+    auto_pull = TRUE
+  ))
 })

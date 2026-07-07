@@ -40,12 +40,16 @@ test_that("Test inputs", {
   skip_if_not(ping_ollama(silent = TRUE))
   # text
   expect_message(query("test"), ".")
-  # text + image (I don't want to pull a different model for this, the API still
-  # works with models that can't handle images)
-  query(
-    "test",
-    images = system.file("extdata", "logo.png", package = "rollama")
+  # text + image (I don't want to pull a different model for this, the API simply
+  # errors with models that can't handle images, which is good enough for testing)
+  expect_error(
+    query(
+      "test",
+      images = system.file("extdata", "logo.png", package = "rollama")
+    ),
+    "Bad"
   )
+
   # data.frame
   expect_message(query(data.frame(role = "user", content = "test")), ".")
   expect_error(

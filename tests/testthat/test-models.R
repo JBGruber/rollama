@@ -10,7 +10,7 @@ test_that("show model", {
   out <- show_model()
   expect_equal(nrow(out), 1L)
   expect_s3_class(out, "tbl_df")
-  expect_equal(ncol(list_models()), 11L)
+  expect_equal(ncol(list_models()), 18L)
   expect_s3_class(list_models(), "tbl_df")
 })
 
