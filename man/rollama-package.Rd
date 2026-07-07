@@ -24,6 +24,7 @@ Useful links:
 
 Authors:
 \itemize{
+  \item Johannes B. Gruber \email{JohannesB.Gruber@gmail.com} (\href{https://orcid.org/0000-0001-9177-1772}{ORCID})
   \item Maximilian Weber (\href{https://orcid.org/0000-0002-1174-449X}{ORCID}) [contributor]
 }
 

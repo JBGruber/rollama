@@ -53,7 +53,13 @@ details.}
 \item{server}{URL to one or several Ollama servers (not the API). Defaults to
 "http://localhost:11434".}
 
-\item{images}{path(s) to images (for multimodal models such as llava).}
+\item{images}{path(s) to images (for multimodal models such as llava). A
+plain character vector of paths/URLs is attached to every query as-is
+(e.g. to ask about several images at once). To annotate several images
+individually with the same prompt, pass a \strong{list} instead, e.g.
+\code{images = as.list(paths)}: each list element is then paired up with \code{q}
+(recycling whichever of the two has length 1) to produce one query per
+image.}
 
 \item{model_params}{a named list of additional model parameters listed in the
 \href{https://docs.ollama.com/modelfile#valid-parameters-and-values}{documentation for the Modelfile}
@@ -172,6 +178,13 @@ images <- c("https://avatars.githubusercontent.com/u/23524101?v=4", # remote
 query(q = "describe these images",
       model = "llava",
       images = images[1]) # just using the first path as the second is not real
+
+# annotate several images individually with the same prompt by passing a
+# list: this issues one query per image instead of one query about all of
+# them
+query(q = "describe this image",
+      model = "llava",
+      images = as.list(images[1])) # again, just the one real path
 
 # set custom options for the model at runtime (rather than in create_model())
 query("why is the sky blue?",

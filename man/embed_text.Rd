@@ -42,7 +42,7 @@ unload immediately, or \code{-1} to keep the model loaded indefinitely.}
 \item{verbose}{Whether to print status messages to the Console
 (\code{TRUE}/\code{FALSE}). The default is to have status messages in
 interactive sessions. Can be changed with \code{options(rollama_verbose =
-  FALSE)}.}
+FALSE)}.}
 }
 \value{
 a tibble with embeddings.

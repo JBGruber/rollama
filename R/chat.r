@@ -32,7 +32,13 @@
 #' @param stream Logical. Should the answer be printed to the screen.
 #' @param server URL to one or several Ollama servers (not the API). Defaults to
 #'   "http://localhost:11434".
-#' @param images path(s) to images (for multimodal models such as llava).
+#' @param images path(s) to images (for multimodal models such as llava). A
+#'   plain character vector of paths/URLs is attached to every query as-is
+#'   (e.g. to ask about several images at once). To annotate several images
+#'   individually with the same prompt, pass a **list** instead, e.g.
+#'   `images = as.list(paths)`: each list element is then paired up with `q`
+#'   (recycling whichever of the two has length 1) to produce one query per
+#'   image.
 #' @param model_params a named list of additional model parameters listed in the
 #'   [documentation for the
 #'   Modelfile](https://docs.ollama.com/modelfile#valid-parameters-and-values)
@@ -112,6 +118,13 @@
 #' query(q = "describe these images",
 #'       model = "llava",
 #'       images = images[1]) # just using the first path as the second is not real
+#'
+#' # annotate several images individually with the same prompt by passing a
+#' # list: this issues one query per image instead of one query about all of
+#' # them
+#' query(q = "describe this image",
+#'       model = "llava",
+#'       images = as.list(images[1])) # again, just the one real path
 #'
 #' # set custom options for the model at runtime (rather than in create_model())
 #' query("why is the sky blue?",
@@ -254,7 +267,25 @@ query <- function(
   if (is.character(q)) {
     config <- getOption("rollama_config", default = NULL)
 
-    msg <- purrr::map(q, function(q) {
+    # a plain vector of images is attached as-is to every query (e.g. to
+    # compare several images in one message). A list of images is paired
+    # up with q instead, so each element becomes its own query (e.g. to
+    # annotate several images with the same prompt).
+    if (is.list(images)) {
+      n <- max(length(q), length(images))
+      if (!length(q) %in% c(1L, n) || !length(images) %in% c(1L, n)) {
+        cli::cli_abort(
+          "{.arg q} and {.arg images} must have compatible lengths (equal \\
+           length, or one of them of length 1)."
+        )
+      }
+      q <- rep_len(q, n)
+      images_list <- rep_len(images, n)
+    } else {
+      images_list <- rep_len(list(images), length(q))
+    }
+
+    msg <- purrr::map2(q, images_list, function(q, images) {
       msg <- do.call(
         rbind,
         list(

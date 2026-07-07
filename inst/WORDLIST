@@ -33,6 +33,7 @@ entiority
 envvars
 http
 httr
+json
 leaderboards
 llava
 logprobs
@@ -47,6 +48,7 @@ pre
 prioritising
 quantisation
 smldemo
+softmax
 tibble
 tibbles
 tidyllm

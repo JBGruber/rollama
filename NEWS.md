@@ -1,5 +1,7 @@
 # rollama (development version)
 
+* `query()` can now batch annotate several several images with the same prompt by passing `images` as a list (one element per query)
+
 # rollama 0.3.0
 
 * adds option to cache responses
