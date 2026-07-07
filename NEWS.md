@@ -1,5 +1,7 @@
 # rollama (development version)
 
+# rollama 0.3.0
+
 * adds option to cache responses
 * query now supports logprobs output
 * make it possible to supply several questions at once
