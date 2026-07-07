@@ -13,6 +13,7 @@ To use [Ollama Turbo](https://ollama.com/turbo), you have to set the
 as a header:
 
 ``` r
+
 library(rollama)
 Sys.setenv(api_key = "<REDACTED>")
 options(
@@ -94,6 +95,7 @@ instance of at `https://ai-openwebui.gesis.org/` so the server address
 is:
 
 ``` r
+
 library(rollama)
 Sys.setenv(api_key = "<REDACTED>")
 options(
@@ -165,6 +167,7 @@ When you then start a new session, `Sys.getenv("rollama_key")` returns
 the `sk-b3...` value. So the start of your script could look like this:
 
 ``` r
+
 library(rollama)
 options(
   rollama_server = "https://ai-openwebui.gesis.org/ollama/",

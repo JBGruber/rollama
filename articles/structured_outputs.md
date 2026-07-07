@@ -21,6 +21,7 @@ filtering. This is more reliable than prompt engineering alone, where
 models can drift from the requested format.
 
 ``` r
+
 library(rollama)
 ```
 
@@ -31,19 +32,20 @@ The
 function lets you build a schema by combining named type declarations.
 Each field maps to a JSON Schema primitive:
 
-| rollama function                                                                  | R equivalent  | JSON Schema type       |
-|-----------------------------------------------------------------------------------|---------------|------------------------|
-| [`type_string()`](https://jbgruber.github.io/rollama/reference/create_schema.md)  | `character`   | `"string"`             |
-| [`type_boolean()`](https://jbgruber.github.io/rollama/reference/create_schema.md) | `logical`     | `"boolean"`            |
-| [`type_integer()`](https://jbgruber.github.io/rollama/reference/create_schema.md) | `integer`     | `"integer"`            |
-| [`type_number()`](https://jbgruber.github.io/rollama/reference/create_schema.md)  | `double`      | `"number"`             |
-| `type_enum(values)`                                                               | `factor`      | `"string"` with `enum` |
-| `type_array(items)`                                                               | vector / list | `"array"`              |
-| `type_object(...)`                                                                | named list    | `"object"`             |
+| rollama function | R equivalent | JSON Schema type |
+|----|----|----|
+| [`type_string()`](https://jbgruber.github.io/rollama/reference/create_schema.md) | `character` | `"string"` |
+| [`type_boolean()`](https://jbgruber.github.io/rollama/reference/create_schema.md) | `logical` | `"boolean"` |
+| [`type_integer()`](https://jbgruber.github.io/rollama/reference/create_schema.md) | `integer` | `"integer"` |
+| [`type_number()`](https://jbgruber.github.io/rollama/reference/create_schema.md) | `double` | `"number"` |
+| `type_enum(values)` | `factor` | `"string"` with `enum` |
+| `type_array(items)` | vector / list | `"array"` |
+| `type_object(...)` | named list | `"object"` |
 
 Here is a schema that captures country-level information:
 
 ``` r
+
 country_schema <- create_schema(
   name = type_string(description = "Name of the country"),
   capital = type_string(description = "Name of the capital"),
@@ -92,6 +94,7 @@ model will fill in every field declared in the schema from the supplied
 text:
 
 ``` r
+
 input_text <- "Canada is a country in North America. With a population of over 41 million, it has widely varying population densities, with the majority residing in its urban areas and large areas being sparsely populated. Its capital is Ottawa and its three largest metropolitan areas are Toronto, Montreal, and Vancouver. Canada is officially bilingual (English and French). It is a member of the North Atlantic Treaty Organization (NATO)."
 
 res <- make_query(
@@ -111,6 +114,7 @@ Because the output is guaranteed to be valid JSON, you can parse it
 directly:
 
 ``` r
+
 jsonlite::fromJSON(res) |>
   tibble::as_tibble()
 #> # A tibble: 2 × 6
@@ -251,6 +255,7 @@ data from it directly.
 First, pull a vision-capable model:
 
 ``` r
+
 pull_model("llama3.2-vision")
 #> ℹ pulling manifest
 #> ✔ pulling manifest [9ms]
@@ -267,6 +272,7 @@ pull_model("llama3.2-vision")
 Define a schema for the visual attributes you want to extract:
 
 ``` r
+
 image_schema <- create_schema(
   subject = type_string(description = "Main subject or object in the image"),
   style = type_enum(
@@ -296,6 +302,7 @@ image_schema <- create_schema(
 Then query the model with both the image and the schema:
 
 ``` r
+
 logo_url <- "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png"
 
 res_image <- query(
@@ -327,6 +334,7 @@ seems most natural to you.
 ### Create as a list
 
 ``` r
+
 country_schema_list <- list(
   type = "object",
   properties = list(
@@ -391,6 +399,7 @@ query(
 ### Create as json string
 
 ``` r
+
 country_schema_json <- '{
   "type": "object",
   "properties": {
@@ -461,6 +470,7 @@ function, however, which works quite differently from
 [`rollama::chat()`](https://jbgruber.github.io/rollama/reference/query.md))
 
 ``` r
+
 library(ellmer)
 #> 
 #> Attaching package: 'ellmer'
@@ -527,6 +537,7 @@ country_schema_ellmer
 ```
 
 ``` r
+
 query(
   q,
   model = "llama3.2:1b",
@@ -554,6 +565,7 @@ outputs. Once again, the output schema is compatible with `rollama` yet
 are masked as `tidyllm` defines these functions as well.
 
 ``` r
+
 library(tidyllm)
 #> 
 #> Attaching package: 'tidyllm'
@@ -621,6 +633,7 @@ country_schema_tidyllm
 ```
 
 ``` r
+
 query(
   q,
   model = "llama3.2:1b",

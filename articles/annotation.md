@@ -11,6 +11,7 @@ into a conversation. By changing the option `rollama_model`, we can
 change which model is used by default in the current session:
 
 ``` r
+
 library(rollama)
 options(rollama_model = "llama3.2:3b-instruct-q8_0")
 pull_model()
@@ -45,6 +46,7 @@ classify and the classification question (in this example we only
 provide the categories).
 
 ``` r
+
 library(tibble)
 library(purrr)
 q <- tribble(
@@ -67,6 +69,7 @@ classification, and then another user prompt with the new text to
 classify.
 
 ``` r
+
 q <- tribble(
   ~role,    ~content,
   "system", "You assign texts into categories. Answer with just the correct category.",
@@ -86,6 +89,7 @@ if you want to have an output that easy to parse, you could change the
 assistant message to `"{'Category':'Negative'}"`
 
 ``` r
+
 q <- tribble(
   ~role,    ~content,
   "system", "You assign texts into categories. Answer with just the correct category.",
@@ -104,6 +108,7 @@ This is a valid JSON return and can be parsed into a list with, e.g.,
 Using this logic, we could request a more informative output:
 
 ``` r
+
 q <- tribble(
   ~role,    ~content,
   "system", "You assign texts into categories. Provide the following information: category, confidence, and the word that is most important for your coding decision.",
@@ -127,6 +132,7 @@ is similar to one-shot but with several iterations of user and assistant
 messages providing examples before the final text to classify.
 
 ``` r
+
 q <- tribble(
   ~role,    ~content,
   "system", "You assign texts into categories. Answer with just the correct category.",
@@ -151,6 +157,7 @@ starts with the system prompt, then a user prompt with a text to
 classify and a reasoning question.
 
 ``` r
+
 q_thought <- tribble(
   ~role,    ~content,
   "system", "You assign texts into categories. ",
@@ -177,6 +184,7 @@ In the next step we can use the assistant’s reasoning and a user prompt
 with the classification question.
 
 ``` r
+
 q <- tribble(
   ~role,    ~content,
   "system", "You assign texts into categories. ",
@@ -218,6 +226,7 @@ Components:
 In this example, the function is used without any examples.
 
 ``` r
+
 # Call the make_query function
 q_zs <- make_query(
   template = "{text}\n{prompt}",
@@ -247,6 +256,7 @@ query(q_zs)
 Here, one prior example is provided to aid the classification:
 
 ``` r
+
 examples_os <- tibble::tribble(
   ~text, ~answer,
   "the pizza tastes terrible", "negative"
@@ -283,6 +293,7 @@ This scenario uses multiple examples to enrich the context for the new
 classification:
 
 ``` r
+
 examples_fs <- tibble::tribble(
   ~text, ~answer,
   "the pizza tastes terrible", "negative",
@@ -322,6 +333,7 @@ results as a new column in the dataframe.
 We create a dataframe named `movie_reviews` with two columns:
 
 ``` r
+
 # Create an example dataframe with 5 movie reviews
 movie_reviews <- tibble::tibble(
   review_id = 1:5,
@@ -348,6 +360,7 @@ reviews. What we want to do is to perform a sentiment analysis, guided
 by a system message and a classification question.
 
 ``` r
+
 # Process each review using make_query
 queries <- make_query(
   text = movie_reviews$review,
@@ -365,6 +378,7 @@ reviews data.frame we created above. The `query` function accepts lists
 of queries, so we can get the annotations simply using:
 
 ``` r
+
 # Process and annotate the movie reviews
 movie_reviews$annotation <- query(queries, screen = FALSE, output = "text")
 
@@ -383,6 +397,7 @@ movie_reviews
 We can also use this approach in a ‘tidy’ coding style:
 
 ``` r
+
 library(dplyr, warn.conflicts = FALSE)
 movie_reviews_annotated <- movie_reviews |>
   mutate(

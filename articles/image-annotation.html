@@ -7,8 +7,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <title>image-annotation • rollama</title>
 <script src="../lightswitch.js"></script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
-<script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
+<link href="../deps/bootstrap-5.3.8/bootstrap.min.css" rel="stylesheet">
+<script src="../deps/bootstrap-5.3.8/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
 <link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet">
 <script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="image-annotation">
 </head>
@@ -90,15 +90,18 @@ model. Using <code>pull_model("llava")</code> will download the model,
 or just load it if it has already been downloaded before.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/pull_model.html">pull_model</a></span><span class="op">(</span><span class="st">"llava"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ✔ model llava pulled succesfully</span></span></code></pre></div>
+<span><span class="co">#&gt; ✔ model llava pulled successfully!</span></span></code></pre></div>
 <p>We can use textual and visual input together. For instance, we can
 ask a question and provide a link to a picture or a local file path,
 such as <code>images = "/home/user/Pictures/IMG_4561.jpg"</code>.</p>
 <p>In the first example, we ask the model to describe the logo of this
 package:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="st">"Excitedly desscribe this logo"</span>, model <span class="op">=</span> <span class="st">"llava"</span>,</span>
-<span>      images <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Excitedly desscribe this logo"</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"llava"</span>,</span>
+<span>  images <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llava ─────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; This is an image of a logo for "Rollama." The logo features a playful</span></span>
@@ -121,16 +124,76 @@ package:</p>
 <span><span class="co">#&gt; entertaining and engaging.</span></span></code></pre></div>
 <p>The second example asks a classification question:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span><span class="st">"Which animal is in this image: a llama, dog, or walrus?"</span>,</span>
-<span>      model <span class="op">=</span> <span class="st">"llava"</span>,</span>
-<span>      images <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png"</span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Which animal is in this image: a llama, dog, or walrus?"</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"llava"</span>,</span>
+<span>  images <span class="op">=</span> <span class="st">"https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png"</span></span>
+<span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
 <span><span class="co">#&gt; ── Answer from llava ─────────────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; The image shows an animated character that resembles a llama. It has</span></span>
 <span><span class="co">#&gt; distinctive features of a llama, such as the large head with two</span></span>
 <span><span class="co">#&gt; forward-facing horns and a long, curved neck with short, rounded ears</span></span>
 <span><span class="co">#&gt; at the top.</span></span></code></pre></div>
-  </main>
+<div class="section level2">
+<h2 id="annotating-several-images-with-structured-output">Annotating Several Images with Structured Output<a class="anchor" aria-label="anchor" href="#annotating-several-images-with-structured-output"></a>
+</h2>
+<p>You can combine this setup with the <a href="https://jbgruber.github.io/rollama/articles/structured_outputs.html">structured
+output</a> workflow to get a systematic classification of images. First,
+define the schema for the fields you want back for each image:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">animal_schema</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_schema.html">create_schema</a></span><span class="op">(</span></span>
+<span>  dog <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_boolean</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  cat <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_boolean</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  human <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_boolean</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  bird <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_boolean</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="va">animal_schema</span></span>
+<span><span class="co">#&gt; &lt;rollama structured output schema&gt;</span></span>
+<span><span class="co">#&gt; ├─object: &lt;NULL&gt; (required)</span></span>
+<span><span class="co">#&gt; └─properties</span></span>
+<span><span class="co">#&gt;   ├─boolean: &lt;dog&gt;  (required)</span></span>
+<span><span class="co">#&gt;   ├─boolean: &lt;cat&gt;  (required)</span></span>
+<span><span class="co">#&gt;   ├─boolean: &lt;human&gt;  (required)</span></span>
+<span><span class="co">#&gt;   └─boolean: &lt;bird&gt;  (required)</span></span></code></pre></div>
+<p>I put some CC images from Wikipedia in a vector:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">examples</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Huskiesatrest.jpg/1920px-Huskiesatrest.jpg"</span>,</span>
+<span>  <span class="st">"https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg/960px-Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg"</span>,</span>
+<span>  <span class="st">"https://upload.wikimedia.org/wikipedia/commons/c/c4/Puffin_(Fratercula_arctica).jpg"</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>To annotate each image on its own, rather than sending all of them
+into a single query, pass <code>images</code> as a
+<strong>list</strong>: each element is then paired up with
+<code>q</code> (recycling the prompt for every image), producing one
+separate query - and one separate result - per image.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span></span>
+<span>  q <span class="op">=</span> <span class="st">"What can you see in this image?"</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"qwen3-vl"</span>,</span>
+<span>  format <span class="op">=</span> <span class="va">animal_schema</span>,</span>
+<span>  images <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">as.list</a></span><span class="op">(</span><span class="va">examples</span><span class="op">)</span>,</span>
+<span>  output <span class="op">=</span> <span class="st">"text"</span>,</span>
+<span>  stream <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  think <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+<p>Because the output is guaranteed to be valid JSON, you can parse all
+results at once<a class="footnote-ref" tabindex="0" data-bs-toggle="popover" data-bs-content="&lt;p&gt;Note that not all models have the ability to use
+structured outputs and some will ignore the schema.&lt;/p&gt;"><sup>1</sup></a>:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">results</span>, <span class="fu">jsonlite</span><span class="fu">::</span><span class="va"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 4</span></span>
+<span><span class="co">#&gt;   dog   cat   human bird </span></span>
+<span><span class="co">#&gt;   &lt;lgl&gt; &lt;lgl&gt; &lt;lgl&gt; &lt;lgl&gt;</span></span>
+<span><span class="co">#&gt; 1 TRUE  FALSE FALSE FALSE</span></span>
+<span><span class="co">#&gt; 2 FALSE TRUE  FALSE FALSE</span></span>
+<span><span class="co">#&gt; 3 FALSE FALSE FALSE TRUE</span></span></code></pre></div>
+</div>
+
+  </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
+    </nav></aside>
 </div>
 
 

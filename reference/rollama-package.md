@@ -20,5 +20,8 @@ Useful links:
 
 Authors:
 
+- Johannes B. Gruber <JohannesB.Gruber@gmail.com>
+  ([ORCID](https://orcid.org/0000-0001-9177-1772))
+
 - Maximilian Weber ([ORCID](https://orcid.org/0000-0002-1174-449X))
   \[contributor\]

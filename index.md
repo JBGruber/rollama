@@ -23,6 +23,7 @@ with related packages.
 You can install this package from CRAN:
 
 ``` r
+
 install.packages("rollama")
 ```
 
@@ -31,6 +32,7 @@ Or you can install the development version of `rollama` from
 more frequently and may contain bug fixes (or new bugs):
 
 ``` r
+
 # install.packages("remotes")
 remotes::install_github("JBGruber/rollama")
 ```
@@ -43,6 +45,7 @@ website](https://ollama.com/). Once `Ollama` is running, you can see if
 you can access it with:
 
 ``` r
+
 rollama::ping_ollama()
 #> ▶ Ollama (v0.17.4) is running at <http://localhost:11434>!
 ```
@@ -72,10 +75,12 @@ without arguments, you are pulling the (current) default model —
 “llama3.1 8b”:
 
 ``` r
+
 library(rollama)
 ```
 
 ``` r
+
 pull_model()
 ```
 
@@ -84,6 +89,7 @@ single requests, which does not store any history and treats each query
 as the beginning of a new chat:
 
 ``` r
+
 # ask a single question
 query("Why is the sky blue? Answer with one sentence.")
 #> 
@@ -98,6 +104,7 @@ Available options include “text”, “list”, “data.frame”, “response�
 “httr2_response”, and “httr2_request”:
 
 ``` r
+
 # ask a single question and specify the output format
 query("Why is the sky blue? Answer with one sentence." , output = "text")
 #> 
@@ -111,6 +118,7 @@ Or you can use the `chat` function, treats all messages sent during an R
 session as part of the same conversation:
 
 ``` r
+
 # hold a conversation
 chat("Why is the sky blue? Give a short answer.")
 #> 
@@ -132,6 +140,7 @@ If you are done with a conversation and want to start a new one, you can
 do that like so:
 
 ``` r
+
 new_chat()
 ```
 
@@ -143,6 +152,7 @@ model, with a
 or by including the parameters in the prompt:
 
 ``` r
+
 query("Why is the sky blue? Answer with one sentence.", output = "text",
       model_params = list(
         seed = 42,
@@ -163,6 +173,7 @@ you are using the default port (11434) of a local instance
 (“localhost”). Let’s make this explicit by setting the option:
 
 ``` r
+
 options(rollama_server = "http://localhost:11434")
 ```
 
@@ -170,6 +181,7 @@ You can change how a model answers by setting a configuration or system
 message in plain English (or another language supported by the model):
 
 ``` r
+
 options(rollama_config = "You make short answers understandable to a 5 year old")
 query("Why is the sky blue?")
 #> 
@@ -186,6 +198,7 @@ model make use of the additional information available in “Tags”
 `rollama_model`:
 
 ``` r
+
 options(rollama_model = "llama3.2:3b-instruct-q4_1")
 # if you don't have the model yet: pull_model("llama3.2:3b-instruct-q4_1")
 query("Why is the sky blue? Answer with one sentence.")
@@ -216,6 +229,7 @@ for more options):
 In this example, the function is used without examples:
 
 ``` r
+
 # Create a query using make_query
 q_zs <- make_query(
   text = "the pizza tastes terrible",

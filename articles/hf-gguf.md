@@ -13,6 +13,7 @@ Once you have identified a model, you can simply pass the URL to the
 `pull_model` function:
 
 ``` r
+
 library(rollama)
 pull_model("https://huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
 #> ✔ model https://huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K pulled succesfully
@@ -28,6 +29,7 @@ name, we need to query our model list first to see how the model is
 named now:
 
 ``` r
+
 grep("oxy-1-small", list_models()$name, value = TRUE)
 #> [1] "huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K"
 ```
@@ -36,6 +38,7 @@ But except for the awkward name, we can now use this model as any other
 one:
 
 ``` r
+
 chat("Why is the sky blue?", model = "huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K")
 #> 
 #> ── Answer from huggingface.co/oxyapi/oxy-1-small-GGUF:Q2_K ───────────
@@ -71,6 +74,7 @@ particular reason, let’s use Snowflake’s Arctic-embed-m-v1.5 embed for
 demonstration purposes here:
 
 ``` r
+
 pull_model("https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16")
 #> ✔ model https://huggingface.co/Snowflake/snowflake-arctic-embed-m-v1.5:BF16 pulled succesfully
 embed_text(c("Why is the sky blue?", "I am pretty happy we can work with GGUF models in R"),

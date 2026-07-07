@@ -2,6 +2,14 @@
 
 ## rollama (development version)
 
+- [`query()`](https://jbgruber.github.io/rollama/reference/query.md) can
+  now batch annotate several several images with the same prompt by
+  passing `images` as a list (one element per query)
+
+## rollama 0.3.0
+
+CRAN release: 2026-03-25
+
 - adds option to cache responses
 - query now supports logprobs output
 - make it possible to supply several questions at once

@@ -12,11 +12,13 @@ for classification is usually faster and more resource efficient –
 especially if you re-use embeddings for multiple tasks.
 
 ``` r
+
 library(rollama)
 library(tidyverse)
 ```
 
 ``` r
+
 reviews_df <- read_csv("https://raw.githubusercontent.com/AFAgarap/ecommerce-reviews-analysis/master/Womens%20Clothing%20E-Commerce%20Reviews.csv",
                        show_col_types = FALSE)
 glimpse(reviews_df)
@@ -41,6 +43,7 @@ process the data slightly by combining the title and review text into a
 single column and turning the rating into a binary variable:
 
 ``` r
+
 reviews <- reviews_df |>
   slice_head(n = 5000) |>
   rename(id = ...1) |>
@@ -52,6 +55,7 @@ To turn one or multiple texts into embeddings, you can simply use
 `embed_text`:
 
 ``` r
+
 embed_text(text = reviews$full_text[1:3])
 #> # A tibble: 3 × 3,072
 #>   dim_1 dim_2  dim_3    dim_4  dim_5  dim_6  dim_7  dim_8 dim_9 dim_10
@@ -81,6 +85,7 @@ with fewer resources. Download the model with
 `pull_model("nomic-embed-text")` then we can run:
 
 ``` r
+
 reviews_embeddings <- reviews |>
   mutate(embeddings = embed_text(text = full_text, model = "nomic-embed-text")) |>
   select(id, rating, embeddings) |>
@@ -91,6 +96,7 @@ The resulting data.frame contains the ID and rating along the 768
 embedding dimensions:
 
 ``` r
+
 reviews_embeddings
 #> # A tibble: 5,000 × 770
 #>       id rating   dim_1 dim_2 dim_3   dim_4  dim_5   dim_6   dim_7
@@ -121,6 +127,7 @@ show how this can be done using the data we embedded above in the
 powerful `tidymodels` collection of packages:
 
 ``` r
+
 library(tidymodels)
 # split data into training an test set (for validation)
 set.seed(1)

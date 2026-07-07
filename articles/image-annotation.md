@@ -6,6 +6,7 @@ create) images.
 We start by loading the package:
 
 ``` r
+
 library(rollama)
 ```
 
@@ -15,8 +16,9 @@ Using `pull_model("llava")` will download the model, or just load it if
 it has already been downloaded before.
 
 ``` r
+
 pull_model("llava")
-#> ✔ model llava pulled succesfully
+#> ✔ model llava pulled successfully!
 ```
 
 We can use textual and visual input together. For instance, we can ask a
@@ -27,8 +29,12 @@ In the first example, we ask the model to describe the logo of this
 package:
 
 ``` r
-query("Excitedly desscribe this logo", model = "llava",
-      images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
+
+query(
+  "Excitedly desscribe this logo",
+  model = "llava",
+  images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png"
+)
 #> 
 #> ── Answer from llava ─────────────────────────────────────────────────
 #> This is an image of a logo for "Rollama." The logo features a playful
@@ -54,9 +60,12 @@ query("Excitedly desscribe this logo", model = "llava",
 The second example asks a classification question:
 
 ``` r
-query("Which animal is in this image: a llama, dog, or walrus?",
-      model = "llava",
-      images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png")
+
+query(
+  "Which animal is in this image: a llama, dog, or walrus?",
+  model = "llava",
+  images = "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figures/logo.png"
+)
 #> 
 #> ── Answer from llava ─────────────────────────────────────────────────
 #> The image shows an animated character that resembles a llama. It has
@@ -64,3 +73,75 @@ query("Which animal is in this image: a llama, dog, or walrus?",
 #> forward-facing horns and a long, curved neck with short, rounded ears
 #> at the top.
 ```
+
+## Annotating Several Images with Structured Output
+
+You can combine this setup with the [structured
+output](https://jbgruber.github.io/rollama/articles/structured_outputs.html)
+workflow to get a systematic classification of images. First, define the
+schema for the fields you want back for each image:
+
+``` r
+
+animal_schema <- create_schema(
+  dog = type_boolean(),
+  cat = type_boolean(),
+  human = type_boolean(),
+  bird = type_boolean()
+)
+animal_schema
+#> <rollama structured output schema>
+#> ├─object: <NULL> (required)
+#> └─properties
+#>   ├─boolean: <dog>  (required)
+#>   ├─boolean: <cat>  (required)
+#>   ├─boolean: <human>  (required)
+#>   └─boolean: <bird>  (required)
+```
+
+I put some CC images from Wikipedia in a vector:
+
+``` r
+
+examples <- c(
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Huskiesatrest.jpg/1920px-Huskiesatrest.jpg",
+  "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg/960px-Orange_tabby_cat_sitting_on_fallen_leaves-Hisashi-01A.jpg",
+  "https://upload.wikimedia.org/wikipedia/commons/c/c4/Puffin_(Fratercula_arctica).jpg"
+)
+```
+
+To annotate each image on its own, rather than sending all of them into
+a single query, pass `images` as a **list**: each element is then paired
+up with `q` (recycling the prompt for every image), producing one
+separate query - and one separate result - per image.
+
+``` r
+
+results <- query(
+  q = "What can you see in this image?",
+  model = "qwen3-vl",
+  format = animal_schema,
+  images = as.list(examples),
+  output = "text",
+  stream = FALSE,
+  think = FALSE
+)
+```
+
+Because the output is guaranteed to be valid JSON, you can parse all
+results at once[^1]:
+
+``` r
+
+purrr::map(results, jsonlite::fromJSON) |>
+  dplyr::bind_rows()
+#> # A tibble: 3 × 4
+#>   dog   cat   human bird 
+#>   <lgl> <lgl> <lgl> <lgl>
+#> 1 TRUE  FALSE FALSE FALSE
+#> 2 FALSE TRUE  FALSE FALSE
+#> 3 FALSE FALSE FALSE TRUE
+```
+
+[^1]: Note that not all models have the ability to use structured
+    outputs and some will ignore the schema.
