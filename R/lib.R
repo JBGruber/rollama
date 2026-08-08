@@ -76,7 +76,7 @@ build_req <- function(
       purrr::map(model, function(m) {
         list(
           model = m,
-          messages = ms,
+          messages = msg_to_list(ms),
           stream = stream,
           options = model_params,
           format = format,
@@ -98,7 +98,7 @@ build_req <- function(
     req_data <- purrr::map2(msg, model, function(ms, m) {
       list(
         model = m,
-        messages = ms,
+        messages = msg_to_list(ms),
         stream = stream,
         options = model_params,
         format = format,
@@ -296,10 +296,33 @@ prep_req_data <- function(tbl) {
     tbl$options <- purrr::map(tbl$option, jsonlite::unbox)
   }
   purrr::modify_tree(tbl, leaf = function(x) {
+    # fields that must stay a JSON array even at length 1 (e.g. a single
+    # image) are marked with I() by msg_to_list() and left untouched here
+    if (inherits(x, "AsIs")) {
+      return(unclass(x))
+    }
     if (length(x) == 1L) {
       jsonlite::unbox(x)
     } else {
       x
     }
+  })
+}
+
+
+# Turn a conversation data.frame/tibble (one row per ChatMessage) into a list
+# of message objects, one per row, with unset fields (e.g. images, tool_calls)
+# dropped instead of sent as JSON null. A plain data.frame is a leaf as far as
+# purrr::modify_tree() is concerned, so scalar values nested inside list
+# columns like `tool_calls` (e.g. `tool_calls[[1]]$function$name`) would never
+# get unboxed by prep_req_data() and would serialise as one-element arrays;
+# turning each row into an ordinary list fixes that.
+msg_to_list <- function(msg) {
+  purrr::pmap(msg, function(...) {
+    row <- purrr::compact(list(...))
+    if (!is.null(row$images)) {
+      row$images <- I(row$images)
+    }
+    row
   })
 }

@@ -266,10 +266,15 @@ tool_call <- resp[[1]]$message$tool_calls[[1]]
 # Step 2: call the real function with the model-supplied arguments
 result <- do.call(add_numbers, tool_call$`function`$arguments)
 
-# Step 3: send the result back so the model can give a final answer
-conversation <- data.frame(
-  role    = c("user", "assistant", "tool"),
-  content = c(question, "", as.character(result))
+# Step 3: send the result back so the model can give a final answer. Add a
+# tool_calls list-column to the assistant turn (needs a tibble, since base
+# data.frame() cannot hold a list-column of tool calls) so the model keeps
+# the link between what it asked for and the result it gets back, instead
+# of just resending an empty assistant message.
+conversation <- tibble::tibble(
+  role       = c("user", "assistant", "tool"),
+  content    = c(question, "", as.character(result)),
+  tool_calls = list(NULL, list(tool_call), NULL)
 )
 query(conversation, model = "llama3.1")
 
