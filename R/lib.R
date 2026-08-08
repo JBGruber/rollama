@@ -15,7 +15,8 @@ ping_ollama <- function(server = NULL, silent = FALSE, version = FALSE) {
     res <- try(
       {
         httr2::request(sv) |>
-          httr2::req_url_path("api/version") |>
+          httr2::req_url_path_append("api/version") |>
+          httr2::req_headers(!!!get_headers()) |>
           httr2::req_perform() |>
           httr2::resp_body_json()
       },
