@@ -1,6 +1,8 @@
 # rollama (development version)
 
-* `query()` can now batch annotate several several images with the same prompt by passing `images` as a list (one element per query)
+* `query()` can now batch annotate several images with the same prompt by passing `images` as a list (one element per query)
+* updated image annotation vignette to explain batch annotation
+* fixes issue in tests
 
 # rollama 0.3.0
 

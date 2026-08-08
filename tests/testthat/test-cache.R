@@ -29,7 +29,7 @@ ollama_json <- function(content = "Because Rayleigh scattering.") {
 # ---- req_hash ---------------------------------------------------------------
 
 test_that("req_hash deterministically returns a 32-character hash string", {
-  expect_equal(req_hash(make_fake_req()), "0227ca5af8ae565c3383d248a8b1010a")
+  expect_equal(req_hash(make_fake_req()), "84509e0fca78bfe92d29a181dfbbce1d")
 })
 
 test_that("req_hash differs for different model or content", {

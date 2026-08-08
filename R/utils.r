@@ -139,7 +139,12 @@ throw_error <- function(fails) {
 
 # Compute a stable hash for a request.
 req_hash <- function(req) {
-  rlang::hash(req$body$data)
+  local({
+    tmp <- tempfile()
+    on.exit(unlink(tmp))
+    writeBin(charToRaw(paste(req$body$data, collapse = "\n")), tmp)
+    unname(tools::md5sum(tmp))
+  })
 }
 
 
