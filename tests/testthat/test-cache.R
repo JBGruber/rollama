@@ -167,10 +167,15 @@ test_that("query with cache runs only missing requests on partial cache hit", {
   qs <- c("question one", "question two", "question three")
   res1 <- query(qs, stream = FALSE, cache = tmp, output = "text")
 
-  cache_files <- list.files(tmp, pattern = "\\.json$", full.names = TRUE)
+  # cache file names are content hashes, so their alphabetical listing order
+  # need not match request order; derive the paths the same way query() does
+  # to reliably target the third *request's* cache file
+  reqs <- query(qs, stream = FALSE, output = "httr2_request")
+  cache_files <- resolve_cache_paths(tmp, reqs)
   expect_length(cache_files, 3L)
+  expect_true(all(file.exists(cache_files)))
 
-  # simulate a corrupted/missing cache entry
+  # simulate a corrupted/missing cache entry for the third request
   unlink(cache_files[3])
 
   expect_message(

@@ -8,6 +8,8 @@ create_model(
   model,
   from = NULL,
   template = NULL,
+  renderer = NULL,
+  parser = NULL,
   license = NULL,
   system = NULL,
   parameters = NULL,
@@ -25,6 +27,10 @@ create_model(
 \item{from}{existing model to create from}
 
 \item{template}{prompt template to use for the model}
+
+\item{renderer}{name of the renderer to use for the model}
+
+\item{parser}{name of the parser to use for the model}
 
 \item{license}{license string or list of licenses for the model}
 

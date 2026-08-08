@@ -175,6 +175,8 @@ show_model <- function(model = NULL, detailed = FALSE, server = NULL) {
 #' @param model name of the model to create
 #' @param from existing model to create from
 #' @param template prompt template to use for the model
+#' @param renderer name of the renderer to use for the model
+#' @param parser name of the parser to use for the model
 #' @param license license string or list of licenses for the model
 #' @param system system prompt to embed in the model
 #' @param parameters key-value parameters for the model
@@ -202,6 +204,8 @@ create_model <- function(
   model,
   from = NULL,
   template = NULL,
+  renderer = NULL,
+  parser = NULL,
   license = NULL,
   system = NULL,
   parameters = NULL,
@@ -228,6 +232,8 @@ create_model <- function(
       model = model,
       from = from,
       template = template,
+      renderer = renderer,
+      parser = parser,
       license = license,
       system = system,
       parameters = parameters,

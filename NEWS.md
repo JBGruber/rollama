@@ -2,6 +2,7 @@
 
 * `query()` can now batch annotate several images with the same prompt by passing `images` as a list (one element per query)
 * updated image annotation vignette to explain batch annotation
+* `create_model()` gains renderer and parser params
 * fixes issue in tests
 * bug fixes
 
