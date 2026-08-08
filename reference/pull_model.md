@@ -67,8 +67,8 @@ copy_model(model, destination = paste0(model, "-copy"), server = NULL)
 
 ## Value
 
-(invisible) a tibble with information about the model (except in
-`delete_model` and `push_model`)
+(invisible) a tibble with information about the model, one row per model
+(except in `delete_model` and `push_model`)
 
 ## Details
 

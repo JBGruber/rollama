@@ -9,6 +9,8 @@ create_model(
   model,
   from = NULL,
   template = NULL,
+  renderer = NULL,
+  parser = NULL,
   license = NULL,
   system = NULL,
   parameters = NULL,
@@ -34,6 +36,14 @@ create_model(
 - template:
 
   prompt template to use for the model
+
+- renderer:
+
+  name of the renderer to use for the model
+
+- parser:
+
+  name of the parser to use for the model
 
 - license:
 

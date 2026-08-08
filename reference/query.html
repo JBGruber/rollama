@@ -343,10 +343,15 @@ server as an input.</p></li>
 <span class="r-in"><span><span class="co"># Step 2: call the real function with the model-supplied arguments</span></span></span>
 <span class="r-in"><span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/do.call.html" class="external-link">do.call</a></span><span class="op">(</span><span class="va">add_numbers</span>, <span class="va">tool_call</span><span class="op">$</span><span class="va">`function`</span><span class="op">$</span><span class="va">arguments</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
-<span class="r-in"><span><span class="co"># Step 3: send the result back so the model can give a final answer</span></span></span>
-<span class="r-in"><span><span class="va">conversation</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html" class="external-link">data.frame</a></span><span class="op">(</span></span></span>
-<span class="r-in"><span>  role    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"user"</span>, <span class="st">"assistant"</span>, <span class="st">"tool"</span><span class="op">)</span>,</span></span>
-<span class="r-in"><span>  content <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">question</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="co"># Step 3: send the result back so the model can give a final answer. Add a</span></span></span>
+<span class="r-in"><span><span class="co"># tool_calls list-column to the assistant turn (needs a tibble, since base</span></span></span>
+<span class="r-in"><span><span class="co"># data.frame() cannot hold a list-column of tool calls) so the model keeps</span></span></span>
+<span class="r-in"><span><span class="co"># the link between what it asked for and the result it gets back, instead</span></span></span>
+<span class="r-in"><span><span class="co"># of just resending an empty assistant message.</span></span></span>
+<span class="r-in"><span><span class="va">conversation</span> <span class="op">&lt;-</span> <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html" class="external-link">tibble</a></span><span class="op">(</span></span></span>
+<span class="r-in"><span>  role       <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"user"</span>, <span class="st">"assistant"</span>, <span class="st">"tool"</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  content    <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="va">question</span>, <span class="st">""</span>, <span class="fu"><a href="https://rdrr.io/r/base/character.html" class="external-link">as.character</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span><span class="op">)</span>,</span></span>
+<span class="r-in"><span>  tool_calls <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="cn">NULL</span>, <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">tool_call</span><span class="op">)</span>, <span class="cn">NULL</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">query</span><span class="op">(</span><span class="va">conversation</span>, model <span class="op">=</span> <span class="st">"llama3.1"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
@@ -373,7 +378,7 @@ server as an input.</p></li>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

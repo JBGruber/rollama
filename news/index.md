@@ -3,8 +3,13 @@
 ## rollama (development version)
 
 - [`query()`](https://jbgruber.github.io/rollama/reference/query.md) can
-  now batch annotate several several images with the same prompt by
-  passing `images` as a list (one element per query)
+  now batch annotate several images with the same prompt by passing
+  `images` as a list (one element per query)
+- updated image annotation vignette to explain batch annotation
+- [`create_model()`](https://jbgruber.github.io/rollama/reference/create_model.md)
+  gains renderer and parser params
+- fixes issue in tests
+- bug fixes
 
 ## rollama 0.3.0
 

@@ -1,5 +1,5 @@
 pandoc: 3.8.3
-pkgdown: 2.2.0
+pkgdown: 2.2.1
 pkgdown_sha: ~
 articles:
   annotation: annotation.html
@@ -8,7 +8,7 @@ articles:
   image-annotation: image-annotation.html
   structured_outputs: structured_outputs.html
   text-embedding: text-embedding.html
-last_built: 2026-07-07T12:28Z
+last_built: 2026-08-08T23:07Z
 urls:
   reference: https://jbgruber.github.io/rollama/reference
   article: https://jbgruber.github.io/rollama/articles
