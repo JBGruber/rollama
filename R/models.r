@@ -31,8 +31,8 @@
 #'   detailed information about the model.
 #' @inheritParams query
 #'
-#' @return (invisible) a tibble with information about the model (except in
-#'   `delete_model` and `push_model`)
+#' @return (invisible) a tibble with information about the model, one row per
+#'   model (except in `delete_model` and `push_model`)
 #' @export
 #'
 #' @examples
@@ -65,9 +65,10 @@ pull_model <- function(
     cli::cli_alert_danger("Could not connect to Ollama at {.url {server}}")
   }
   if (length(model) > 1L) {
-    for (m in model) {
+    res <- purrr::map(model, function(m) {
       pull_model(m, server, insecure, background, verbose)
-    }
+    })
+    return(invisible(dplyr::bind_rows(res)))
   }
 
   req <- httr2::request(server) |>
@@ -89,9 +90,10 @@ pull_model <- function(
 
   if (done) {
     cli::cli_alert_success("model {model} pulled successfully!")
-    return(invisible(show_model(model)))
+    return(invisible(show_model(model, server = server)))
   } else {
     cli::cli_alert_success("model {model} downloading in background")
+    return(invisible(NULL))
   }
 }
 

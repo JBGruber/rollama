@@ -19,3 +19,4 @@ use_github_release2.r
 .env
 plan.md
 openapi.yaml
+.claude/

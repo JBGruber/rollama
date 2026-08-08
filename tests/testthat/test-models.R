@@ -5,6 +5,15 @@ test_that("pull model", {
   expect_equal(nrow(pull_model()), 1L)
 })
 
+test_that("pull several models", {
+  skip_if_not(ping_ollama(silent = TRUE))
+  models <- list_models()$name
+  skip_if(length(models) < 2L, "needs at least two local models")
+  out <- pull_model(models[1:2])
+  expect_s3_class(out, "tbl_df")
+  expect_equal(nrow(out), 2L)
+})
+
 test_that("show model", {
   skip_if_not(ping_ollama(silent = TRUE))
   out <- show_model()

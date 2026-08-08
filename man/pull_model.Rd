@@ -52,8 +52,8 @@ detailed information about the model.}
 \item{destination}{name of the copied model.}
 }
 \value{
-(invisible) a tibble with information about the model (except in
-\code{delete_model} and \code{push_model})
+(invisible) a tibble with information about the model, one row per
+model (except in \code{delete_model} and \code{push_model})
 }
 \description{
 Pull, push, show and delete models
