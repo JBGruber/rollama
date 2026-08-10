@@ -18,5 +18,6 @@ After all endpoints are processed:
 6. Add a prioritised list of recommended changes at the bottom of @plan.md.
 
 Note: we are not using /api/generate on purpose, as it offers no advantages over /api/chat"
+Note 2: we are not exposing stream in addition to expose as it offers no added capabilities. If verbose is FALSE, stream would produce the same result with more overhead.
 
 claude --permission-mode="acceptEdits" "$PROMPT"
