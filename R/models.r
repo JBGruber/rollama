@@ -312,14 +312,66 @@ list_models <- function(server = NULL) {
     server <- getOption("rollama_server", default = "http://localhost:11434")
   }
 
-  httr2::request(server) |>
+  models <- httr2::request(server) |>
     httr2::req_url_path_append("/api/tags") |>
     httr2::req_headers(!!!get_headers()) |>
     httr2::req_perform() |>
     httr2::resp_body_json() |>
-    purrr::pluck("models") |>
-    purrr::map(\(x) purrr::list_flatten(x, name_spec = "{inner}")) |>
-    dplyr::bind_rows()
+    purrr::pluck("models")
+
+  tibble::tibble(
+    name = purrr::map_chr(models, "name", .default = NA_character_),
+    model = purrr::map_chr(models, "model", .default = NA_character_),
+    modified_at = purrr::map_chr(
+      models,
+      "modified_at",
+      .default = NA_character_
+    ),
+    size = purrr::map_dbl(models, "size", .default = NA_real_),
+    digest = purrr::map_chr(models, "digest", .default = NA_character_),
+    parent_model = purrr::map_chr(
+      models,
+      list("details", "parent_model"),
+      .default = NA_character_
+    ),
+    format = purrr::map_chr(
+      models,
+      list("details", "format"),
+      .default = NA_character_
+    ),
+    family = purrr::map_chr(
+      models,
+      list("details", "family"),
+      .default = NA_character_
+    ),
+    families = purrr::map(
+      models,
+      \(m) unlist(purrr::pluck(m, "details", "families"))
+    ),
+    parameter_size = purrr::map_chr(
+      models,
+      list("details", "parameter_size"),
+      .default = NA_character_
+    ),
+    quantization_level = purrr::map_chr(
+      models,
+      list("details", "quantization_level"),
+      .default = NA_character_
+    ),
+    context_length = purrr::map_int(
+      models,
+      list("details", "context_length"),
+      .default = NA_integer_
+    ),
+    embedding_length = purrr::map_int(
+      models,
+      list("details", "embedding_length"),
+      .default = NA_integer_
+    ),
+    capabilities = purrr::map(models, \(m) {
+      unlist(purrr::pluck(m, "capabilities"))
+    })
+  )
 }
 
 #' List running models
