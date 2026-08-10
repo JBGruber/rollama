@@ -216,10 +216,10 @@ directly:</p>
 <code class="sourceCode R"><span><span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="va">res</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 2 × 6</span></span>
-<span><span class="co">#&gt;   name   capital population continent     nato_member official_languages</span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;  &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;         &lt;lgl&gt;       &lt;chr&gt;             </span></span>
-<span><span class="co">#&gt; 1 Canada Ottawa    41000000 North America TRUE        English           </span></span>
-<span><span class="co">#&gt; 2 Canada Ottawa    41000000 North America TRUE        French</span></span></code></pre></div>
+<span><span class="co">#&gt;   name   capital population continent nato_member official_languages</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;  &lt;chr&gt;        &lt;int&gt; &lt;chr&gt;     &lt;lgl&gt;       &lt;chr&gt;             </span></span>
+<span><span class="co">#&gt; 1 Canada Ottawa          41 North Am… TRUE        English           </span></span>
+<span><span class="co">#&gt; 2 Canada Ottawa          41 North Am… TRUE        French</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="batch-extraction">Batch Extraction<a class="anchor" aria-label="anchor" href="#batch-extraction"></a>
@@ -227,49 +227,42 @@ directly:</p>
 <p><code><a href="../reference/make_query.html">make_query()</a></code> accepts a vector of texts, and
 <code><a href="../reference/query.html">query()</a></code> accepts lists of queries, so you can run structured
 extraction over many texts in a single pipeline:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>country_texts <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a>  <span class="st">"Germany is a country in Central Europe. Its capital is Berlin and it has a population of about 84 million people. Germany is a founding member of NATO and the official language is German."</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a>  <span class="st">"Brazil is the largest country in South America, with a population of around 215 million. The capital is Brasília. Portuguese is the official language. Brazil is not a member of NATO."</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a>  <span class="st">"Japan is an island nation in East Asia with approximately 125 million inhabitants. Its capital is Tokyo. Japanese is the official language. Japan is not a NATO member."</span></span>
-<span id="cb5-5"><a href="#cb5-5" tabindex="-1"></a>)</span>
-<span id="cb5-6"><a href="#cb5-6" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" tabindex="-1"></a>queries <span class="ot">&lt;-</span> <span class="fu">make_query</span>(</span>
-<span id="cb5-8"><a href="#cb5-8" tabindex="-1"></a>  country_texts,</span>
-<span id="cb5-9"><a href="#cb5-9" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="st">"Extract information about the country from the text. Do not make things up. Convert numbers into their full numeric form."</span>,</span>
-<span id="cb5-10"><a href="#cb5-10" tabindex="-1"></a>  <span class="at">template =</span> <span class="st">"{prompt}</span><span class="sc">\n\n</span><span class="st">TEXT:</span><span class="sc">\n\n</span><span class="st">{text}"</span></span>
-<span id="cb5-11"><a href="#cb5-11" tabindex="-1"></a>)</span>
-<span id="cb5-12"><a href="#cb5-12" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" tabindex="-1"></a>results <span class="ot">&lt;-</span> <span class="fu">query</span>(</span>
-<span id="cb5-14"><a href="#cb5-14" tabindex="-1"></a>  queries,</span>
-<span id="cb5-15"><a href="#cb5-15" tabindex="-1"></a>  <span class="at">model =</span> <span class="st">"llama3.2:1b"</span>,</span>
-<span id="cb5-16"><a href="#cb5-16" tabindex="-1"></a>  <span class="at">format =</span> country_schema,</span>
-<span id="cb5-17"><a href="#cb5-17" tabindex="-1"></a>  <span class="at">output =</span> <span class="st">"text"</span>,</span>
-<span id="cb5-18"><a href="#cb5-18" tabindex="-1"></a>  <span class="at">screen =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb5-19"><a href="#cb5-19" tabindex="-1"></a>  <span class="at">stream =</span> <span class="cn">FALSE</span></span>
-<span id="cb5-20"><a href="#cb5-20" tabindex="-1"></a>)</span>
-<span id="cb5-21"><a href="#cb5-21" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb5-22"><a href="#cb5-22" tabindex="-1"></a>⠙ llama3<span class="fl">.2</span><span class="sc">:</span><span class="dv">1</span>b is thinking about <span class="dv">3</span><span class="sc">/</span><span class="dv">3</span> questions[ETA<span class="sc">:</span> ?]</span>
-<span id="cb5-23"><a href="#cb5-23" tabindex="-1"></a></span>
-<span id="cb5-24"><a href="#cb5-24" tabindex="-1"></a>⠹ llama3<span class="fl">.2</span><span class="sc">:</span><span class="dv">1</span>b is thinking about <span class="dv">2</span><span class="sc">/</span><span class="dv">3</span> questions[ETA<span class="sc">:</span> <span class="dv">2</span>s]</span>
-<span id="cb5-25"><a href="#cb5-25" tabindex="-1"></a></span>
-<span id="cb5-26"><a href="#cb5-26" tabindex="-1"></a>⠸</span>
-<span id="cb5-27"><a href="#cb5-27" tabindex="-1"></a><span class="co">#&gt; llama3.2:1b is thinking about 1/3 questions[ETA: 1s]</span></span>
-<span id="cb5-28"><a href="#cb5-28" tabindex="-1"></a></span>
-<span id="cb5-29"><a href="#cb5-29" tabindex="-1"></a></span>
-<span id="cb5-30"><a href="#cb5-30" tabindex="-1"></a><span class="co"># Parse all results at once</span></span>
-<span id="cb5-31"><a href="#cb5-31" tabindex="-1"></a>countries_df <span class="ot">&lt;-</span> purrr<span class="sc">::</span><span class="fu">map</span>(results, jsonlite<span class="sc">::</span>fromJSON) <span class="sc">|&gt;</span></span>
-<span id="cb5-32"><a href="#cb5-32" tabindex="-1"></a>  purrr<span class="sc">::</span><span class="fu">map</span>(\(x) {</span>
-<span id="cb5-33"><a href="#cb5-33" tabindex="-1"></a>    tibble<span class="sc">::</span><span class="fu">as_tibble</span>(<span class="fu">lapply</span>(x, \(v) <span class="cf">if</span> (<span class="fu">length</span>(v) <span class="sc">&gt;</span> <span class="dv">1</span>) <span class="fu">list</span>(v) <span class="cf">else</span> v))</span>
-<span id="cb5-34"><a href="#cb5-34" tabindex="-1"></a>  }) <span class="sc">|&gt;</span></span>
-<span id="cb5-35"><a href="#cb5-35" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">bind_rows</span>()</span>
-<span id="cb5-36"><a href="#cb5-36" tabindex="-1"></a></span>
-<span id="cb5-37"><a href="#cb5-37" tabindex="-1"></a>countries_df</span>
-<span id="cb5-38"><a href="#cb5-38" tabindex="-1"></a><span class="co">#&gt; # A tibble: 3 × 6</span></span>
-<span id="cb5-39"><a href="#cb5-39" tabindex="-1"></a><span class="co">#&gt;   name    capital  population continent     nato_member official_languages</span></span>
-<span id="cb5-40"><a href="#cb5-40" tabindex="-1"></a><span class="co">#&gt;   &lt;chr&gt;   &lt;chr&gt;         &lt;int&gt; &lt;chr&gt;         &lt;lgl&gt;       &lt;chr&gt;             </span></span>
-<span id="cb5-41"><a href="#cb5-41" tabindex="-1"></a><span class="co">#&gt; 1 Germany Berlin     84000000 Europe        TRUE        german            </span></span>
-<span id="cb5-42"><a href="#cb5-42" tabindex="-1"></a><span class="co">#&gt; 2 Brazil  Brasília        215 South America FALSE       Portuguese        </span></span>
-<span id="cb5-43"><a href="#cb5-43" tabindex="-1"></a><span class="co">#&gt; 3 Japan   Tokyo     125000000 Asia          FALSE       Japanese</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">country_texts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span></span>
+<span>  <span class="st">"Germany is a country in Central Europe. Its capital is Berlin and it has a population of about 84 million people. Germany is a founding member of NATO and the official language is German."</span>,</span>
+<span>  <span class="st">"Brazil is the largest country in South America, with a population of around 215 million. The capital is Brasília. Portuguese is the official language. Brazil is not a member of NATO."</span>,</span>
+<span>  <span class="st">"Japan is an island nation in East Asia with approximately 125 million inhabitants. Its capital is Tokyo. Japanese is the official language. Japan is not a NATO member."</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">queries</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/make_query.html">make_query</a></span><span class="op">(</span></span>
+<span>  <span class="va">country_texts</span>,</span>
+<span>  prompt <span class="op">=</span> <span class="st">"Extract information about the country from the text. Do not make things up. Convert numbers into their full numeric form."</span>,</span>
+<span>  template <span class="op">=</span> <span class="st">"{prompt}\n\nTEXT:\n\n{text}"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">results</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span></span>
+<span>  <span class="va">queries</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"llama3.2:1b"</span>,</span>
+<span>  format <span class="op">=</span> <span class="va">country_schema</span>,</span>
+<span>  output <span class="op">=</span> <span class="st">"text"</span>,</span>
+<span>  screen <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  stream <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Parse all results at once</span></span>
+<span><span class="va">countries_df</span> <span class="op">&lt;-</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span><span class="va">results</span>, <span class="fu">jsonlite</span><span class="fu">::</span><span class="va"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html" class="external-link">map</a></span><span class="op">(</span>\<span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">lapply</a></span><span class="op">(</span><span class="va">x</span>, \<span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="va">v</span><span class="op">)</span> <span class="kw">else</span> <span class="va">v</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/bind_rows.html" class="external-link">bind_rows</a></span><span class="op">(</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">countries_df</span></span>
+<span><span class="co">#&gt; # A tibble: 3 × 6</span></span>
+<span><span class="co">#&gt;   name   capital population continent nato_member official_languages</span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;  &lt;chr&gt;        &lt;dbl&gt; &lt;chr&gt;     &lt;lgl&gt;       &lt;chr&gt;             </span></span>
+<span><span class="co">#&gt; 1 Germa… Berlin    84000000 Europe    TRUE        German            </span></span>
+<span><span class="co">#&gt; 2 Brazil Brasíl… 2150000000 South Am… FALSE       Portuguese        </span></span>
+<span><span class="co">#&gt; 3 Japan  Tokyo          125 Asia      FALSE       Japanese</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="nested-objects">Nested Objects<a class="anchor" aria-label="anchor" href="#nested-objects"></a>
@@ -277,64 +270,58 @@ extraction over many texts in a single pipeline:</p>
 <p>For more complex structures, <code><a href="../reference/create_schema.html">type_object()</a></code> can be nested
 to represent hierarchical data. Here is a schema for a scientific paper
 that contains a nested author object:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>paper_schema <span class="ot">&lt;-</span> <span class="fu">create_schema</span>(</span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>  <span class="at">title =</span> <span class="fu">type_string</span>(<span class="at">description =</span> <span class="st">"Title of the paper"</span>),</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>  <span class="at">year =</span> <span class="fu">type_integer</span>(<span class="at">description =</span> <span class="st">"Publication year"</span>),</span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a>  <span class="at">authors =</span> <span class="fu">type_array</span>(</span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a>    <span class="at">description =</span> <span class="st">"List of authors"</span>,</span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>    <span class="at">items =</span> <span class="fu">type_object</span>(</span>
-<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a>      <span class="at">name =</span> <span class="fu">type_string</span>(<span class="at">description =</span> <span class="st">"Full name of the author"</span>),</span>
-<span id="cb6-8"><a href="#cb6-8" tabindex="-1"></a>      <span class="at">affiliation =</span> <span class="fu">type_string</span>(<span class="at">description =</span> <span class="st">"Institutional affiliation"</span>)</span>
-<span id="cb6-9"><a href="#cb6-9" tabindex="-1"></a>    )</span>
-<span id="cb6-10"><a href="#cb6-10" tabindex="-1"></a>  ),</span>
-<span id="cb6-11"><a href="#cb6-11" tabindex="-1"></a>  <span class="at">keywords =</span> <span class="fu">type_array</span>(</span>
-<span id="cb6-12"><a href="#cb6-12" tabindex="-1"></a>    <span class="at">items =</span> <span class="fu">type_string</span>(),</span>
-<span id="cb6-13"><a href="#cb6-13" tabindex="-1"></a>    <span class="at">description =</span> <span class="st">"Key topics covered by the paper"</span></span>
-<span id="cb6-14"><a href="#cb6-14" tabindex="-1"></a>  ),</span>
-<span id="cb6-15"><a href="#cb6-15" tabindex="-1"></a>  <span class="at">open_access =</span> <span class="fu">type_boolean</span>(</span>
-<span id="cb6-16"><a href="#cb6-16" tabindex="-1"></a>    <span class="at">description =</span> <span class="st">"Whether the paper is freely available"</span></span>
-<span id="cb6-17"><a href="#cb6-17" tabindex="-1"></a>  )</span>
-<span id="cb6-18"><a href="#cb6-18" tabindex="-1"></a>)</span>
-<span id="cb6-19"><a href="#cb6-19" tabindex="-1"></a></span>
-<span id="cb6-20"><a href="#cb6-20" tabindex="-1"></a>paper_text <span class="ot">&lt;-</span> <span class="st">"We present 'Attention Is All You Need' (2017) by Ashish Vaswani (Google Brain), Noam Shazeer (Google Brain), and Illia Polosukhin (Google Research). The paper introduces the Transformer architecture and covers topics such as attention mechanisms, neural machine translation, and sequence modelling. The paper is freely available on arXiv."</span></span>
-<span id="cb6-21"><a href="#cb6-21" tabindex="-1"></a></span>
-<span id="cb6-22"><a href="#cb6-22" tabindex="-1"></a><span class="fu">make_query</span>(</span>
-<span id="cb6-23"><a href="#cb6-23" tabindex="-1"></a>  paper_text,</span>
-<span id="cb6-24"><a href="#cb6-24" tabindex="-1"></a>  <span class="at">prompt =</span> <span class="st">"Extract the bibliographic information from the text below."</span>,</span>
-<span id="cb6-25"><a href="#cb6-25" tabindex="-1"></a>  <span class="at">template =</span> <span class="st">"{prompt}</span><span class="sc">\n\n</span><span class="st">TEXT:</span><span class="sc">\n\n</span><span class="st">{text}"</span></span>
-<span id="cb6-26"><a href="#cb6-26" tabindex="-1"></a>) <span class="sc">|&gt;</span></span>
-<span id="cb6-27"><a href="#cb6-27" tabindex="-1"></a>  <span class="fu">query</span>(</span>
-<span id="cb6-28"><a href="#cb6-28" tabindex="-1"></a>    <span class="at">model =</span> <span class="st">"llama3.2:1b"</span>,</span>
-<span id="cb6-29"><a href="#cb6-29" tabindex="-1"></a>    <span class="at">format =</span> paper_schema,</span>
-<span id="cb6-30"><a href="#cb6-30" tabindex="-1"></a>    <span class="at">output =</span> <span class="st">"text"</span>,</span>
-<span id="cb6-31"><a href="#cb6-31" tabindex="-1"></a>    <span class="at">stream =</span> <span class="cn">FALSE</span></span>
-<span id="cb6-32"><a href="#cb6-32" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
-<span id="cb6-33"><a href="#cb6-33" tabindex="-1"></a>  jsonlite<span class="sc">::</span><span class="fu">fromJSON</span>()</span>
-<span id="cb6-34"><a href="#cb6-34" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb6-35"><a href="#cb6-35" tabindex="-1"></a>⠙ llama3<span class="fl">.2</span><span class="sc">:</span><span class="dv">1</span>b is thinking</span>
-<span id="cb6-36"><a href="#cb6-36" tabindex="-1"></a></span>
-<span id="cb6-37"><a href="#cb6-37" tabindex="-1"></a>⠹ llama3<span class="fl">.2</span><span class="sc">:</span><span class="dv">1</span>b is thinking</span>
-<span id="cb6-38"><a href="#cb6-38" tabindex="-1"></a></span>
-<span id="cb6-39"><a href="#cb6-39" tabindex="-1"></a>⠸ llama3<span class="fl">.2</span><span class="sc">:</span><span class="dv">1</span>b is thinking</span>
-<span id="cb6-40"><a href="#cb6-40" tabindex="-1"></a></span>
-<span id="cb6-41"><a href="#cb6-41" tabindex="-1"></a><span class="co">#&gt; $title</span></span>
-<span id="cb6-42"><a href="#cb6-42" tabindex="-1"></a><span class="co">#&gt; [1] "Attention Is All You Need"</span></span>
-<span id="cb6-43"><a href="#cb6-43" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb6-44"><a href="#cb6-44" tabindex="-1"></a><span class="co">#&gt; $year</span></span>
-<span id="cb6-45"><a href="#cb6-45" tabindex="-1"></a><span class="co">#&gt; [1] 2017</span></span>
-<span id="cb6-46"><a href="#cb6-46" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb6-47"><a href="#cb6-47" tabindex="-1"></a><span class="co">#&gt; $authors</span></span>
-<span id="cb6-48"><a href="#cb6-48" tabindex="-1"></a><span class="co">#&gt;               name     affiliation</span></span>
-<span id="cb6-49"><a href="#cb6-49" tabindex="-1"></a><span class="co">#&gt; 1   Ashish Vaswani    Google Brain</span></span>
-<span id="cb6-50"><a href="#cb6-50" tabindex="-1"></a><span class="co">#&gt; 2     Noam Shazeer    Google Brain</span></span>
-<span id="cb6-51"><a href="#cb6-51" tabindex="-1"></a><span class="co">#&gt; 3 Illia Polosukhin Google Research</span></span>
-<span id="cb6-52"><a href="#cb6-52" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb6-53"><a href="#cb6-53" tabindex="-1"></a><span class="co">#&gt; $keywords</span></span>
-<span id="cb6-54"><a href="#cb6-54" tabindex="-1"></a><span class="co">#&gt; [1] "Transformer architecture"   "attention mechanisms"       "neural machine translation"</span></span>
-<span id="cb6-55"><a href="#cb6-55" tabindex="-1"></a><span class="co">#&gt; [4] "sequence modelling"        </span></span>
-<span id="cb6-56"><a href="#cb6-56" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb6-57"><a href="#cb6-57" tabindex="-1"></a><span class="co">#&gt; $open_access</span></span>
-<span id="cb6-58"><a href="#cb6-58" tabindex="-1"></a><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">paper_schema</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_schema.html">create_schema</a></span><span class="op">(</span></span>
+<span>  title <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_string</a></span><span class="op">(</span>description <span class="op">=</span> <span class="st">"Title of the paper"</span><span class="op">)</span>,</span>
+<span>  year <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_integer</a></span><span class="op">(</span>description <span class="op">=</span> <span class="st">"Publication year"</span><span class="op">)</span>,</span>
+<span>  authors <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_array</a></span><span class="op">(</span></span>
+<span>    description <span class="op">=</span> <span class="st">"List of authors"</span>,</span>
+<span>    items <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_object</a></span><span class="op">(</span></span>
+<span>      name <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_string</a></span><span class="op">(</span>description <span class="op">=</span> <span class="st">"Full name of the author"</span><span class="op">)</span>,</span>
+<span>      affiliation <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_string</a></span><span class="op">(</span>description <span class="op">=</span> <span class="st">"Institutional affiliation"</span><span class="op">)</span></span>
+<span>    <span class="op">)</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  keywords <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_array</a></span><span class="op">(</span></span>
+<span>    items <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_string</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>    description <span class="op">=</span> <span class="st">"Key topics covered by the paper"</span></span>
+<span>  <span class="op">)</span>,</span>
+<span>  open_access <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_boolean</a></span><span class="op">(</span></span>
+<span>    description <span class="op">=</span> <span class="st">"Whether the paper is freely available"</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">paper_text</span> <span class="op">&lt;-</span> <span class="st">"We present 'Attention Is All You Need' (2017) by Ashish Vaswani (Google Brain), Noam Shazeer (Google Brain), and Illia Polosukhin (Google Research). The paper introduces the Transformer architecture and covers topics such as attention mechanisms, neural machine translation, and sequence modelling. The paper is freely available on arXiv."</span></span>
+<span></span>
+<span><span class="fu"><a href="../reference/make_query.html">make_query</a></span><span class="op">(</span></span>
+<span>  <span class="va">paper_text</span>,</span>
+<span>  prompt <span class="op">=</span> <span class="st">"Extract the bibliographic information from the text below."</span>,</span>
+<span>  template <span class="op">=</span> <span class="st">"{prompt}\n\nTEXT:\n\n{text}"</span></span>
+<span><span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span></span>
+<span>    model <span class="op">=</span> <span class="st">"llama3.2:1b"</span>,</span>
+<span>    format <span class="op">=</span> <span class="va">paper_schema</span>,</span>
+<span>    output <span class="op">=</span> <span class="st">"text"</span>,</span>
+<span>    stream <span class="op">=</span> <span class="cn">FALSE</span></span>
+<span>  <span class="op">)</span> <span class="op">|&gt;</span></span>
+<span>  <span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $title</span></span>
+<span><span class="co">#&gt; [1] "Attention Is All You Need"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $year</span></span>
+<span><span class="co">#&gt; [1] 2017</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $authors</span></span>
+<span><span class="co">#&gt;               name     affiliation</span></span>
+<span><span class="co">#&gt; 1   Ashish Vaswani    Google Brain</span></span>
+<span><span class="co">#&gt; 2     Noam Shazeer    Google Brain</span></span>
+<span><span class="co">#&gt; 3 Illia Polosukhin Google Research</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $keywords</span></span>
+<span><span class="co">#&gt; [1] "Transformer architecture"   "attention mechanisms"      </span></span>
+<span><span class="co">#&gt; [3] "neural machine translation" "sequence modeling"         </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $open_access</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="image-based-extraction">Image-Based Extraction<a class="anchor" aria-label="anchor" href="#image-based-extraction"></a>
@@ -344,17 +331,8 @@ getting a free-text description of an image, you can extract structured
 data from it directly.</p>
 <p>First, pull a vision-capable model:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="../reference/pull_model.html">pull_model</a></span><span class="op">(</span><span class="st">"llama3.2-vision"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; ℹ pulling manifest</span></span>
-<span><span class="co">#&gt; ✔ pulling manifest [9ms]</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ verifying sha256 digest</span></span>
-<span><span class="co">#&gt; ✔ verifying sha256 digest [3ms]</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ℹ writing manifest</span></span>
-<span><span class="co">#&gt; ✔ writing manifest [4ms]</span></span>
-<span><span class="co">#&gt; ✔ success!</span></span>
-<span><span class="co">#&gt; ✔ model llama3.2-vision pulled succesfully!</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="../reference/pull_model.html">pull_model</a></span><span class="op">(</span><span class="st">"qwen3-vl:2b"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; ✔ model qwen3-vl:2b pulled successfully!</span></span></code></pre></div>
 <p>Define a schema for the visual attributes you want to extract:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">image_schema</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_schema.html">create_schema</a></span><span class="op">(</span></span>
@@ -387,22 +365,21 @@ data from it directly.</p>
 <span></span>
 <span><span class="va">res_image</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span></span>
 <span>  q <span class="op">=</span> <span class="st">"Analyse this image and fill in the structured fields."</span>,</span>
-<span>  model <span class="op">=</span> <span class="st">"llama3.2-vision"</span>,</span>
+<span>  model <span class="op">=</span> <span class="st">"qwen3-vl:2b"</span>,</span>
 <span>  images <span class="op">=</span> <span class="va">logo_url</span>,</span>
 <span>  format <span class="op">=</span> <span class="va">image_schema</span>,</span>
 <span>  output <span class="op">=</span> <span class="st">"text"</span>,</span>
 <span>  stream <span class="op">=</span> <span class="cn">FALSE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span></span>
 <span><span class="fu">jsonlite</span><span class="fu">::</span><span class="fu"><a href="https://jeroen.r-universe.dev/jsonlite/reference/fromJSON.html" class="external-link">fromJSON</a></span><span class="op">(</span><span class="va">res_image</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">tibble</span><span class="fu">::</span><span class="fu"><a href="https://tibble.tidyverse.org/reference/as_tibble.html" class="external-link">as_tibble</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; # A tibble: 3 × 6</span></span>
-<span><span class="co">#&gt;   subject style dominant_colors background text_present mood   </span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;   &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;      &lt;lgl&gt;        &lt;chr&gt;  </span></span>
-<span><span class="co">#&gt; 1 Rollama logo  white           blue       TRUE         playful</span></span>
-<span><span class="co">#&gt; 2 Rollama logo  blue            blue       TRUE         playful</span></span>
-<span><span class="co">#&gt; 3 Rollama logo  green           blue       TRUE         playful</span></span></code></pre></div>
+<span><span class="co">#&gt;   subject       style dominant_colors background text_present mood  </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;         &lt;chr&gt; &lt;chr&gt;           &lt;chr&gt;      &lt;lgl&gt;        &lt;chr&gt; </span></span>
+<span><span class="co">#&gt; 1 Cartoon llama chart blue            teal       TRUE         playf…</span></span>
+<span><span class="co">#&gt; 2 Cartoon llama chart green           teal       TRUE         playf…</span></span>
+<span><span class="co">#&gt; 3 Cartoon llama chart white           teal       TRUE         playf…</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="alternative-ways-to-provide-structured-outputs">Alternative Ways to Provide Structured Outputs<a class="anchor" aria-label="anchor" href="#alternative-ways-to-provide-structured-outputs"></a>
@@ -464,15 +441,15 @@ that seems most natural to you.</p>
 <span>  output <span class="op">=</span> <span class="st">"text"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:1b ───────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer from llama3.2:1b ─────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; {</span></span>
-<span><span class="co">#&gt;  "name": "Canada",</span></span>
-<span><span class="co">#&gt;  "capital": "Ottawa",</span></span>
-<span><span class="co">#&gt;  "population": 41000000, "continent": "North America",</span></span>
-<span><span class="co">#&gt;  "nato_member": true,</span></span>
-<span><span class="co">#&gt;  "official_languages": ["English", "French"] </span></span>
-<span><span class="co">#&gt; }</span></span></code></pre></div>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; "name": "Canaada"</span></span>
+<span><span class="co">#&gt; ,"capital": "Ottawa"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ,"population": 41, "continent": "Africa" ,</span></span>
+<span><span class="co">#&gt; "nato_member": true</span></span>
+<span><span class="co">#&gt; ,"official_languages": ["English", "French"] }</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="create-as-json-string">Create as json string<a class="anchor" aria-label="anchor" href="#create-as-json-string"></a>
@@ -533,9 +510,14 @@ that seems most natural to you.</p>
 <span>  output <span class="op">=</span> <span class="st">"text"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:1b ───────────────────────────────────────────────────────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; ── Answer from llama3.2:1b ─────────────────────────────────────────</span></span>
+<span><span class="co">#&gt; {</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; {"name": "Canada", "capital": "Ottawa", "population": 41000000, "continent": "North America", "nato_member": true, "official_languages": ["English", "French"]}</span></span></code></pre></div>
+<span><span class="co">#&gt; "name": "Canada",</span></span>
+<span><span class="co">#&gt; "capital": "Ottawa",</span></span>
+<span><span class="co">#&gt; "population": 41, "continent": "North America",</span></span>
+<span><span class="co">#&gt; "nato_member": true,</span></span>
+<span><span class="co">#&gt; "official_languages": ["English", "French"]}</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="using-ellmer">Using ellmer<a class="anchor" aria-label="anchor" href="#using-ellmer"></a>
@@ -552,7 +534,8 @@ works quite differently from <code><a href="../reference/query.html">rollama::ch
 <span><span class="co">#&gt; Attaching package: 'ellmer'</span></span>
 <span><span class="co">#&gt; The following objects are masked from 'package:rollama':</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     chat, type_array, type_boolean, type_enum, type_integer, type_number, type_object, type_string</span></span>
+<span><span class="co">#&gt;     chat, type_array, type_boolean, type_enum, type_integer,</span></span>
+<span><span class="co">#&gt;     type_number, type_object, type_string</span></span>
 <span><span class="va">country_schema_ellmer</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/create_schema.html">type_object</a></span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_string</a></span><span class="op">(</span>description <span class="op">=</span> <span class="st">"Name of the country"</span><span class="op">)</span>,</span>
 <span>  capital <span class="op">=</span> <span class="fu"><a href="../reference/create_schema.html">type_string</a></span><span class="op">(</span>description <span class="op">=</span> <span class="st">"Name of the capital"</span><span class="op">)</span>,</span>
@@ -618,15 +601,14 @@ works quite differently from <code><a href="../reference/query.html">rollama::ch
 <span>  output <span class="op">=</span> <span class="st">"text"</span></span>
 <span><span class="op">)</span></span>
 <span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:1b ───────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; ── Answer from llama3.2:1b ─────────────────────────────────────────</span></span>
 <span><span class="co">#&gt; {</span></span>
-<span><span class="co">#&gt;  "name": "Canada",</span></span>
-<span><span class="co">#&gt;  "capital": "Ottawa",</span></span>
-<span><span class="co">#&gt;  "population": 41000000, "continent": "North America",</span></span>
-<span><span class="co">#&gt;  "nato_member": true,</span></span>
-<span><span class="co">#&gt;  "official_languages": ["English", "French"] </span></span>
-<span><span class="co">#&gt; }</span></span></code></pre></div>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; "name": "Canada",</span></span>
+<span><span class="co">#&gt; "capital": "Ottawa",</span></span>
+<span><span class="co">#&gt; "population": 41, "continent": "North America",</span></span>
+<span><span class="co">#&gt; "nato_member": true,</span></span>
+<span><span class="co">#&gt; "official_languages": ["English", "French"]}</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="using-tidyllm">Using tidyllm<a class="anchor" aria-label="anchor" href="#using-tidyllm"></a>
@@ -638,17 +620,10 @@ with <code>rollama</code> yet <code><a href="../reference/query.html">chat()</a>
 these functions as well.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://edubruell.github.io/tidyllm/" class="external-link">tidyllm</a></span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; Attaching package: 'tidyllm'</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:ellmer':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     chat</span></span>
-<span><span class="co">#&gt; The following objects are masked from 'package:rollama':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     chat, list_models</span></span>
-<span><span class="co">#&gt; The following object is masked from 'package:stats':</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt;     embed</span></span>
+<span><span class="co">#&gt; Error:</span></span>
+<span><span class="co">#&gt; ! package or namespace load failed for 'tidyllm' in dyn.load(file, DLLpath = DLLpath, ...):</span></span>
+<span><span class="co">#&gt;  unable to load shared object '/home/johannes/R/x86_64-pc-linux-gnu-library/4.5/pdftools/libs/pdftools.so':</span></span>
+<span><span class="co">#&gt;   libpoppler-cpp.so.2: cannot open shared object file: No such file or directory</span></span>
 <span><span class="va">country_schema_tidyllm</span> <span class="op">&lt;-</span> <span class="fu">field_object</span><span class="op">(</span></span>
 <span>  name <span class="op">=</span> <span class="fu">field_chr</span><span class="op">(</span>.description <span class="op">=</span> <span class="st">"Name of the country"</span><span class="op">)</span>,</span>
 <span>  capital <span class="op">=</span> <span class="fu">field_chr</span><span class="op">(</span>.description <span class="op">=</span> <span class="st">"Name of the capital"</span><span class="op">)</span>,</span>
@@ -672,35 +647,11 @@ these functions as well.</p>
 <span>    .vector <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">)</span></span>
 <span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in `field_object()`:</span></span>
+<span><span class="co">#&gt; ! could not find function "field_object"</span></span>
 <span><span class="va">country_schema_tidyllm</span></span>
-<span><span class="co">#&gt; &lt;tidyllm::tidyllm_field&gt;</span></span>
-<span><span class="co">#&gt;  @ type       : chr "object"</span></span>
-<span><span class="co">#&gt;  @ description: chr(0) </span></span>
-<span><span class="co">#&gt;  @ enum       : chr(0) </span></span>
-<span><span class="co">#&gt;  @ vector     : logi FALSE</span></span>
-<span><span class="co">#&gt;  @ schema     :List of 3</span></span>
-<span><span class="co">#&gt;  .. $ type      : chr "object"</span></span>
-<span><span class="co">#&gt;  .. $ properties:List of 6</span></span>
-<span><span class="co">#&gt;  ..  ..$ name              :List of 2</span></span>
-<span><span class="co">#&gt;  ..  .. ..$ type       : chr "string"</span></span>
-<span><span class="co">#&gt;  ..  .. ..$ description: chr "Name of the country"</span></span>
-<span><span class="co">#&gt;  ..  ..$ capital           :List of 2</span></span>
-<span><span class="co">#&gt;  ..  .. ..$ type       : chr "string"</span></span>
-<span><span class="co">#&gt;  ..  .. ..$ description: chr "Name of the capital"</span></span>
-<span><span class="co">#&gt;  ..  ..$ population        :List of 2</span></span>
-<span><span class="co">#&gt;  ..  .. ..$ type       : chr "number"</span></span>
-<span><span class="co">#&gt;  ..  .. ..$ description: chr "Number of inhabitants, convert to absolute numbers"</span></span>
-<span><span class="co">#&gt;  ..  ..$ continent         :List of 2</span></span>
-<span><span class="co">#&gt;  ..  .. ..$ type: chr "string"</span></span>
-<span><span class="co">#&gt;  ..  .. ..$ enum: chr [1:7] "Asia" "Africa" "North America" "South America" ...</span></span>
-<span><span class="co">#&gt;  ..  ..$ nato_member       :List of 1</span></span>
-<span><span class="co">#&gt;  ..  .. ..$ type: chr "boolean"</span></span>
-<span><span class="co">#&gt;  ..  ..$ official_languages:List of 2</span></span>
-<span><span class="co">#&gt;  ..  .. ..$ type : chr "array"</span></span>
-<span><span class="co">#&gt;  ..  .. ..$ items:List of 2</span></span>
-<span><span class="co">#&gt;  ..  .. .. ..$ type       : chr "string"</span></span>
-<span><span class="co">#&gt;  ..  .. .. ..$ description: chr "Official languages"</span></span>
-<span><span class="co">#&gt;  .. $ required  : 'AsIs' chr [1:6] "name" "capital" "population" "continent" ...</span></span></code></pre></div>
+<span><span class="co">#&gt; Error:</span></span>
+<span><span class="co">#&gt; ! object 'country_schema_tidyllm' not found</span></span></code></pre></div>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/query.html">query</a></span><span class="op">(</span></span>
 <span>  <span class="va">q</span>,</span>
@@ -708,17 +659,8 @@ these functions as well.</p>
 <span>  format <span class="op">=</span> <span class="va">country_schema_tidyllm</span>,</span>
 <span>  output <span class="op">=</span> <span class="st">"text"</span></span>
 <span><span class="op">)</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; ── Answer from llama3.2:1b ───────────────────────────────────────────────────────────────────────────────────────────</span></span>
-<span><span class="co">#&gt; </span></span>
-<span><span class="co">#&gt; {</span></span>
-<span><span class="co">#&gt;  "name": "Canada",</span></span>
-<span><span class="co">#&gt;  "capital": "Ottawa",</span></span>
-<span><span class="co">#&gt;  "population": 41000000, "continent": "North America",</span></span>
-<span><span class="co">#&gt;  "nato_member": true,</span></span>
-<span><span class="co">#&gt;  "official_languages": ["English", "French"] </span></span>
-<span><span class="co">#&gt; }</span></span>
-<span><span class="co">#&gt; </span></span></code></pre></div>
+<span><span class="co">#&gt; Error:</span></span>
+<span><span class="co">#&gt; ! object 'country_schema_tidyllm' not found</span></span></code></pre></div>
 </div>
 </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
