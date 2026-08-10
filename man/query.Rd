@@ -17,7 +17,7 @@ query(
   tools = NULL,
   think = NULL,
   keep_alive = NULL,
-  logprobs = FALSE,
+  logprobs = NULL,
   top_logprobs = NULL,
   cache = NULL,
   ...,
@@ -79,8 +79,10 @@ for details.}
 should follow the Ollama tool schema with fields \code{type}, \code{function}
 (containing \code{name}, \code{description}, and \code{parameters}).}
 
-\item{think}{logical. If \code{TRUE}, enables extended thinking / reasoning
-mode (supported by compatible models such as DeepSeek-R1).}
+\item{think}{logical or character. \code{TRUE}/\code{FALSE} enables/disables extended
+thinking / reasoning mode (supported by compatible models such as
+DeepSeek-R1). Some models also accept a thinking \emph{level} instead of a
+plain toggle: one of \code{"high"}, \code{"medium"}, \code{"low"}, or \code{"max"}.}
 
 \item{keep_alive}{controls how long the model is kept in memory after the
 request. Accepts a duration string such as \code{"5m"} or \code{"1h"}, \code{0} to
@@ -135,8 +137,11 @@ For the output of \code{query}, there are a couple of options:
 \itemize{
 \item \code{response}: the response of the Ollama server
 \item \code{text}: only the answer as a character vector
-\item \code{data.frame}: a data.frame containing model and response
-\item \code{list}: a list containing the prompt to Ollama and the response
+\item \code{data.frame}: a data.frame containing model and response, plus a
+\code{thinking} column (the reasoning trace, \code{NA} unless \code{think} was used)
+and a \code{tool_calls} list-column (\code{NULL} unless \code{tools} was used)
+\item \code{list}: a list containing the prompt to Ollama and the response,
+including \code{thinking} and \code{tool_calls} (both \code{NULL} when unused)
 \item \code{httr2_response}: the response of the Ollama server including HTML
 headers in the \code{httr2} response format
 \item \code{httr2_request}: httr2_request objects in a list, in case you want to run

@@ -93,7 +93,7 @@ test_that("Test output parameter", {
       screen = FALSE,
       output = "data.frame"
     )),
-    c("model", "role", "response")
+    c("model", "role", "response", "thinking", "tool_calls")
   )
 })
 

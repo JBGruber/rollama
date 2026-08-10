@@ -71,7 +71,9 @@ process2list <- function(resps, reqs) {
       response = list(
         model = purrr::pluck(resp, "model"),
         role = purrr::pluck(resp, "message", "role"),
-        message = purrr::pluck(resp, "message", "content")
+        message = purrr::pluck(resp, "message", "content"),
+        thinking = purrr::pluck(resp, "message", "thinking"),
+        tool_calls = purrr::pluck(resp, "message", "tool_calls")
       )
     )
   })
@@ -83,7 +85,21 @@ process2df <- function(resps) {
   tibble::tibble(
     model = purrr::map_chr(resps, "model"),
     role = purrr::map_chr(resps, c("message", "role")),
-    response = purrr::map_chr(resps, c("message", "content"))
+    response = purrr::map_chr(resps, c("message", "content")),
+    thinking = purrr::map_chr(
+      resps,
+      purrr::pluck,
+      "message",
+      "thinking",
+      .default = NA_character_
+    ),
+    tool_calls = purrr::map(
+      resps,
+      purrr::pluck,
+      "message",
+      "tool_calls",
+      .default = list(NULL)
+    )
   )
 }
 

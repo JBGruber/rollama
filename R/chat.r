@@ -13,8 +13,11 @@
 #'
 #'   - `response`: the response of the Ollama server
 #'   - `text`: only the answer as a character vector
-#'   - `data.frame`: a data.frame containing model and response
-#'   - `list`: a list containing the prompt to Ollama and the response
+#'   - `data.frame`: a data.frame containing model and response, plus a
+#'      `thinking` column (the reasoning trace, `NA` unless `think` was used)
+#'      and a `tool_calls` list-column (`NULL` unless `tools` was used)
+#'   - `list`: a list containing the prompt to Ollama and the response,
+#'      including `thinking` and `tool_calls` (both `NULL` when unused)
 #'   - `httr2_response`: the response of the Ollama server including HTML
 #'      headers in the `httr2` response format
 #'   - `httr2_request`: httr2_request objects in a list, in case you want to run
@@ -58,8 +61,10 @@
 #' @param tools a list of tools (functions) the model may call. Each tool
 #'   should follow the Ollama tool schema with fields `type`, `function`
 #'   (containing `name`, `description`, and `parameters`).
-#' @param think logical. If `TRUE`, enables extended thinking / reasoning
-#'   mode (supported by compatible models such as DeepSeek-R1).
+#' @param think logical or character. `TRUE`/`FALSE` enables/disables extended
+#'   thinking / reasoning mode (supported by compatible models such as
+#'   DeepSeek-R1). Some models also accept a thinking *level* instead of a
+#'   plain toggle: one of `"high"`, `"medium"`, `"low"`, or `"max"`.
 #' @param keep_alive controls how long the model is kept in memory after the
 #'   request. Accepts a duration string such as `"5m"` or `"1h"`, `0` to
 #'   unload immediately, or `-1` to keep the model loaded indefinitely.
@@ -248,7 +253,7 @@ query <- function(
   tools = NULL,
   think = NULL,
   keep_alive = NULL,
-  logprobs = FALSE,
+  logprobs = NULL,
   top_logprobs = NULL,
   cache = NULL,
   ...,
