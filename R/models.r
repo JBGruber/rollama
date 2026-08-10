@@ -225,22 +225,24 @@ create_model <- function(
 
   # flush progress
   the$str_prgs <- NULL
+  body <- list(
+    model = model,
+    from = from,
+    template = template,
+    renderer = renderer,
+    parser = parser,
+    license = license,
+    system = system,
+    parameters = parameters,
+    messages = messages,
+    quantize = quantize,
+    stream = stream
+  ) |>
+    purrr::compact()
   req <- httr2::request(server) |>
     httr2::req_url_path_append("/api/create") |>
     httr2::req_method("POST") |>
-    httr2::req_body_json(list(
-      model = model,
-      from = from,
-      template = template,
-      renderer = renderer,
-      parser = parser,
-      license = license,
-      system = system,
-      parameters = parameters,
-      messages = messages,
-      quantize = quantize,
-      stream = stream
-    )) |>
+    httr2::req_body_json(body) |>
     httr2::req_headers(!!!get_headers())
 
   if (stream) {
