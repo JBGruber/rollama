@@ -189,7 +189,7 @@ Instead of getting a free-text description of an image, you can extract structur
 First, pull a vision-capable model:
 
 ```{r pull}
-pull_model("llama3.2-vision")
+pull_model("qwen3-vl:2b")
 ```
 
 Define a schema for the visual attributes you want to extract:
@@ -228,7 +228,7 @@ logo_url <- "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figur
 
 res_image <- query(
   q = "Analyse this image and fill in the structured fields.",
-  model = "llama3.2-vision",
+  model = "qwen3-vl:2b",
   images = logo_url,
   format = image_schema,
   output = "text",

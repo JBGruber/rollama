@@ -112,10 +112,10 @@ Because the output is guaranteed to be valid JSON, you can parse it directly:
 jsonlite::fromJSON(res) |>
   tibble::as_tibble()
 #> # A tibble: 2 × 6
-#>   name   capital population continent     nato_member official_languages
-#>   <chr>  <chr>        <int> <chr>         <lgl>       <chr>             
-#> 1 Canada Ottawa    41000000 North America TRUE        English           
-#> 2 Canada Ottawa    41000000 North America TRUE        French
+#>   name   capital population continent nato_member official_languages
+#>   <chr>  <chr>        <int> <chr>     <lgl>       <chr>             
+#> 1 Canada Ottawa          41 North Am… TRUE        English           
+#> 2 Canada Ottawa          41 North Am… TRUE        French
 ```
 
 ## Batch Extraction
@@ -144,14 +144,6 @@ results <- query(
   screen = FALSE,
   stream = FALSE
 )
-#> 
-⠙ llama3.2:1b is thinking about 3/3 questions[ETA: ?]
-
-⠹ llama3.2:1b is thinking about 2/3 questions[ETA: 2s]
-
-⠸
-#> llama3.2:1b is thinking about 1/3 questions[ETA: 1s]
-
 
 # Parse all results at once
 countries_df <- purrr::map(results, jsonlite::fromJSON) |>
@@ -162,11 +154,11 @@ countries_df <- purrr::map(results, jsonlite::fromJSON) |>
 
 countries_df
 #> # A tibble: 3 × 6
-#>   name    capital  population continent     nato_member official_languages
-#>   <chr>   <chr>         <int> <chr>         <lgl>       <chr>             
-#> 1 Germany Berlin     84000000 Europe        TRUE        german            
-#> 2 Brazil  Brasília        215 South America FALSE       Portuguese        
-#> 3 Japan   Tokyo     125000000 Asia          FALSE       Japanese
+#>   name   capital population continent nato_member official_languages
+#>   <chr>  <chr>        <dbl> <chr>     <lgl>       <chr>             
+#> 1 Germa… Berlin    84000000 Europe    TRUE        German            
+#> 2 Brazil Brasíl… 2150000000 South Am… FALSE       Portuguese        
+#> 3 Japan  Tokyo          125 Asia      FALSE       Japanese
 ```
 
 ## Nested Objects
@@ -209,13 +201,6 @@ make_query(
     stream = FALSE
   ) |>
   jsonlite::fromJSON()
-#> 
-⠙ llama3.2:1b is thinking
-
-⠹ llama3.2:1b is thinking
-
-⠸ llama3.2:1b is thinking
-
 #> $title
 #> [1] "Attention Is All You Need"
 #> 
@@ -229,8 +214,8 @@ make_query(
 #> 3 Illia Polosukhin Google Research
 #> 
 #> $keywords
-#> [1] "Transformer architecture"   "attention mechanisms"       "neural machine translation"
-#> [4] "sequence modelling"        
+#> [1] "Transformer architecture"   "attention mechanisms"      
+#> [3] "neural machine translation" "sequence modeling"         
 #> 
 #> $open_access
 #> [1] TRUE
@@ -245,17 +230,8 @@ First, pull a vision-capable model:
 
 
 ``` r
-pull_model("llama3.2-vision")
-#> ℹ pulling manifest
-#> ✔ pulling manifest [9ms]
-#> 
-#> ℹ verifying sha256 digest
-#> ✔ verifying sha256 digest [3ms]
-#> 
-#> ℹ writing manifest
-#> ✔ writing manifest [4ms]
-#> ✔ success!
-#> ✔ model llama3.2-vision pulled succesfully!
+pull_model("qwen3-vl:2b")
+#> ✔ model qwen3-vl:2b pulled successfully!
 ```
 
 Define a schema for the visual attributes you want to extract:
@@ -296,22 +272,21 @@ logo_url <- "https://raw.githubusercontent.com/JBGruber/rollama/master/man/figur
 
 res_image <- query(
   q = "Analyse this image and fill in the structured fields.",
-  model = "llama3.2-vision",
+  model = "qwen3-vl:2b",
   images = logo_url,
   format = image_schema,
   output = "text",
   stream = FALSE
 )
 
-
 jsonlite::fromJSON(res_image) |>
   tibble::as_tibble()
 #> # A tibble: 3 × 6
-#>   subject style dominant_colors background text_present mood   
-#>   <chr>   <chr> <chr>           <chr>      <lgl>        <chr>  
-#> 1 Rollama logo  white           blue       TRUE         playful
-#> 2 Rollama logo  blue            blue       TRUE         playful
-#> 3 Rollama logo  green           blue       TRUE         playful
+#>   subject       style dominant_colors background text_present mood  
+#>   <chr>         <chr> <chr>           <chr>      <lgl>        <chr> 
+#> 1 Cartoon llama chart blue            teal       TRUE         playf…
+#> 2 Cartoon llama chart green           teal       TRUE         playf…
+#> 3 Cartoon llama chart white           teal       TRUE         playf…
 ```
 
 ## Alternative Ways to Provide Structured Outputs
@@ -372,15 +347,15 @@ query(
   output = "text"
 )
 #> 
-#> ── Answer from llama3.2:1b ───────────────────────────────────────────────────────────────────────────────────────────
-#> 
+#> ── Answer from llama3.2:1b ─────────────────────────────────────────
 #> {
-#>  "name": "Canada",
-#>  "capital": "Ottawa",
-#>  "population": 41000000, "continent": "North America",
-#>  "nato_member": true,
-#>  "official_languages": ["English", "French"] 
-#> }
+#> 
+#> "name": "Canaada"
+#> ,"capital": "Ottawa"
+#> 
+#> ,"population": 41, "continent": "Africa" ,
+#> "nato_member": true
+#> ,"official_languages": ["English", "French"] }
 ```
 
 
@@ -443,9 +418,14 @@ query(
   output = "text"
 )
 #> 
-#> ── Answer from llama3.2:1b ───────────────────────────────────────────────────────────────────────────────────────────
+#> ── Answer from llama3.2:1b ─────────────────────────────────────────
+#> {
 #> 
-#> {"name": "Canada", "capital": "Ottawa", "population": 41000000, "continent": "North America", "nato_member": true, "official_languages": ["English", "French"]}
+#> "name": "Canada",
+#> "capital": "Ottawa",
+#> "population": 41, "continent": "North America",
+#> "nato_member": true,
+#> "official_languages": ["English", "French"]}
 ```
 
 ### Using ellmer
@@ -454,13 +434,15 @@ The `ellmer` package introduces it's own type system, which has the same names f
 Attaching the package thus issues a warning.
 However, `rollama` handles the duplicated function names under the hood and you can use the types as expected (beware of the `ellmer::chat()` function, however, which works quite differently from `rollama::chat()`)
 
+
 ``` r
 library(ellmer)
 #> 
 #> Attaching package: 'ellmer'
 #> The following objects are masked from 'package:rollama':
 #> 
-#>     chat, type_array, type_boolean, type_enum, type_integer, type_number, type_object, type_string
+#>     chat, type_array, type_boolean, type_enum, type_integer,
+#>     type_number, type_object, type_string
 country_schema_ellmer <- type_object(
   name = type_string(description = "Name of the country"),
   capital = type_string(description = "Name of the capital"),
@@ -529,15 +511,14 @@ query(
   output = "text"
 )
 #> 
-#> ── Answer from llama3.2:1b ───────────────────────────────────────────────────────────────────────────────────────────
-#> 
+#> ── Answer from llama3.2:1b ─────────────────────────────────────────
 #> {
-#>  "name": "Canada",
-#>  "capital": "Ottawa",
-#>  "population": 41000000, "continent": "North America",
-#>  "nato_member": true,
-#>  "official_languages": ["English", "French"] 
-#> }
+#> 
+#> "name": "Canada",
+#> "capital": "Ottawa",
+#> "population": 41, "continent": "North America",
+#> "nato_member": true,
+#> "official_languages": ["English", "French"]}
 ```
 
 ### Using tidyllm
@@ -545,19 +526,13 @@ query(
 Like `ellmer`, `tidyllm` uses its own system to define structured outputs. 
 Once again, the output schema is compatible with `rollama` yet `chat()` and `list_models()` are masked as `tidyllm` defines these functions as well.
 
+
 ``` r
 library(tidyllm)
-#> 
-#> Attaching package: 'tidyllm'
-#> The following object is masked from 'package:ellmer':
-#> 
-#>     chat
-#> The following objects are masked from 'package:rollama':
-#> 
-#>     chat, list_models
-#> The following object is masked from 'package:stats':
-#> 
-#>     embed
+#> Error:
+#> ! package or namespace load failed for 'tidyllm' in dyn.load(file, DLLpath = DLLpath, ...):
+#>  unable to load shared object '/home/johannes/R/x86_64-pc-linux-gnu-library/4.5/pdftools/libs/pdftools.so':
+#>   libpoppler-cpp.so.2: cannot open shared object file: No such file or directory
 country_schema_tidyllm <- field_object(
   name = field_chr(.description = "Name of the country"),
   capital = field_chr(.description = "Name of the capital"),
@@ -581,35 +556,11 @@ country_schema_tidyllm <- field_object(
     .vector = TRUE
   )
 )
+#> Error in `field_object()`:
+#> ! could not find function "field_object"
 country_schema_tidyllm
-#> <tidyllm::tidyllm_field>
-#>  @ type       : chr "object"
-#>  @ description: chr(0) 
-#>  @ enum       : chr(0) 
-#>  @ vector     : logi FALSE
-#>  @ schema     :List of 3
-#>  .. $ type      : chr "object"
-#>  .. $ properties:List of 6
-#>  ..  ..$ name              :List of 2
-#>  ..  .. ..$ type       : chr "string"
-#>  ..  .. ..$ description: chr "Name of the country"
-#>  ..  ..$ capital           :List of 2
-#>  ..  .. ..$ type       : chr "string"
-#>  ..  .. ..$ description: chr "Name of the capital"
-#>  ..  ..$ population        :List of 2
-#>  ..  .. ..$ type       : chr "number"
-#>  ..  .. ..$ description: chr "Number of inhabitants, convert to absolute numbers"
-#>  ..  ..$ continent         :List of 2
-#>  ..  .. ..$ type: chr "string"
-#>  ..  .. ..$ enum: chr [1:7] "Asia" "Africa" "North America" "South America" ...
-#>  ..  ..$ nato_member       :List of 1
-#>  ..  .. ..$ type: chr "boolean"
-#>  ..  ..$ official_languages:List of 2
-#>  ..  .. ..$ type : chr "array"
-#>  ..  .. ..$ items:List of 2
-#>  ..  .. .. ..$ type       : chr "string"
-#>  ..  .. .. ..$ description: chr "Official languages"
-#>  .. $ required  : 'AsIs' chr [1:6] "name" "capital" "population" "continent" ...
+#> Error:
+#> ! object 'country_schema_tidyllm' not found
 ```
 
 
@@ -621,15 +572,6 @@ query(
   format = country_schema_tidyllm,
   output = "text"
 )
-#> 
-#> ── Answer from llama3.2:1b ───────────────────────────────────────────────────────────────────────────────────────────
-#> 
-#> {
-#>  "name": "Canada",
-#>  "capital": "Ottawa",
-#>  "population": 41000000, "continent": "North America",
-#>  "nato_member": true,
-#>  "official_languages": ["English", "French"] 
-#> }
-#> 
+#> Error:
+#> ! object 'country_schema_tidyllm' not found
 ```
