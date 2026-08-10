@@ -65,7 +65,7 @@
 <span>  tools <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  think <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  keep_alive <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  logprobs <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>  logprobs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  top_logprobs <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  cache <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span>,</span>
@@ -150,8 +150,10 @@ should follow the Ollama tool schema with fields <code>type</code>, <code>functi
 
 
 <dt id="arg-think">think<a class="anchor" aria-label="anchor" href="#arg-think"></a></dt>
-<dd><p>logical. If <code>TRUE</code>, enables extended thinking / reasoning
-mode (supported by compatible models such as DeepSeek-R1).</p></dd>
+<dd><p>logical or character. <code>TRUE</code>/<code>FALSE</code> enables/disables extended
+thinking / reasoning mode (supported by compatible models such as
+DeepSeek-R1). Some models also accept a thinking <em>level</em> instead of a
+plain toggle: one of <code>"high"</code>, <code>"medium"</code>, <code>"low"</code>, or <code>"max"</code>.</p></dd>
 
 
 <dt id="arg-keep-alive">keep_alive<a class="anchor" aria-label="anchor" href="#arg-keep-alive"></a></dt>
@@ -211,8 +213,11 @@ models will give the same answer, changing the seed leads to a different
 answer.</p>
 <p>For the output of <code>query</code>, there are a couple of options:</p><ul><li><p><code>response</code>: the response of the Ollama server</p></li>
 <li><p><code>text</code>: only the answer as a character vector</p></li>
-<li><p><code>data.frame</code>: a data.frame containing model and response</p></li>
-<li><p><code>list</code>: a list containing the prompt to Ollama and the response</p></li>
+<li><p><code>data.frame</code>: a data.frame containing model and response, plus a
+<code>thinking</code> column (the reasoning trace, <code>NA</code> unless <code>think</code> was used)
+and a <code>tool_calls</code> list-column (<code>NULL</code> unless <code>tools</code> was used)</p></li>
+<li><p><code>list</code>: a list containing the prompt to Ollama and the response,
+including <code>thinking</code> and <code>tool_calls</code> (both <code>NULL</code> when unused)</p></li>
 <li><p><code>httr2_response</code>: the response of the Ollama server including HTML
 headers in the <code>httr2</code> response format</p></li>
 <li><p><code>httr2_request</code>: httr2_request objects in a list, in case you want to run

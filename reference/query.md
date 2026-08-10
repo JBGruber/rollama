@@ -17,7 +17,7 @@ query(
   tools = NULL,
   think = NULL,
   keep_alive = NULL,
-  logprobs = FALSE,
+  logprobs = NULL,
   top_logprobs = NULL,
   cache = NULL,
   ...,
@@ -105,8 +105,10 @@ chat(
 
 - think:
 
-  logical. If `TRUE`, enables extended thinking / reasoning mode
-  (supported by compatible models such as DeepSeek-R1).
+  logical or character. `TRUE`/`FALSE` enables/disables extended
+  thinking / reasoning mode (supported by compatible models such as
+  DeepSeek-R1). Some models also accept a thinking *level* instead of a
+  plain toggle: one of `"high"`, `"medium"`, `"low"`, or `"max"`.
 
 - keep_alive:
 
@@ -179,9 +181,12 @@ For the output of `query`, there are a couple of options:
 
 - `text`: only the answer as a character vector
 
-- `data.frame`: a data.frame containing model and response
+- `data.frame`: a data.frame containing model and response, plus a
+  `thinking` column (the reasoning trace, `NA` unless `think` was used)
+  and a `tool_calls` list-column (`NULL` unless `tools` was used)
 
-- `list`: a list containing the prompt to Ollama and the response
+- `list`: a list containing the prompt to Ollama and the response,
+  including `thinking` and `tool_calls` (both `NULL` when unused)
 
 - `httr2_response`: the response of the Ollama server including HTML
   headers in the `httr2` response format
