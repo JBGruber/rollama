@@ -11,7 +11,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/JBGruber/rollama/blob/main/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/JBGruber/rollama/blob/v0.3.1/DESCRIPTION)
 
 Gruber J, Weber M (2026). *rollama: Communicate with 'Ollama' to Run
 Large Language Models Locally*. R package version 0.3.0.9000,
