@@ -2,6 +2,10 @@
 
 ## rollama (development version)
 
+## rollama 0.3.1
+
+CRAN release: 2026-08-24
+
 - [`query()`](https://jbgruber.github.io/rollama/reference/query.md) can
   now batch annotate several images with the same prompt by passing
   `images` as a list (one element per query)
