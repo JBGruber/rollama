@@ -9,16 +9,20 @@ knitr::knit(
   output = "annotation.Rmd"
 )
 knitr::knit(
+  "hf-gguf.Rmd.orig",
+  output = "hf-gguf.Rmd"
+)
+knitr::knit(
   "image-annotation.Rmd.orig",
   output = "image-annotation.Rmd"
 )
 knitr::knit(
-  "text-embedding.Rmd.orig",
-  output = "text-embedding.Rmd"
-)
-knitr::knit(
   "structured_outputs.Rmd.orig",
   output = "structured_outputs.Rmd"
+)
+knitr::knit(
+  "text-embedding.Rmd.orig",
+  output = "text-embedding.Rmd"
 )
 
 # render site to have a look
