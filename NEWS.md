@@ -1,5 +1,7 @@
 # rollama (development version)
 
+* document how to use `rollama` with [llmman](https://github.com/llmmanorg/llmman), which serves the Ollama API on port 17434
+
 # rollama 0.3.1
 
 * `query()` can now batch annotate several images with the same prompt by passing `images` as a list (one element per query)
