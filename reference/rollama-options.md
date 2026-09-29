@@ -36,6 +36,12 @@ options below can be set.
 
   :   None
 
+- rollama_cache_retries:
+
+  default:
+
+  :   `3`
+
 ## Examples
 
 ``` r

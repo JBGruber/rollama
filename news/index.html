@@ -48,7 +48,9 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="rollama-development-version">rollama (development version)<a class="anchor" aria-label="anchor" href="#rollama-development-version"></a></h2>
-</div>
+<ul><li>
+<code><a href="../reference/query.html">query()</a></code> cache file names are now more stable and survive different locales and R versions. Settings that do not change the response, like <code>keep_alive</code> and <code>stream</code>, are no longer used to produce the hash. Failed requests are retried only up to 3 times now (see <code>options(rollama_cache_retries)</code>) instead of indefinitely, then an error lists the reasons. Identical requests are sent only once, interrupting no longer restarts unfinished requests, and the cache directory is created for single requests too.</li>
+</ul></div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="0.3.1" id="rollama-031">rollama 0.3.1<a class="anchor" aria-label="anchor" href="#rollama-031"></a></h2><p class="text-muted">CRAN release: 2026-08-24</p>
 <ul><li>
