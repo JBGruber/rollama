@@ -153,14 +153,36 @@ throw_error <- function(fails) {
 }
 
 
-# Compute a stable hash for a request.
+# Compute a stable hash for a request. The hash is taken over the request body
+# as JSON (always UTF-8) so that file names are the same across sessions,
+# locales, R versions and machines. Fields that do not change the answer are
+# left out.
 req_hash <- function(req) {
-  local({
-    tmp <- tempfile()
-    on.exit(unlink(tmp))
-    writeBin(charToRaw(paste(req$body$data, collapse = "\n")), tmp)
-    unname(tools::md5sum(tmp))
-  })
+  data <- req$body$data
+  data$keep_alive <- NULL
+  data$stream <- NULL
+  json <- jsonlite::toJSON(
+    data,
+    auto_unbox = FALSE,
+    digits = NA,
+    null = "null"
+  )
+  md5_string(enc2utf8(as.character(json)))
+}
+
+
+# Hash used by rollama <= 0.3.1. It depends on deparse() and therefore on the
+# locale and R version. Only kept to migrate existing cache directories.
+req_hash_legacy <- function(req) {
+  md5_string(paste(req$body$data, collapse = "\n"))
+}
+
+
+md5_string <- function(x) {
+  tmp <- tempfile()
+  on.exit(unlink(tmp))
+  writeBin(charToRaw(x), tmp)
+  unname(tools::md5sum(tmp))
 }
 
 
@@ -172,12 +194,14 @@ resolve_cache_paths <- function(cache, reqs) {
   }
 
   if (length(cache) == 1L && tools::file_ext(cache) == "") {
-    if (!dir.exists(cache) && length(reqs) > 1L) {
+    if (!dir.exists(cache)) {
       dir.create(cache, recursive = TRUE)
       cli::cli_inform("Created cache directory {.path {cache}}")
     }
     hashes <- purrr::map_chr(reqs, req_hash)
-    return(file.path(cache, paste0(hashes, ".json")))
+    paths <- file.path(cache, paste0(hashes, ".json"))
+    migrate_legacy_cache(cache, paths, reqs)
+    return(paths)
   }
 
   if (length(cache) == length(reqs)) {
@@ -192,6 +216,32 @@ resolve_cache_paths <- function(cache, reqs) {
 }
 
 
+# Rename cache files written by rollama <= 0.3.1 (see req_hash_legacy()) to the
+# current file names so existing cache directories keep working.
+migrate_legacy_cache <- function(cache, paths, reqs) {
+  todo <- which(!file.exists(paths) & !duplicated(paths))
+  if (
+    length(todo) == 0L ||
+      length(list.files(cache, pattern = "\\.json$")) == 0L
+  ) {
+    return(invisible(0L))
+  }
+  legacy <- file.path(
+    cache,
+    paste0(purrr::map_chr(reqs[todo], req_hash_legacy), ".json")
+  )
+  found <- file.exists(legacy)
+  renamed <- file.rename(legacy[found], paths[todo][found])
+  if (any(renamed)) {
+    cli::cli_inform(
+      "Renamed {sum(renamed)} cache file{?s} in {.path {cache}} to the new \\
+       naming scheme."
+    )
+  }
+  invisible(sum(renamed))
+}
+
+
 read_cache <- function(path) {
   content <- readBin(path, what = "raw", n = file.info(path)$size)
   httr2::response(
@@ -202,16 +252,44 @@ read_cache <- function(path) {
 }
 
 
-# TRUE when the file exists and contains parseable JSON.
+# TRUE when the file exists and contains a chat response. Error responses from
+# Ollama (e.g. {"error": "..."}) are valid JSON but do not count as cached.
 check_cache_valid <- function(path) {
   if (!file.exists(path)) {
     return(FALSE)
   }
   tryCatch(
     {
-      jsonlite::read_json(path)
-      TRUE
+      resp <- jsonlite::read_json(path)
+      is.list(resp) && !is.null(resp$message) && is.null(resp$error)
     },
     error = function(e) FALSE
   )
+}
+
+
+# Describe why requests did not leave a valid cache file. Ollama's error
+# message is taken from the file httr2 wrote the error response to.
+cache_failures <- function(resps, paths) {
+  purrr::map2_chr(resps, paths, function(resp, path) {
+    msg <- if (!is.null(resp$parent)) {
+      conditionMessage(resp$parent)
+    } else if (inherits(resp, "condition")) {
+      conditionMessage(resp)
+    } else {
+      "Response is not a valid chat response."
+    }
+    err <- tryCatch(jsonlite::read_json(path)$error, error = function(e) NULL)
+    if (is.character(err)) {
+      msg <- paste(msg, err)
+    }
+    gsub("\\s*\n\\s*", " ", cli::ansi_strip(msg))
+  })
+}
+
+
+# Escape braces so cli does not try to interpolate text from responses.
+cli_escape <- function(x) {
+  x <- gsub("{", "{{", x, fixed = TRUE)
+  gsub("}", "}}", x, fixed = TRUE)
 }

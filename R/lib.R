@@ -172,7 +172,12 @@ perform_reqs <- function(reqs, verbose) {
   httr2::resps_successes(resps)
 }
 
-perform_reqs_with_cache <- function(reqs, cache_paths, verbose) {
+perform_reqs_with_cache <- function(
+  reqs,
+  cache_paths,
+  verbose,
+  retries = getOption("rollama_cache_retries", default = 3L)
+) {
   valid <- purrr::map_lgl(cache_paths, check_cache_valid)
 
   model <- purrr::map_chr(reqs, c("body", "data", "model")) |>
@@ -182,7 +187,7 @@ perform_reqs_with_cache <- function(reqs, cache_paths, verbose) {
     pb <- verbose
   } else if (verbose) {
     n_cached <- sum(valid)
-    n_run <- sum(!valid)
+    n_run <- sum(!valid & !duplicated(cache_paths))
     if (n_cached > 0L && n_run > 0L) {
       cli::cli_alert_info(
         "Loading {n_cached} cached response{?s}, running {n_run} new request{?s}."
@@ -199,26 +204,64 @@ perform_reqs_with_cache <- function(reqs, cache_paths, verbose) {
       )
     )
   }
-  resps <- vector("list", length(reqs))
-  withr::with_options(list(cli.progress_show_after = 0, model = model), {
-    resps[!valid] <- httr2::req_perform_parallel(
-      reqs = reqs[!valid],
-      paths = cache_paths[!valid],
-      on_error = "continue",
-      progress = pb
-    )
-  })
+  attempt <- 0L
+  repeat {
+    # identical requests share a cache file, so only the first one is run
+    # instead of having several requests write to the same file at once
+    todo <- which(!valid & !duplicated(cache_paths))
+    if (length(todo) == 0L) {
+      break
+    }
+    withr::with_options(list(cli.progress_show_after = 0, model = model), {
+      resps <- httr2::req_perform_parallel(
+        reqs = reqs[todo],
+        paths = cache_paths[todo],
+        on_error = "continue",
+        progress = pb
+      )
+    })
 
-  # verify that all responses are valid
-  if (!all(purrr::map_lgl(cache_paths, check_cache_valid))) {
+    ok <- purrr::map_lgl(cache_paths[todo], check_cache_valid)
+    fails <- cache_failures(resps[!ok], cache_paths[todo][!ok])
+    # remove error responses and partial downloads so they are never mistaken
+    # for answers, e.g., when the cache directory is shared with other machines
+    unlink(cache_paths[todo][!ok])
+    valid <- valid | cache_paths %in% cache_paths[todo][ok]
+
+    # httr2 catches the first interrupt and returns NULL for requests that did
+    # not run, so stop here instead of starting them again
+    if (any(purrr::map_lgl(resps, is.null))) {
+      cli::cli_abort(c(
+        "Interrupted.",
+        "i" = "{sum(valid)} of {length(valid)} responses are cached. Run the \\
+               same call again to continue."
+      ))
+    }
+
+    if (all(ok)) {
+      break
+    }
+    if (attempt >= retries) {
+      counts <- table(fails)
+      reasons <- cli_escape(paste0(
+        names(counts),
+        ifelse(counts > 1L, paste0(" (", counts, " times)"), "")
+      ))
+      names(reasons) <- rep("x", length(reasons))
+      cli::cli_abort(c(
+        "{sum(!ok)} request{?s} failed after {retries} retr{?y/ies}:",
+        reasons,
+        "i" = "{sum(valid)} of {length(valid)} responses are cached. Run the \\
+               same call again to retry only the failed requests."
+      ))
+    }
+    attempt <- attempt + 1L
     cli::cli_alert_warning(
-      "Some responses were corrupted, rerunning failed requests"
+      "{sum(!ok)} request{?s} failed, retrying (attempt {attempt} of {retries})."
     )
-    # call itself to execute again
-    resps <- perform_reqs_with_cache(reqs, cache_paths, verbose)
   }
-  resps[valid] <- purrr::map(cache_paths[valid], read_cache)
-  return(resps)
+
+  purrr::map(cache_paths, read_cache)
 }
 
 

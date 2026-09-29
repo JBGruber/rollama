@@ -43,6 +43,11 @@ the <- new.env()
 #'   \code{chat()} will give you a different answer.
 #'   \item{default:}{None}
 #' }}
+#' \item{rollama_cache_retries}{\describe{
+#'   How often failed requests are retried when responses are cached with the
+#'   \code{cache} argument of \code{query()}.
+#'   \item{default:}{\code{3}}
+#' }}
 #' }
 #' @examples
 #' options(rollama_config = "You make answers understandable to a 5 year old")

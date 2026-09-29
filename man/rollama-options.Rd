@@ -40,6 +40,11 @@ answer. Per default, no seed is set and each call to \code{query()} or
 \code{chat()} will give you a different answer.
 \item{default:}{None}
 }}
+\item{rollama_cache_retries}{\describe{
+How often failed requests are retried when responses are cached with the
+\code{cache} argument of \code{query()}.
+\item{default:}{\code{3}}
+}}
 }
 }
 \examples{

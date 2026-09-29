@@ -99,13 +99,20 @@ pipelines can be resumed after an interruption. Two forms are accepted:
 \itemize{
 \item A \strong{single directory path} (e.g. \code{"my_cache"}). Each response is
 stored as \verb{\{directory\}/\{md5_hash\}.json}, where the hash is derived from
-the request content (model, messages, options). Re-running the same
-request always hits the same file, even across sessions.
+the request content (model, messages, options, format etc., but not
+the server or \code{keep_alive}). Re-running the same request always hits
+the same file, even across sessions and machines, so a cache
+directory can be shared. Cache directories written by rollama <=
+0.3.1 are migrated to the new file names automatically.
 \item A \strong{character vector} with one explicit file path per request.
 Use this when you need to control file names yourself.
 }
 Existing, valid cache files are loaded instead of re-querying Ollama.
-Corrupted or missing files are re-requested and then saved. Caching
+Missing or corrupted files are re-requested and then saved, while error
+responses are never saved. Failed requests are retried up to 3 times
+(change with \code{options(rollama_cache_retries = 5)}). If they still fail,
+an error is thrown and running the same call again retries only the
+failed requests. Caching
 requires \code{stream = FALSE} (a warning is emitted and streaming is disabled
 automatically when \code{cache} is set). The \code{"httr2_response"} output type
 and custom output functions are not compatible with caching.}
