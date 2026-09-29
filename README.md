@@ -179,6 +179,20 @@ you are using the default port (11434) of a local instance
 options(rollama_server = "http://localhost:11434")
 ```
 
+### Using with llmman
+
+`rollama` also works with [llmman](https://github.com/llmmanorg/llmman),
+a local model runner that serves the Ollama API (alongside OpenAI- and
+Anthropic-compatible ones) on port 17434. After starting it with
+`llmman serve` and pulling a model (e.g., `llmman pull gemma4`), point
+`rollama` at it:
+
+``` r
+options(rollama_server = "http://localhost:17434")
+ping_ollama()
+query("Why is the sky blue? Answer with one sentence.", model = "gemma4")
+```
+
 You can change how a model answers by setting a configuration or system
 message in plain English (or another language supported by the model):
 

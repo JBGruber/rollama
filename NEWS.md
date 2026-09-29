@@ -1,6 +1,7 @@
 # rollama (development version)
 
 * `query()` cache file names are now more stable and survive different locales and R versions. Settings that do not change the response, like `keep_alive` and `stream`, are no longer used to produce the hash. Failed requests are retried only up to 3 times now (see `options(rollama_cache_retries)`) instead of indefinitely, then an error lists the reasons. Identical requests are sent only once, interrupting no longer restarts unfinished requests, and the cache directory is created for single requests too.
+* document how to use `rollama` with [llmman](https://github.com/llmmanorg/llmman), which serves the Ollama API on port 17434
 
 # rollama 0.3.1
 
