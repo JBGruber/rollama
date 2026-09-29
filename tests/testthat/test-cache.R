@@ -3,14 +3,17 @@
 make_fake_req <- function(
   model = "llama3.1",
   content = "test",
-  stream = FALSE
+  stream = FALSE,
+  server = "http://localhost:11434",
+  ...
 ) {
-  httr2::request("http://localhost:11434") |>
+  httr2::request(server) |>
     httr2::req_url_path_append("/api/chat") |>
     httr2::req_body_json(list(
       model = model,
       messages = list(list(role = "user", content = content)),
-      stream = stream
+      stream = stream,
+      ...
     ))
 }
 
@@ -29,7 +32,31 @@ ollama_json <- function(content = "Because Rayleigh scattering.") {
 # ---- req_hash ---------------------------------------------------------------
 
 test_that("req_hash deterministically returns a 32-character hash string", {
-  expect_equal(req_hash(make_fake_req()), "84509e0fca78bfe92d29a181dfbbce1d")
+  expect_equal(req_hash(make_fake_req()), "2e52d4ea12589b3f4bd93a2f027e1f85")
+})
+
+test_that("req_hash_legacy still returns the hash used by rollama <= 0.3.1", {
+  expect_equal(
+    req_hash_legacy(make_fake_req()),
+    "84509e0fca78bfe92d29a181dfbbce1d"
+  )
+})
+
+test_that("req_hash does not depend on the locale", {
+  req <- make_fake_req(content = "Gr\u00fc\u00dfe \u2013 \U0001F600")
+  hash <- req_hash(req)
+  withr::with_locale(c(LC_CTYPE = "C"), expect_equal(req_hash(req), hash))
+})
+
+test_that("req_hash ignores server, stream and keep_alive", {
+  expect_equal(
+    req_hash(make_fake_req()),
+    req_hash(make_fake_req(
+      server = "http://other:11434",
+      stream = TRUE,
+      keep_alive = "5m"
+    ))
+  )
 })
 
 test_that("req_hash differs for different model or content", {
@@ -62,6 +89,31 @@ test_that("resolve_cache_paths in directory mode creates dir and returns hashed 
   expect_true(all(endsWith(paths, ".json")))
   # different questions → different file names
   expect_false(paths[[1]] == paths[[2]])
+})
+
+test_that("resolve_cache_paths creates the directory for a single request", {
+  sub_dir <- file.path(withr::local_tempdir(), "new_cache")
+  expect_message(resolve_cache_paths(sub_dir, list(make_fake_req())), "Created")
+  expect_true(dir.exists(sub_dir))
+})
+
+test_that("resolve_cache_paths renames cache files from rollama <= 0.3.1", {
+  tmp <- withr::local_tempdir()
+  reqs <- list(make_fake_req(content = "q1"), make_fake_req(content = "q2"))
+  legacy <- file.path(tmp, paste0(req_hash_legacy(reqs[[1]]), ".json"))
+  writeLines(ollama_json("old answer"), legacy)
+
+  expect_message(
+    paths <- resolve_cache_paths(tmp, reqs),
+    "Renamed 1 cache file"
+  )
+  expect_false(file.exists(legacy))
+  expect_true(file.exists(paths[1]))
+  expect_false(file.exists(paths[2]))
+  expect_equal(
+    httr2::resp_body_json(read_cache(paths[1]))$message$content,
+    "old answer"
+  )
 })
 
 test_that("resolve_cache_paths uses an existing directory without error", {
@@ -108,6 +160,18 @@ test_that("check_cache_valid returns FALSE for a corrupted file", {
   expect_false(check_cache_valid(tmp))
 })
 
+test_that("check_cache_valid returns FALSE for an Ollama error response", {
+  tmp <- withr::local_tempfile(fileext = ".json")
+  writeLines('{"error":"model runner has unexpectedly stopped"}', tmp)
+  expect_false(check_cache_valid(tmp))
+})
+
+test_that("check_cache_valid returns FALSE for JSON that is not a response", {
+  tmp <- withr::local_tempfile(fileext = ".json")
+  writeLines("[1, 2, 3]", tmp)
+  expect_false(check_cache_valid(tmp))
+})
+
 # ---- read_cache -------------------------------------------------------------
 
 test_that("read_cache returns an httr2_response with the original JSON body", {
@@ -120,6 +184,87 @@ test_that("read_cache returns an httr2_response with the original JSON body", {
   body <- httr2::resp_body_json(resp)
   expect_equal(body$message$content, "sky is blue")
   expect_equal(body$message$role, "assistant")
+})
+
+# ---- perform_reqs_with_cache ------------------------------------------------
+
+# mocked responses bypass httr2's file writing, so the mock writes the cache
+# file itself; `bodies` is used in turn for each call
+mock_ollama <- function(cache_dir, bodies, status = 200L) {
+  env <- new.env()
+  env$calls <- 0L
+  env$fn <- function(req) {
+    env$calls <- env$calls + 1L
+    i <- min(env$calls, length(bodies))
+    path <- file.path(cache_dir, paste0(req_hash(req), ".json"))
+    writeLines(bodies[[i]], path)
+    httr2::response(status_code = rep_len(status, i)[[i]])
+  }
+  env
+}
+
+test_that("perform_reqs_with_cache sends identical requests only once", {
+  tmp <- withr::local_tempdir()
+  mock <- mock_ollama(tmp, list(ollama_json()))
+  withr::local_options(httr2_mock = mock$fn)
+  reqs <- list(
+    make_fake_req(content = "a"),
+    make_fake_req(content = "a"),
+    make_fake_req(content = "b")
+  )
+  paths <- resolve_cache_paths(tmp, reqs)
+
+  resps <- perform_reqs_with_cache(reqs, paths, verbose = FALSE)
+
+  expect_equal(mock$calls, 2L)
+  expect_length(resps, 3L)
+  expect_equal(
+    httr2::resp_body_json(resps[[2]])$message$content,
+    "Because Rayleigh scattering."
+  )
+})
+
+test_that("perform_reqs_with_cache retries failed requests", {
+  tmp <- withr::local_tempdir()
+  mock <- mock_ollama(
+    tmp,
+    list('{"error":"try again"}', ollama_json("second time lucky")),
+    status = c(500L, 200L)
+  )
+  withr::local_options(httr2_mock = mock$fn)
+  reqs <- list(make_fake_req())
+  paths <- resolve_cache_paths(tmp, reqs)
+
+  expect_message(
+    resps <- perform_reqs_with_cache(reqs, paths, verbose = FALSE),
+    "retrying"
+  )
+  expect_equal(mock$calls, 2L)
+  expect_equal(
+    httr2::resp_body_json(resps[[1]])$message$content,
+    "second time lucky"
+  )
+})
+
+test_that("perform_reqs_with_cache gives up after retries and keeps no error files", {
+  tmp <- withr::local_tempdir()
+  mock <- mock_ollama(
+    tmp,
+    list('{"error":"model runner has unexpectedly stopped"}'),
+    status = 500L
+  )
+  withr::local_options(httr2_mock = mock$fn)
+  reqs <- list(make_fake_req())
+  paths <- resolve_cache_paths(tmp, reqs)
+
+  expect_error(
+    suppressMessages(
+      perform_reqs_with_cache(reqs, paths, verbose = FALSE, retries = 2L)
+    ),
+    "unexpectedly stopped"
+  )
+  expect_equal(mock$calls, 3L)
+  expect_false(file.exists(paths))
 })
 
 # ---- integration tests ------------------------------------------------------
